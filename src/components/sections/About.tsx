@@ -34,24 +34,24 @@ export function About() {
 
 				{/* Wide horizontal image banner */}
 				<div className="relative mt-14 overflow-hidden rounded-2xl">
-					<div className="relative aspect-[21/9] w-full">
+					<div className="relative aspect-[16/10] w-full sm:aspect-[18/9] lg:aspect-[21/9]">
 						<Image
 							src="/images/ibs.png"
 							alt="Iraq · UAE skyline"
 							fill
 							sizes="(max-width: 1280px) 100vw, 1280px"
-							className="object-cover"
+							className="object-cover object-[center_65%]"
 						/>
 						<div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,102,102,0.75)] via-[rgba(1,30,47,0.55)] to-transparent" />
-						<div className="absolute inset-0 flex items-end p-8 sm:p-12">
+						<div className="absolute inset-0 flex items-end p-5 sm:p-8 lg:p-12">
 							<div className="max-w-xl">
 								<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 									Iraq · UAE
 								</div>
-								<div className="mt-3 font-display text-2xl font-semibold text-white sm:text-3xl">
+								<div className="mt-2 font-display text-xl font-semibold text-white sm:mt-3 sm:text-2xl lg:text-3xl">
 									Two markets. One institutional alliance.
 								</div>
-								<div className="mt-2 text-[14px] text-white/75">
+								<div className="mt-1.5 text-[13px] text-white/75 sm:mt-2 sm:text-[14px]">
 									Operating across Baghdad and Dubai — connecting the public and private sectors.
 								</div>
 							</div>
