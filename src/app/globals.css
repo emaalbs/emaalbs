@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+	/* Brand palette */
+	--color-navy: #01334d;
+	--color-navy-dark: #011e2f;
+	--color-ink: #0a1628;
+	--color-slate: #546e7a;
+	--color-warm: #f8f9fa;
+	--color-gold: #eec13b;
+	--color-gold-deep: #ab820b;
+	--color-gold-tint: #fff8e1;
+	--color-teal: #006666;
+	--color-teal-tint: #e0f2f1;
+	--color-silver: #b0bec5;
+	--color-line: #e6e8eb;
+	--color-teal-dark: #005252;
+
+	--background: var(--color-warm);
+	--foreground: var(--color-ink);
 }
 
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+	--color-navy: var(--color-navy);
+	--color-navy-dark: var(--color-navy-dark);
+	--color-ink: var(--color-ink);
+	--color-slate: var(--color-slate);
+	--color-warm: var(--color-warm);
+	--color-gold: var(--color-gold);
+	--color-gold-deep: var(--color-gold-deep);
+	--color-gold-tint: var(--color-gold-tint);
+	--color-teal: var(--color-teal);
+	--color-teal-tint: var(--color-teal-tint);
+	--color-silver: var(--color-silver);
+	--color-line: var(--color-line);
+	--font-sans: var(--font-montserrat);
+	--font-display: var(--font-montserrat);
+	--font-numeric: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
+html {
+	scroll-behavior: smooth;
 }
 
 body {
 	background: var(--background);
 	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* Selection */
+::selection {
+	background: var(--color-gold);
+	color: var(--color-navy);
+}
+
+/* Utility helpers */
+.font-numeric {
+	font-family: var(--font-inter), ui-sans-serif, system-ui;
+	font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.tracking-overline {
+	letter-spacing: 0.18em;
+}
+
+.tracking-display {
+	letter-spacing: -0.02em;
+}
+
+/* Subtle reveal animation */
+@keyframes reveal-up {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.reveal {
+	animation: reveal-up 0.6s ease-out both;
+}
+
+/* Infinite marquee */
+@keyframes marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+	.reveal {
+		animation: none;
+	}
 }
