@@ -1,9 +1,18 @@
+"use client";
+
 import { Container } from "@/components/ui/Container";
 import { BRAND_LOGOS } from "@/components/site/BrandLogos";
+import { useI18n } from "@/i18n/provider";
 
 export function TrustStrip() {
-	// Duplicate the list so the marquee loops seamlessly.
-	const loop = [...BRAND_LOGOS, ...BRAND_LOGOS];
+	const { t } = useI18n();
+	// Duplicate the list many times so the marquee track is always wider than any viewport.
+	const loop = [
+		...BRAND_LOGOS,
+		...BRAND_LOGOS,
+		...BRAND_LOGOS,
+		...BRAND_LOGOS,
+	];
 	return (
 		<section className="relative bg-white py-14 border-y border-[var(--color-line)]">
 			{/* Teal accent strip at top */}
@@ -11,13 +20,14 @@ export function TrustStrip() {
 			<Container>
 				<div className="mb-8 flex items-center justify-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-slate)]">
 					<span className="inline-block h-px w-8 bg-[var(--color-teal)]/60" />
-					Trusted by leaders across sectors
+					{t.trustStrip.label}
 					<span className="inline-block h-px w-8 bg-[var(--color-teal)]/60" />
 				</div>
 			</Container>
 
 			{/* Marquee */}
 			<div
+				dir="ltr"
 				className="relative overflow-hidden"
 				style={{
 					maskImage:
@@ -26,7 +36,7 @@ export function TrustStrip() {
 						"linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%)",
 				}}
 			>
-				<div className="flex w-max items-center gap-12 py-2 animate-[marquee_45s_linear_infinite]">
+				<div className="flex w-max items-center gap-12 py-2 animate-[marquee_50s_linear_infinite]">
 					{loop.map(({ name, src, scale = 1 }, i) => (
 						<img
 							key={`${name}-${i}`}
@@ -35,7 +45,7 @@ export function TrustStrip() {
 							className="shrink-0 w-auto opacity-80 transition-opacity hover:opacity-100"
 							style={{ height: `${32 * scale}px` }}
 							title={name}
-							loading="lazy"
+							decoding="async"
 						/>
 					))}
 				</div>

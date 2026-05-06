@@ -1,24 +1,11 @@
-import { Container } from "@/components/ui/Container";
+"use client";
 
-const PILLARS = [
-	{
-		k: "Access",
-		t: "Government & regulators",
-		d: "Pre-qualified introductions to the ministries, agencies, and decision-makers that shape sectors.",
-	},
-	{
-		k: "Positioning",
-		t: "Panels & roundtables",
-		d: "Executive speaking slots and ministerial dialogue that place your business where decisions happen.",
-	},
-	{
-		k: "Execution",
-		t: "Curated B2B meetings",
-		d: "Hand-matched meetings with the buyers, investors, and partners who move strategy forward.",
-	},
-];
+import { Container } from "@/components/ui/Container";
+import { useI18n } from "@/i18n/provider";
 
 export function WhyEmaal() {
+	const { t } = useI18n();
+	const pillars = t.whyEmaal.pillars;
 	return (
 		<section id="why" className="relative bg-warm py-20 lg:py-28">
 			<Container>
@@ -27,24 +14,23 @@ export function WhyEmaal() {
 					<div className="lg:col-span-5">
 						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold-deep)]">
 							<span className="inline-block h-px w-8 bg-[var(--color-gold-deep)]" />
-							Why EMAAL & IBS
+							{t.whyEmaal.overline}
 						</div>
 						<h2 className="mt-4 font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.65rem,2.8vw,2.5rem)] leading-[1.15]">
-							Growth needs more than services.
+							{t.whyEmaal.title[0]}
 							<br />
-							It needs <span className="text-[var(--color-gold-deep)]">access</span>,
+							{t.whyEmaal.title[1]} <span className="text-[var(--color-gold-deep)]">{t.whyEmaal.title[2]}</span>
 							<br />
-							positioning, and execution.
+							{t.whyEmaal.title[3]}
 						</h2>
 						<p className="mt-5 max-w-md text-[15px] leading-[1.65] text-[var(--color-slate)]">
-							EMAAL, through IBS and EMAAL Tech, doesn't just connect opportunities — we help
-							you execute them. A platform not just for visibility, but for outcomes.
+							{t.whyEmaal.description}
 						</p>
 					</div>
 
 					{/* Right: 3 numbered pillars */}
 					<ol className="lg:col-span-7 space-y-px overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-line)]">
-						{PILLARS.map((p, i) => (
+						{pillars.map((p, i) => (
 							<li
 								key={p.k}
 								className="group relative bg-white p-7 transition-colors hover:bg-[var(--color-teal-tint)]/40"

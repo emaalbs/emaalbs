@@ -1,37 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Overline";
 import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/icons";
-
-const BRANDS = [
-	{
-		name: "Iraq Business Summit",
-		tag: "Flagship",
-		desc: "Iraq's national business platform connecting government, investors, and enterprise.",
-		img: "/images/group-ibs.jpg",
-	},
-	{
-		name: "Iraq 24 HD",
-		tag: "Media",
-		desc: "Iraq's first business & economy channel — the voice of the country's economic conversation.",
-		img: "/images/group-iraq24.jpg",
-	},
-	{
-		name: "EMAAL Tech",
-		tag: "Technology",
-		desc: "Technology, infrastructure, and digital solutions that execute strategy at scale.",
-		img: "/images/group-tech.jpg",
-	},
-	{
-		name: "EMAAL Gaming",
-		tag: "Emerging",
-		desc: "A new vertical building Iraq's place in the global gaming and digital entertainment economy.",
-		img: "/images/group-gaming.jpg",
-	},
-];
+import { useI18n } from "@/i18n/provider";
 
 export function Group() {
+	const { t, dir } = useI18n();
+	const isRtl = dir === "rtl";
+	const brands = t.group.brands;
 	return (
 		<section id="group" className="relative bg-white py-20 lg:py-28">
 			{/* Top divider */}
@@ -40,23 +19,23 @@ export function Group() {
 			<Container>
 				<div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
 					<SectionHeading
-						overline="EMAAL Group"
+						overline={t.group.overline}
 						title={
 							<>
-								One group.
+								{t.group.title[0]}
 								<br />
-								Four <span className="text-[var(--color-gold-deep)]">platforms.</span>
+								{t.group.title[1]} <span className="text-[var(--color-gold-deep)]">{t.group.title[2]}</span>{t.group.title[3]}
 							</>
 						}
-						subtitle="Each company in the EMAAL Group plays a specific role in connecting markets, institutions, and opportunities — together they form a single, coordinated business ecosystem."
+						subtitle={t.group.subtitle}
 					/>
 					<Button href="#" variant="outline-navy" withArrow>
-						Explore EMAAL Group
+						{t.group.cta}
 					</Button>
 				</div>
 
 				<div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-					{BRANDS.map((b) => (
+					{brands.map((b) => (
 						<a
 							key={b.name}
 							href="#"
@@ -85,7 +64,7 @@ export function Group() {
 							<div className="flex flex-1 flex-col justify-between p-6">
 								<p className="text-[14px] leading-[1.6] text-[var(--color-slate)]">{b.desc}</p>
 								<div className="mt-5 inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--color-teal)] transition-all group-hover:gap-3 group-hover:text-[var(--color-navy)]">
-									Visit <ArrowRightIcon className="h-4 w-4" />
+									{t.group.visit} <ArrowRightIcon className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
 								</div>
 							</div>
 						</a>

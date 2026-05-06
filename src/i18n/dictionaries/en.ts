@@ -1,0 +1,309 @@
+export const en = {
+	meta: {
+		title: "EMAAL Business Space — Building Businesses. Scaling Growth.",
+		description:
+			"EMAAL Business Space is a business platform builder and investment-driven group operating across Iraq and the region. Home of the Iraq Business Summit (IBS).",
+	},
+	header: {
+		nav: [
+			{ label: "About", href: "#about" },
+			{ label: "IBS", href: "#ibs" },
+			{ label: "Services", href: "#services" },
+			{ label: "Group", href: "#group" },
+			{ label: "Insights", href: "#insights" },
+			{ label: "Contact", href: "#contact" },
+		],
+		cta: "Get in Touch",
+		langToggle: "EN",
+		langToggleLabel: "Toggle language",
+		mobileMenu: {
+			open: "Open menu",
+			close: "Close menu",
+			switchTo: "Switch to",
+			english: "English",
+			arabic: "العربية",
+		},
+	},
+	footer: {
+		tagline: [
+			"A platform for business —",
+			"connecting Iraq's economy to the world.",
+		],
+		stayInformed: "Stay Informed",
+		newsletterText:
+			"Quarterly insights from Iraq's business platform — straight to your inbox.",
+		emailPlaceholder: "you@company.com",
+		subscribe: "Subscribe",
+		getInTouch: "Get in Touch",
+		companyHeading: "Company",
+		companyLinks: [
+			{ label: "About EMAAL", href: "#about" },
+			{ label: "Our Services", href: "#services" },
+			{ label: "EMAAL Group", href: "#group" },
+			{ label: "Why EMAAL", href: "#why" },
+			{ label: "Insights", href: "#insights" },
+		],
+		ibsHeading: "IBS",
+		ibsLinks: [
+			{ label: "About IBS", href: "#ibs" },
+			{ label: "IBS 2026", href: "#ibs" },
+			{ label: "Ports Summit", href: "#ibs" },
+			{ label: "Sponsors", href: "#ibs" },
+			{ label: "Publications", href: "#insights" },
+		],
+		followHeading: "Follow EMAAL",
+		social: [
+			{ label: "LinkedIn", href: "#" },
+			{ label: "X / Twitter", href: "#" },
+			{ label: "Instagram", href: "#" },
+			{ label: "YouTube", href: "#" },
+		],
+		copyright: "EMAAL Business Space. All rights reserved.",
+		privacy: "Privacy",
+		terms: "Terms",
+		cookies: "Cookies",
+		address: "Baghdad · Al-Salihiya, near Al-Rashid Cinema",
+		phones: "+964 776 262 6777 · +971 54 530 1452",
+		email: "info@emaalbs.com",
+	},
+	hero: {
+		overline: "EMAAL Business Space",
+		title: [
+			"Building Businesses. Scaling Growth.",
+			"Connecting Opportunity.",
+		],
+		description:
+			"A business platform builder and investment-driven group operating across Iraq and the region — building ventures, investing in growth, and helping companies expand through market access and high-level business platforms.",
+		ctaPrimary: "Explore Iraq Business Summit",
+		ctaSecondary: "Discover EMAAL Group",
+	},
+	trustStrip: {
+		label: "Trusted by leaders across sectors",
+	},
+	ibsBand: {
+		overline: "Flagship Platform",
+		title: [
+			"Iraq Business Summit —",
+			"a platform for business.",
+		],
+		description:
+			"IBS brings together government decision-makers, investors, and private sector leaders to unlock real opportunities across Iraq's key sectors.",
+		stats: [
+			{ value: "XX+", label: "Companies" },
+			{ value: "XX+", label: "Gov Entities" },
+			{ value: "XX+", label: "Partnerships" },
+		],
+		ctaPrimary: "Become a Partner",
+		ctaSecondary: "Register Interest",
+		featureOverline: "IBS 2025 · Baghdad",
+		featureTitle: "The largest economic summit of its kind in Iraq",
+		playLabel: "Play summit highlights",
+	},
+	about: {
+		overline: "About EMAAL",
+		sectionLabel: "/ Section 02",
+		title: [
+			"We don't just",
+			"consult",
+			".",
+			"We",
+			"build, invest, and execute",
+			"across Iraq's economy.",
+		],
+		bannerOverline: "Iraq · UAE",
+		bannerTitle: "Two markets. One institutional alliance.",
+		bannerDescription:
+			"Operating across Baghdad and Dubai — connecting the public and private sectors.",
+		ribbon: [
+			{ v: "45+", k: "Active Clients" },
+			{ v: "6", k: "Economic Sectors" },
+			{ v: "3", k: "Core Companies" },
+			{ v: "2", k: "Markets · IQ + UAE" },
+		],
+		processOverline: "How We Work",
+		processTitle: "A simple, four-step engagement.",
+		processLabel: "Touch Base → Feedback",
+		steps: [
+			{ n: "01", t: "Touch Base", d: "Kick-off meeting to align on goals." },
+			{ n: "02", t: "Evaluation", d: "Deep analysis with a clear action plan." },
+			{ n: "03", t: "Execution", d: "Deliver on the plan, end to end." },
+			{ n: "04", t: "Feedback", d: "Iterate and enhance outcomes." },
+		],
+		stepLabel: "Step",
+	},
+	services: {
+		overline: "What We Do",
+		title: [
+			"Five capabilities.",
+			"One platform.",
+		],
+		hint: "Hover to explore",
+		ctaLabel: "Ready to start?",
+		ctaTitle: "Talk to our team",
+		list: [
+			{
+				tag: "Build",
+				title: "Venture Building & Growth",
+				desc: "Building and scaling businesses — from ground-up launches to growth playbooks for established companies.",
+				img: "/images/group-tech.jpg",
+			},
+			{
+				tag: "Invest",
+				title: "Investment & Acceleration",
+				desc: "Capital, growth strategy, and market positioning that compound returns over time.",
+				img: "/images/highlight-1.jpg",
+			},
+			{
+				tag: "Connect",
+				title: "Government & Market Access",
+				desc: "Direct connections to the institutions and regulators that move sectors — opening doors that matter.",
+				img: "/images/ibs-feature.jpg",
+			},
+			{
+				tag: "Convene",
+				title: "International Engagement",
+				desc: "Participation in global and regional conferences, plus Iraq's flagship business summits — by EMAAL.",
+				img: "/images/hero-summit.jpg",
+			},
+			{
+				tag: "Support",
+				title: "Strategic Business Services",
+				desc: "Branding, PR, training, research, and operations — full-stack support for sustained business growth.",
+				img: "/images/highlight-2.jpg",
+			},
+		],
+	},
+	group: {
+		overline: "EMAAL Group",
+		title: [
+			"One group.",
+			"Four",
+			"platforms",
+			".",
+		],
+		subtitle:
+			"Each company in the EMAAL Group plays a specific role in connecting markets, institutions, and opportunities — together they form a single, coordinated business ecosystem.",
+		cta: "Explore EMAAL Group",
+		brands: [
+			{
+				name: "Iraq Business Summit",
+				tag: "Flagship",
+				desc: "Iraq's national business platform connecting government, investors, and enterprise.",
+				img: "/images/group-ibs.jpg",
+			},
+			{
+				name: "Iraq 24 HD",
+				tag: "Media",
+				desc: "Iraq's first business & economy channel — the voice of the country's economic conversation.",
+				img: "/images/group-iraq24.jpg",
+			},
+			{
+				name: "EMAAL Tech",
+				tag: "Technology",
+				desc: "Technology, infrastructure, and digital solutions that execute strategy at scale.",
+				img: "/images/group-tech.jpg",
+			},
+			{
+				name: "EMAAL Gaming",
+				tag: "Emerging",
+				desc: "A new vertical building Iraq's place in the global gaming and digital entertainment economy.",
+				img: "/images/group-gaming.jpg",
+			},
+		],
+		visit: "Visit",
+	},
+	whyEmaal: {
+		overline: "Why EMAAL & IBS",
+		title: [
+			"Growth needs more than services.",
+			"It needs",
+			"access",
+			", positioning, and execution.",
+		],
+		description:
+			"EMAAL, through IBS and EMAAL Tech, doesn't just connect opportunities — we help you execute them. A platform not just for visibility, but for outcomes.",
+		pillars: [
+			{
+				k: "Access",
+				t: "Government & regulators",
+				d: "Pre-qualified introductions to the ministries, agencies, and decision-makers that shape sectors.",
+			},
+			{
+				k: "Positioning",
+				t: "Panels & roundtables",
+				d: "Executive speaking slots and ministerial dialogue that place your business where decisions happen.",
+			},
+			{
+				k: "Execution",
+				t: "Curated B2B meetings",
+				d: "Hand-matched meetings with the buyers, investors, and partners who move strategy forward.",
+			},
+		],
+	},
+	highlights: {
+		overline: "Latest Highlights",
+		title: [
+			"Stories, signals, and",
+			"market intelligence",
+			".",
+		],
+		subtitle:
+			"From the EMAAL platform — what we're seeing across Iraq's sectors, our IBS events, and the partnerships we're enabling.",
+		cta: "View all insights",
+		posts: [
+			{
+				category: "IBS 2025",
+				date: "April 2025",
+				title: "How IBS 2025 reshaped Iraq's investment conversation in three days",
+				img: "/images/highlight-1.jpg",
+				readTime: "6 min read",
+			},
+			{
+				category: "Insights",
+				date: "March 2025",
+				title: "Six sectors, one platform: why Iraq's growth story needs coordination",
+				img: "/images/highlight-2.jpg",
+				readTime: "4 min read",
+			},
+			{
+				category: "Announcement",
+				date: "February 2025",
+				title: "EMAAL launches Ports & Logistics Summit ahead of IBS 2026",
+				img: "/images/highlight-3.jpg",
+				readTime: "3 min read",
+			},
+		],
+		readStory: "Read story",
+	},
+	statsBar: {
+		overline: "By the Numbers",
+		title: [
+			"A track record built on",
+			"delivery",
+			".",
+		],
+		asOf: "As of 2025",
+		stats: [
+			{ value: 45, suffix: "+", label: "Events Delivered", note: "Across Iraq & UAE" },
+			{ value: 120, suffix: "+", label: "Strategic Partnerships", note: "Public & private" },
+			{ value: 200, suffix: "+", label: "Market Engagements", note: "Media + B2B reach" },
+			{ value: 6, suffix: "", label: "Economic Sectors", note: "Vital industries covered" },
+		],
+	},
+	ctaBand: {
+		overline: "Get Started",
+		title: [
+			"Let's build",
+			"what's next",
+			".",
+		],
+		description:
+			"Whether you are a startup, an established company, or an investor — EMAAL provides the platform to connect, grow, and move forward.",
+		primaryLabel: "Talk to us",
+		primaryTitle: "Contact our team",
+		secondaryLabel: "Collaborate",
+		secondaryTitle: "Partner with us",
+	},
+};
+
+export type Dictionary = typeof en;

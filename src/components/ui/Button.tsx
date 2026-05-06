@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { ReactNode } from "react";
 import { ArrowRightIcon } from "@/components/ui/icons";
+import { useI18n } from "@/i18n/provider";
 
 type Variant = "gold" | "outline-navy" | "outline-white" | "ghost-navy" | "outline-teal" | "teal";
 type Size = "md" | "lg";
@@ -47,11 +50,13 @@ export function Button({
 	withArrow = false,
 	external = false,
 }: Props) {
+	const { dir } = useI18n();
+	const isRtl = dir === "rtl";
 	const cls = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
 	const inner = (
 		<>
 			<span>{children}</span>
-			{withArrow ? <ArrowRightIcon className="h-4 w-4" /> : null}
+			{withArrow ? <ArrowRightIcon className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} /> : null}
 		</>
 	);
 	if (href) {

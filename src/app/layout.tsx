@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
-const montserrat = Montserrat({
-	variable: "--font-montserrat",
+const plusJakartaSans = Plus_Jakarta_Sans({
+	variable: "--font-jakarta",
 	subsets: ["latin"],
 	weight: ["400", "500", "600", "700", "800"],
 	display: "swap",
@@ -13,6 +13,13 @@ const inter = Inter({
 	variable: "--font-inter",
 	subsets: ["latin"],
 	weight: ["400", "500", "600", "700"],
+	display: "swap",
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+	variable: "--font-arabic",
+	subsets: ["arabic"],
+	weight: ["400", "500", "600", "700", "800"],
 	display: "swap",
 });
 
@@ -32,7 +39,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${montserrat.variable} ${inter.variable} antialiased bg-warm text-ink`}>
+			<body className={`${plusJakartaSans.variable} ${inter.variable} ${notoSansArabic.variable} antialiased bg-warm text-ink`}>
 				{children}
 			</body>
 		</html>

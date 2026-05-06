@@ -1,55 +1,38 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Overline";
 import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/icons";
-
-const POSTS = [
-	{
-		category: "IBS 2025",
-		date: "April 2025",
-		title: "How IBS 2025 reshaped Iraq's investment conversation in three days",
-		img: "/images/highlight-1.jpg",
-		readTime: "6 min read",
-	},
-	{
-		category: "Insights",
-		date: "March 2025",
-		title: "Six sectors, one platform: why Iraq's growth story needs coordination",
-		img: "/images/highlight-2.jpg",
-		readTime: "4 min read",
-	},
-	{
-		category: "Announcement",
-		date: "February 2025",
-		title: "EMAAL launches Ports & Logistics Summit ahead of IBS 2026",
-		img: "/images/highlight-3.jpg",
-		readTime: "3 min read",
-	},
-];
+import { useI18n } from "@/i18n/provider";
 
 export function Highlights() {
+	const { t, dir } = useI18n();
+	const isRtl = dir === "rtl";
+	const posts = t.highlights.posts;
 	return (
 		<section id="insights" className="relative bg-warm py-20 lg:py-28">
 			<Container>
 				<div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
 					<SectionHeading
-						overline="Latest Highlights"
+						overline={t.highlights.overline}
 						title={
 							<>
-								Stories, signals, and{" "}
-								<span className="text-[var(--color-teal)]">market intelligence.</span>
+								{t.highlights.title[0]}{" "}
+								<span className="text-[var(--color-teal)]">{t.highlights.title[1]}</span>
+								{t.highlights.title[2]}
 							</>
 						}
-						subtitle="From the EMAAL platform — what we're seeing across Iraq's sectors, our IBS events, and the partnerships we're enabling."
+						subtitle={t.highlights.subtitle}
 					/>
 					<Button href="#" variant="ghost-navy" withArrow>
-						View all insights
+						{t.highlights.cta}
 					</Button>
 				</div>
 
 				<div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-					{POSTS.map((post, i) => (
+					{posts.map((post, i) => (
 						<a
 							key={post.title}
 							href="#"
@@ -79,7 +62,7 @@ export function Highlights() {
 									{post.title}
 								</h3>
 								<div className="mt-auto pt-6 inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--color-teal)] transition-all group-hover:gap-3">
-									Read story <ArrowRightIcon className="h-4 w-4" />
+									{t.highlights.readStory} <ArrowRightIcon className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
 								</div>
 							</div>
 						</a>

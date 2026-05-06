@@ -1,14 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
-
-const STEPS = [
-	{ n: "01", t: "Touch Base", d: "Kick-off meeting to align on goals." },
-	{ n: "02", t: "Evaluation", d: "Deep analysis with a clear action plan." },
-	{ n: "03", t: "Execution", d: "Deliver on the plan, end to end." },
-	{ n: "04", t: "Feedback", d: "Iterate and enhance outcomes." },
-];
+import { useI18n } from "@/i18n/provider";
 
 export function About() {
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 	return (
 		<section id="about" className="relative bg-warm py-24 lg:py-32">
 			<Container>
@@ -17,18 +15,18 @@ export function About() {
 					<div className="lg:col-span-3">
 						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold-deep)]">
 							<span className="inline-block h-px w-8 bg-[var(--color-gold-deep)]" />
-							About EMAAL
+							{t.about.overline}
 						</div>
 						<div className="mt-4 hidden font-numeric text-[12px] uppercase tracking-[0.2em] text-[var(--color-slate)]/70 lg:block">
-							/ Section 02
+							{t.about.sectionLabel}
 						</div>
 					</div>
 					<h2 className="font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.85rem,4vw,3.25rem)] leading-[1.08] lg:col-span-9">
-						We don't just{" "}
-						<span className="italic font-medium text-[var(--color-slate)]">consult</span>.
+						{t.about.title[0]}{" "}
+						<span className="italic font-medium text-[var(--color-slate)]">{t.about.title[1]}</span>
+						{t.about.title[2]}
 						<br />
-						We <span className="text-[var(--color-teal)]">build, invest, and execute</span> across
-						Iraq's economy.
+						{t.about.title[3]} <span className="text-[var(--color-teal)]">{t.about.title[4]}</span> {t.about.title[5]}
 					</h2>
 				</div>
 
@@ -46,13 +44,13 @@ export function About() {
 						<div className="absolute inset-0 flex items-end p-5 sm:p-8 lg:p-12">
 							<div className="max-w-xl">
 								<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-									Iraq · UAE
+									{t.about.bannerOverline}
 								</div>
 								<div className="mt-2 font-display text-xl font-semibold text-white sm:mt-3 sm:text-2xl lg:text-3xl">
-									Two markets. One institutional alliance.
+									{t.about.bannerTitle}
 								</div>
 								<div className="mt-1.5 text-[13px] text-white/75 sm:mt-2 sm:text-[14px]">
-									Operating across Baghdad and Dubai — connecting the public and private sectors.
+									{t.about.bannerDescription}
 								</div>
 							</div>
 						</div>
@@ -61,12 +59,7 @@ export function About() {
 
 				{/* Inline data ribbon under banner */}
 				<div className="mt-8 grid grid-cols-2 gap-y-6 border-t border-[var(--color-line)] pt-8 sm:grid-cols-4">
-					{[
-						{ v: "45+", k: "Active Clients" },
-						{ v: "6", k: "Economic Sectors" },
-						{ v: "3", k: "Core Companies" },
-						{ v: "2", k: "Markets · IQ + UAE" },
-					].map((s) => (
+					{t.about.ribbon.map((s) => (
 						<div key={s.k} className="px-2">
 							<div className="font-numeric text-[clamp(2rem,3.2vw,2.75rem)] font-bold leading-none text-[var(--color-teal)]">
 								{s.v}
@@ -83,23 +76,23 @@ export function About() {
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 						<div>
 							<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-teal)]">
-								How We Work
+								{t.about.processOverline}
 							</div>
 							<h3 className="mt-3 font-display text-2xl font-semibold text-[var(--color-navy)] sm:text-[28px]">
-								A simple, four-step engagement.
+								{t.about.processTitle}
 							</h3>
 						</div>
 						<div className="text-[12px] uppercase tracking-[0.2em] text-[var(--color-slate)]/70">
-							Touch Base → Feedback
+							{t.about.processLabel}
 						</div>
 					</div>
 
 					{/* Connected timeline */}
 					<div className="relative mt-12">
 						{/* horizontal connector line (desktop) */}
-						<div className="absolute left-0 right-0 top-3 hidden h-px bg-gradient-to-r from-[var(--color-teal)]/40 via-[var(--color-teal)]/20 to-[var(--color-teal)]/40 lg:block" />
+						<div className={`absolute ${isAr ? "right-0 left-0" : "left-0 right-0"} top-3 hidden h-px bg-gradient-to-r from-[var(--color-teal)]/40 via-[var(--color-teal)]/20 to-[var(--color-teal)]/40 lg:block`} />
 						<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-10">
-							{STEPS.map((s) => (
+							{t.about.steps.map((s) => (
 								<div key={s.n} className="relative">
 									{/* dot on the timeline */}
 									<div className="flex items-center gap-3">
@@ -107,7 +100,7 @@ export function About() {
 											<div className="h-2 w-2 rounded-full bg-[var(--color-teal)]" />
 										</div>
 										<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-slate)]/70">
-											Step {s.n}
+											{t.about.stepLabel} {s.n}
 										</div>
 									</div>
 									<div className="mt-5 font-display text-lg font-semibold text-[var(--color-navy)]">

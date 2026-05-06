@@ -1,15 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PlayIcon } from "@/components/ui/icons";
-
-const STATS = [
-	{ value: "XX+", label: "Companies" },
-	{ value: "XX+", label: "Gov Entities" },
-	{ value: "XX+", label: "Partnerships" },
-];
+import { useI18n } from "@/i18n/provider";
 
 export function IBSBand() {
+	const { t } = useI18n();
 	return (
 		<section
 			id="ibs"
@@ -26,20 +24,19 @@ export function IBSBand() {
 					<div className="lg:col-span-6">
 						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
-							Flagship Platform
+							{t.ibsBand.overline}
 						</div>
 						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,2.8vw,2.5rem)] leading-[1.15]">
-							Iraq Business Summit —
+							{t.ibsBand.title[0]}
 							<br />
-							<span className="text-[var(--color-gold)]">a platform for business.</span>
+							<span className="text-[var(--color-gold)]">{t.ibsBand.title[1]}</span>
 						</h2>
 						<p className="mt-5 max-w-lg text-[15px] leading-[1.65] text-[var(--color-silver)]">
-							IBS brings together government decision-makers, investors, and private sector leaders
-							to unlock real opportunities across Iraq's key sectors.
+							{t.ibsBand.description}
 						</p>
 
 						<div className="mt-8 flex items-center divide-x divide-white/10 rounded-xl border border-white/10 border-t-[var(--color-teal)]/50 bg-white/[0.03] backdrop-blur-sm">
-							{STATS.map((s) => (
+							{t.ibsBand.stats.map((s) => (
 								<div key={s.label} className="flex-1 px-5 py-4">
 									<div className="font-numeric text-2xl font-bold text-[var(--color-gold)] leading-none">
 										{s.value}
@@ -53,10 +50,10 @@ export function IBSBand() {
 
 						<div className="mt-8 flex flex-col gap-3 sm:flex-row">
 							<Button href="#contact" variant="gold" withArrow>
-								Become a Partner
+								{t.ibsBand.ctaPrimary}
 							</Button>
 							<Button href="#contact" variant="teal" withArrow>
-								Register Interest
+								{t.ibsBand.ctaSecondary}
 							</Button>
 						</div>
 					</div>
@@ -74,7 +71,7 @@ export function IBSBand() {
 							<button
 								type="button"
 								className="absolute inset-0 grid place-items-center"
-								aria-label="Play summit highlights"
+								aria-label={t.ibsBand.playLabel}
 							>
 								<span className="relative grid h-16 w-16 place-items-center rounded-full bg-[var(--color-gold)] text-[var(--color-navy)] shadow-[0_8px_30px_rgba(238,193,59,0.5)] transition-transform hover:scale-110">
 									<span className="absolute inset-0 animate-ping rounded-full bg-[var(--color-gold)] opacity-30" />
@@ -83,10 +80,10 @@ export function IBSBand() {
 							</button>
 							<div className="absolute inset-x-0 bottom-0 p-5">
 								<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-									IBS 2025 · Baghdad
+									{t.ibsBand.featureOverline}
 								</div>
 								<div className="mt-1 text-white text-base font-semibold">
-									The largest economic summit of its kind in Iraq
+									{t.ibsBand.featureTitle}
 								</div>
 							</div>
 						</div>

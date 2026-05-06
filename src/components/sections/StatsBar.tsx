@@ -2,13 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/ui/Container";
-
-const STATS = [
-	{ value: 45, suffix: "+", label: "Events Delivered", note: "Across Iraq & UAE" },
-	{ value: 120, suffix: "+", label: "Strategic Partnerships", note: "Public & private" },
-	{ value: 200, suffix: "+", label: "Market Engagements", note: "Media + B2B reach" },
-	{ value: 6, suffix: "", label: "Economic Sectors", note: "Vital industries covered" },
-];
+import { useI18n } from "@/i18n/provider";
 
 function useCountUp(target: number, start: boolean, duration = 1600) {
 	const [n, setN] = useState(0);
@@ -69,6 +63,7 @@ function StatItem({
 }
 
 export function StatsBar() {
+	const { t } = useI18n();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [start, setStart] = useState(false);
 
@@ -117,22 +112,22 @@ export function StatsBar() {
 					<div className="max-w-2xl">
 						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
-							By the Numbers
+							{t.statsBar.overline}
 						</div>
 						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,3vw,2.5rem)] leading-[1.1]">
-							A track record built on{" "}
-							<span className="italic font-medium text-white/60">delivery</span>.
+							{t.statsBar.title[0]}{" "}
+							<span className="italic font-medium text-white/60">{t.statsBar.title[1]}</span>{t.statsBar.title[2]}
 						</h2>
 					</div>
 					<div className="text-[12px] uppercase tracking-[0.2em] text-white/40">
-						As of 2025
+						{t.statsBar.asOf}
 					</div>
 				</div>
 
 				{/* Stats — connected grid with hairline dividers */}
 				<div className="mt-14 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm">
 					<div className="grid grid-cols-1 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 sm:[&>*:nth-child(-n+2)]:border-b sm:[&>*:nth-child(-n+2)]:border-white/10 sm:[&>*:nth-child(odd)]:border-r sm:[&>*:nth-child(odd)]:border-white/10 lg:grid-cols-4 lg:divide-x lg:divide-y-0 lg:[&>*:nth-child(-n+2)]:border-b-0 lg:[&>*:nth-child(odd)]:border-r-0">
-						{STATS.map((s, i) => (
+						{t.statsBar.stats.map((s, i) => (
 							<StatItem key={s.label} {...s} start={start} index={i} />
 						))}
 					</div>

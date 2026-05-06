@@ -4,48 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { ArrowRightIcon } from "@/components/ui/icons";
-
-type Service = {
-	tag: string;
-	title: string;
-	desc: string;
-	img: string;
-};
-
-const SERVICES: Service[] = [
-	{
-		tag: "Build",
-		title: "Venture Building & Growth",
-		desc: "Building and scaling businesses — from ground-up launches to growth playbooks for established companies.",
-		img: "/images/group-tech.jpg",
-	},
-	{
-		tag: "Invest",
-		title: "Investment & Acceleration",
-		desc: "Capital, growth strategy, and market positioning that compound returns over time.",
-		img: "/images/highlight-1.jpg",
-	},
-	{
-		tag: "Connect",
-		title: "Government & Market Access",
-		desc: "Direct connections to the institutions and regulators that move sectors — opening doors that matter.",
-		img: "/images/ibs-feature.jpg",
-	},
-	{
-		tag: "Convene",
-		title: "International Engagement",
-		desc: "Participation in global and regional conferences, plus Iraq's flagship business summits — by EMAAL.",
-		img: "/images/hero-summit.jpg",
-	},
-	{
-		tag: "Support",
-		title: "Strategic Business Services",
-		desc: "Branding, PR, training, research, and operations — full-stack support for sustained business growth.",
-		img: "/images/highlight-2.jpg",
-	},
-];
+import { useI18n } from "@/i18n/provider";
 
 export function Services() {
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
+	const services = t.services.list;
 	const [active, setActive] = useState(0);
 	return (
 		<section
@@ -65,36 +29,36 @@ export function Services() {
 					<div className="max-w-xl">
 						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
-							What We Do
+							{t.services.overline}
 						</div>
 						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.85rem,4vw,3.25rem)] leading-[1.05]">
-							Five capabilities.
+							{t.services.title[0]}
 							<br />
-							<span className="text-[var(--color-gold)]">One platform.</span>
+							<span className="text-[var(--color-gold)]">{t.services.title[1]}</span>
 						</h2>
 					</div>
 					<div className="text-[12px] uppercase tracking-[0.2em] text-white/50">
-						Hover to explore
-					</div>
+						{t.services.hint}
+						</div>
 				</div>
 
 				{/* Two-column: list left, image preview right */}
 				<div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
 					{/* List */}
 					<ol className="lg:col-span-7">
-						{SERVICES.map((s, i) => {
+						{services.map((s, i) => {
 							const isActive = active === i;
 							return (
 								<li
 									key={s.title}
 									onMouseEnter={() => setActive(i)}
 									className={`group relative cursor-pointer border-t border-white/10 py-7 transition-all ${
-										i === SERVICES.length - 1 ? "border-b" : ""
+										i === services.length - 1 ? "border-b" : ""
 									}`}
 								>
 									{/* Hover/active gold strip */}
 									<span
-										className={`absolute left-0 top-0 h-px bg-[var(--color-teal)] transition-all duration-500 ${
+										className={`absolute ${isAr ? "right-0" : "left-0"} top-0 h-px bg-[var(--color-teal)] transition-all duration-500 ${
 											isActive ? "w-full" : "w-0"
 										}`}
 									/>
@@ -125,10 +89,10 @@ export function Services() {
 										</div>
 										<div
 											className={`hidden shrink-0 self-center text-white transition-all sm:block ${
-												isActive ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-30"
+												isActive ? "translate-x-0 opacity-100" : isAr ? "translate-x-2 opacity-30" : "-translate-x-2 opacity-30"
 											}`}
 										>
-											<ArrowRightIcon className="h-5 w-5" />
+											<ArrowRightIcon className={`h-5 w-5 ${isAr ? "rotate-180" : ""}`} />
 										</div>
 									</div>
 								</li>
@@ -140,7 +104,7 @@ export function Services() {
 					<div className="lg:col-span-5">
 						<div>
 							<div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-white/10">
-								{SERVICES.map((s, i) => (
+								{services.map((s, i) => (
 									<Image
 										key={s.title}
 										src={s.img}
@@ -155,10 +119,10 @@ export function Services() {
 								<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,30,47,0.9)] via-transparent to-transparent" />
 								<div className="absolute inset-x-0 bottom-0 p-6">
 									<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-										{SERVICES[active].tag}
+										{services[active].tag}
 									</div>
 									<div className="mt-2 font-display text-xl font-semibold text-white">
-										{SERVICES[active].title}
+										{services[active].title}
 									</div>
 								</div>
 							</div>
@@ -169,14 +133,14 @@ export function Services() {
 							>
 								<div>
 									<div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--color-teal)]">
-										Ready to start?
+										{t.services.ctaLabel}
 									</div>
 									<div className="mt-1 font-display text-[17px] font-semibold text-white">
-										Talk to our team
+										{t.services.ctaTitle}
 									</div>
 								</div>
-								<span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--color-teal)] text-white transition-transform duration-300 group-hover:translate-x-1">
-									<ArrowRightIcon className="h-4 w-4" />
+								<span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--color-teal)] text-white transition-transform duration-300 ${isAr ? "group-hover:-translate-x-1" : "group-hover:translate-x-1"}`}>
+									<ArrowRightIcon className={`h-4 w-4 ${isAr ? "rotate-180" : ""}`} />
 								</span>
 							</a>
 						</div>

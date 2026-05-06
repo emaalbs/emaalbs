@@ -1,25 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/site/Logo";
 import { CloseIcon, GlobeIcon, MenuIcon } from "@/components/ui/icons";
-
-const NAV = [
-	{ label: "About", href: "#about" },
-	{ label: "IBS", href: "#ibs" },
-	{ label: "Services", href: "#services" },
-	{ label: "Group", href: "#group" },
-	{ label: "Insights", href: "#insights" },
-	{ label: "Contact", href: "#contact" },
-];
+import { useI18n } from "@/i18n/provider";
 
 export function Header() {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
-	const [lang, setLang] = useState<"EN" | "AR">("EN");
+	const { locale, t } = useI18n();
+	const pathname = usePathname();
+	const isAr = locale === "ar";
+	const otherLocale = isAr ? "en" : "ar";
+	const otherPath = pathname.replace(`/${locale}`, `/${otherLocale}`) || `/${otherLocale}`;
 
 	useEffect(() => {
 		const onScroll = () => setScrolled(window.scrollY > 24);
@@ -44,12 +41,12 @@ export function Header() {
 		>
 			<Container>
 				<div className={`flex items-center justify-between transition-all duration-300 ${onLight ? "h-[68px]" : "h-[80px]"}`}>
-					<Link href="/" className="shrink-0">
+					<Link href={`/${locale}`} className="shrink-0">
 						<Logo tone={onLight ? "light" : "dark"} height={onLight ? 32 : 36} />
 					</Link>
 
 					<nav className="hidden lg:flex items-center gap-9">
-						{NAV.map((item) => (
+						{t.header.nav.map((item) => (
 							<Link
 								key={item.href}
 								href={item.href}
@@ -60,36 +57,35 @@ export function Header() {
 								}`}
 							>
 								{item.label}
-								<span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full" />
+								<span className={`absolute -bottom-1.5 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full ${isAr ? "right-0" : "left-0"}`} />
 							</Link>
 						))}
 					</nav>
 
 					<div className="flex items-center gap-2.5">
-						<button
-							type="button"
-							onClick={() => setLang((l) => (l === "EN" ? "AR" : "EN"))}
+						<Link
+							href={otherPath}
 							className={`hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-wider px-2.5 h-9 rounded-md transition-colors ${
 								onLight
 									? "text-[var(--color-slate)] hover:text-[var(--color-navy)]"
 									: "text-white/70 hover:text-white"
 							}`}
-							aria-label="Toggle language"
+							aria-label={t.header.langToggleLabel}
 						>
 							<GlobeIcon className="h-4 w-4" />
-							{lang}
-						</button>
+							{isAr ? "EN" : "AR"}
+						</Link>
 
 						<div className="hidden sm:block">
 							<Link
 								href="#contact"
-								className={`group inline-flex items-center gap-2 h-10 pl-5 pr-2 rounded-full text-[13px] font-semibold transition-all ${
+								className={`group inline-flex items-center gap-2 h-10 ps-5 pe-2 rounded-full text-[13px] font-semibold transition-all ${
 									onLight
 										? "bg-[var(--color-navy)] text-white hover:bg-[var(--color-navy-dark)]"
 										: "bg-white text-[var(--color-navy)] hover:bg-[var(--color-gold)]"
 								}`}
 							>
-								<span>Get in Touch</span>
+								<span>{t.header.cta}</span>
 								<span
 									className={`grid h-7 w-7 place-items-center rounded-full transition-colors ${
 										onLight
@@ -97,7 +93,7 @@ export function Header() {
 											: "bg-[var(--color-navy)] text-white"
 									}`}
 								>
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" style={{ transform: isAr ? "scaleX(-1)" : undefined }}>
 										<path d="M5 12h14M13 6l6 6-6 6" />
 									</svg>
 								</span>
@@ -112,7 +108,7 @@ export function Header() {
 									? "text-[var(--color-ink)] hover:bg-[var(--color-line)]/40"
 									: "text-white hover:bg-white/10"
 							}`}
-							aria-label="Open menu"
+							aria-label={t.header.mobileMenu.open}
 						>
 							<MenuIcon className="h-5 w-5" />
 						</button>
@@ -133,7 +129,7 @@ export function Header() {
 							type="button"
 							onClick={() => setOpen(false)}
 							className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/20 text-white"
-							aria-label="Close menu"
+							aria-label={t.header.mobileMenu.close}
 						>
 							<CloseIcon className="h-5 w-5" />
 						</button>
@@ -141,7 +137,7 @@ export function Header() {
 				</Container>
 				<Container>
 					<nav className="mt-6 flex flex-col">
-						{NAV.map((item) => (
+						{t.header.nav.map((item) => (
 							<Link
 								key={item.href}
 								href={item.href}
@@ -149,22 +145,22 @@ export function Header() {
 								className="group flex items-center justify-between border-b border-white/10 py-5 text-white text-2xl font-display font-semibold"
 							>
 								{item.label}
-								<span className="text-[var(--color-gold)] opacity-0 transition-opacity group-hover:opacity-100">→</span>
+								<span className="text-[var(--color-gold)] opacity-0 transition-opacity group-hover:opacity-100">{isAr ? "←" : "→"}</span>
 							</Link>
 						))}
 					</nav>
 					<div className="mt-8 flex flex-col gap-3">
 						<Button href="#contact" variant="gold" size="lg" withArrow>
-							Get in Touch
+							{t.header.cta}
 						</Button>
-						<button
-							type="button"
-							onClick={() => setLang((l) => (l === "EN" ? "AR" : "EN"))}
+						<Link
+							href={otherPath}
 							className="inline-flex items-center justify-center gap-2 h-12 rounded-xl border border-white/20 text-white text-sm font-semibold tracking-wider"
+							onClick={() => setOpen(false)}
 						>
 							<GlobeIcon className="h-4 w-4" />
-							Switch to {lang === "EN" ? "العربية" : "English"}
-						</button>
+							{t.header.mobileMenu.switchTo} {isAr ? t.header.mobileMenu.english : t.header.mobileMenu.arabic}
+						</Link>
 					</div>
 				</Container>
 			</div>

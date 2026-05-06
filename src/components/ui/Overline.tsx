@@ -44,7 +44,7 @@ export function SectionHeading({
 }: HeadingProps) {
 	const titleColor = tone === "light" ? "text-[var(--color-navy)]" : "text-white";
 	const subColor = tone === "light" ? "text-[var(--color-slate)]" : "text-[var(--color-silver)]";
-	const alignCls = align === "center" ? "text-center mx-auto" : "text-left";
+	const alignCls = align === "center" ? "text-center mx-auto" : "text-start";
 	const overlineAlign = align === "center" ? "justify-center" : "justify-start";
 	return (
 		<div className={`max-w-2xl ${alignCls} ${className}`}>

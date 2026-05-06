@@ -234,7 +234,7 @@ A dashboard for the EMAAL team to manage content dynamically — especially IBS 
 ### 4.6 Logo & Brand Mark
 
 - **Primary:** "EMAAL" in Montserrat Bold + "BUSINESS SPACE" in Montserrat Medium, `letter-spacing: 0.2em`
-- **Arabic:** "إعمال" in Cairo Bold
+- **Arabic:** "إعمال " in Cairo Bold
 - **On Dark Navy:** White wordmark + Gold accent
 - **On White/Light:** Navy wordmark + Gold accent
 - **Favicon:** "E" lettermark, Gold on Navy, 12px rounded

@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { useI18n } from "@/i18n/provider";
 
 export function Hero() {
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 	return (
 		<section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-24">
 			{/* Background image */}
@@ -27,32 +32,27 @@ export function Hero() {
 				<div className="max-w-3xl py-16">
 					<div className="reveal flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 						<span className="inline-block h-px w-8 bg-[var(--color-teal)]" />
-						EMAAL Business Space
+						{t.hero.overline}
 					</div>
 
-					<h1 className="reveal mt-6 font-display font-bold tracking-display text-white text-[clamp(1.9rem,4.2vw,3.75rem)] leading-[1.05]">
-						Building Businesses.
-						<br />
-						Scaling Growth.
-						<br />
-						<span className="text-[var(--color-gold)]">Connecting Opportunity.</span>
+					<h1 className="reveal mt-6 font-display font-bold tracking-display text-white text-[clamp(1.9rem,4.2vw,3.2rem)] leading-[1.1]">
+						{t.hero.title[0]}<br />
+						<span className="text-[var(--color-gold)] leading-[1.5]">{t.hero.title[1]}</span>
 					</h1>
 
-					<p className="reveal mt-6 max-w-xl border-l-2 border-[var(--color-teal)]/50 pl-4 text-[15px] sm:text-[16px] leading-[1.65] text-[var(--color-silver)]">
-						A business platform builder and investment-driven group operating across Iraq and the
-						region — building ventures, investing in growth, and helping companies expand through
-						market access and high-level business platforms.
+					<p className={`reveal mt-6 max-w-xl border-${isAr ? "r" : "l"}-2 border-[var(--color-teal)]/50 ${isAr ? "pr-4" : "pl-4"} text-[15px] sm:text-[16px] leading-[1.65] text-[var(--color-silver)]`}>
+						{t.hero.description}
 					</p>
 
 					{/* Teal accent line */}
-					<div className="reveal mt-8 h-[2px] w-32 bg-gradient-to-r from-[var(--color-teal)] via-[var(--color-teal)]/50 to-transparent" />
+					<div className={`reveal mt-8 h-[2px] w-32 bg-gradient-to-${isAr ? "l" : "r"} from-[var(--color-teal)] via-[var(--color-teal)]/50 to-transparent`} />
 
 					<div className="reveal mt-6 flex flex-col gap-3 sm:flex-row">
 						<Button href="#ibs" variant="gold" size="md" withArrow>
-							Explore Iraq Business Summit
+							{t.hero.ctaPrimary}
 						</Button>
 						<Button href="#group" variant="outline-teal" size="md">
-							Discover EMAAL Group
+							{t.hero.ctaSecondary}
 						</Button>
 					</div>
 				</div>
