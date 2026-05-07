@@ -429,6 +429,90 @@ export const en = {
 
     impactButton: "Build with EMAAL",
   },
+  whatWeDo: {
+  badge: "EMAAL | What We Do",
+
+  hero: {
+    title: "What We Do",
+    description:
+      "EMAAL enables business growth by providing access, positioning, and execution through its integrated platforms and ecosystem.",
+  },
+
+  intro: {
+    title: "Building Opportunities Across Iraq & The Region",
+    description:
+      "We work with established companies, investors, and institutions to support expansion, strengthen market presence, and unlock opportunities across Iraq and the region.",
+  },
+
+  focus: {
+    title: "Core Focus Areas",
+
+    items: [
+      {
+        title: "Platforms & Ecosystems",
+        description:
+          "We create platforms that bring together decision-makers, investors, and private sector leaders enabling engagement, partnerships, and real opportunities.",
+      },
+
+      {
+        title: "Government Relations & Market Access",
+        description:
+          "We support companies in accessing the right institutions and stakeholders, helping them navigate opportunities and engage effectively within the market.",
+      },
+
+      {
+        title: "Media Coverage & Market Visibility",
+        description:
+          "Through Iraq 24 HD, we enhance visibility and positioning by delivering economic content, media exposure, and targeted market communication.",
+      },
+
+      {
+        title: "Infrastructure & Execution Support",
+        description:
+          "Through EMAAL Tech, we support implementation through infrastructure, technology, and operational solutions helping businesses move from opportunity to execution.",
+      },
+    ],
+  },
+
+  delivery: {
+    title: "How We Deliver",
+    description:
+      "EMAAL delivers these capabilities through its integrated platforms:",
+
+    platforms: [
+      {
+        title: "Iraq Business Summit (IBS)",
+        description:
+          "Enabling access, partnerships, and high-level business engagement.",
+      },
+
+      {
+        title: "Iraq 24 HD",
+        description:
+          "Driving media coverage, economic visibility, and market positioning.",
+      },
+
+      {
+        title: "EMAAL Tech",
+        description:
+          "Supporting execution through infrastructure and technology solutions.",
+      },
+    ],
+  },
+
+  international: {
+    title: "International Engagement",
+    description:
+      "EMAAL facilitates participation in international conferences and business platforms both within Iraq and globally helping companies position themselves in the right markets and connect with key stakeholders.",
+  },
+
+  cta: {
+    title: "Let’s Build Together",
+    description:
+      "EMAAL provides the platform, access, and support needed to expand and move forward.",
+    button: "Contact Us",
+  },
+},
 };
 
 export type Dictionary = typeof en;
