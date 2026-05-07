@@ -1,34 +1,85 @@
 "use client";
 
-import { createContext, useContext, ReactNode } from "react";
+import {
+	createContext,
+	useContext,
+	ReactNode,
+	useEffect,
+	useState,
+} from "react";
+
 import { Locale, defaultLocale } from "./config";
+
 import { en } from "./dictionaries/en";
 import { ar } from "./dictionaries/ar";
+
 import type { Dictionary } from "./dictionaries/en";
 
-const dictionaries: Record<Locale, Dictionary> = { en, ar };
+const dictionaries: Record<Locale, Dictionary> = {
+	en,
+	ar,
+};
 
 const I18nContext = createContext<{
 	locale: Locale;
 	dir: "ltr" | "rtl";
 	t: Dictionary;
+	toggleLanguage: () => void;
 }>({
 	locale: defaultLocale,
 	dir: "ltr",
 	t: en,
+	toggleLanguage: () => {},
 });
 
 export function I18nProvider({
-	locale,
 	children,
 }: {
-	locale: Locale;
 	children: ReactNode;
 }) {
-	const dir: "ltr" | "rtl" = locale === "ar" ? "rtl" : "ltr";
+	const [locale, setLocale] =
+		useState<Locale>(defaultLocale);
+
+	useEffect(() => {
+		const saved =
+			localStorage.getItem("locale") as Locale;
+
+		if (saved) {
+			setLocale(saved);
+		}
+	}, []);
+
+	const toggleLanguage = () => {
+		const newLocale =
+			locale === "en" ? "ar" : "en";
+
+		setLocale(newLocale);
+
+		localStorage.setItem(
+			"locale",
+			newLocale,
+		);
+	};
+
+	const dir: "ltr" | "rtl" =
+		locale === "ar" ? "rtl" : "ltr";
+
+	useEffect(() => {
+		document.documentElement.lang = locale;
+		document.documentElement.dir = dir;
+	}, [locale, dir]);
+
 	const t = dictionaries[locale];
+
 	return (
-		<I18nContext.Provider value={{ locale, dir, t }}>
+		<I18nContext.Provider
+			value={{
+				locale,
+				dir,
+				t,
+				toggleLanguage,
+			}}
+		>
 			{children}
 		</I18nContext.Provider>
 	);

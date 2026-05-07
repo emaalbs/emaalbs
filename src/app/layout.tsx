@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Noto_Sans_Arabic } from "next/font/google";
+
+import {
+	Plus_Jakarta_Sans,
+	Inter,
+	Noto_Sans_Arabic,
+} from "next/font/google";
+
 import "./globals.css";
+
+import { I18nProvider } from "@/i18n/provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
 	variable: "--font-jakarta",
@@ -39,8 +47,12 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${plusJakartaSans.variable} ${inter.variable} ${notoSansArabic.variable} antialiased bg-warm text-ink`}>
-				{children}
+			<body
+				className={`${plusJakartaSans.variable} ${inter.variable} ${notoSansArabic.variable} antialiased bg-warm text-ink`}
+			>
+				<I18nProvider>
+					{children}
+				</I18nProvider>
 			</body>
 		</html>
 	);

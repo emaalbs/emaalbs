@@ -1,32 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/site/Logo";
-import { CloseIcon, GlobeIcon, MenuIcon } from "@/components/ui/icons";
+import {
+	CloseIcon,
+	GlobeIcon,
+	MenuIcon,
+} from "@/components/ui/icons";
+
 import { useI18n } from "@/i18n/provider";
 
 export function Header() {
-	const [scrolled, setScrolled] = useState(false);
-	const [open, setOpen] = useState(false);
-	const { locale, t } = useI18n();
-	const pathname = usePathname();
+	const [scrolled, setScrolled] =
+		useState(false);
+
+	const [open, setOpen] =
+		useState(false);
+
+	const {
+		locale,
+		t,
+		toggleLanguage,
+	} = useI18n();
+
 	const isAr = locale === "ar";
-	const otherLocale = isAr ? "en" : "ar";
-	const otherPath = pathname.replace(`/${locale}`, `/${otherLocale}`) || `/${otherLocale}`;
 
 	useEffect(() => {
-		const onScroll = () => setScrolled(window.scrollY > 24);
+		const onScroll = () =>
+			setScrolled(window.scrollY > 24);
+
 		onScroll();
-		window.addEventListener("scroll", onScroll, { passive: true });
-		return () => window.removeEventListener("scroll", onScroll);
+
+		window.addEventListener(
+			"scroll",
+			onScroll,
+			{
+				passive: true,
+			},
+		);
+
+		return () =>
+			window.removeEventListener(
+				"scroll",
+				onScroll,
+			);
 	}, []);
 
 	useEffect(() => {
-		document.body.style.overflow = open ? "hidden" : "";
+		document.body.style.overflow =
+			open ? "hidden" : "";
 	}, [open]);
 
 	const onLight = scrolled;
@@ -40,41 +65,85 @@ export function Header() {
 			}`}
 		>
 			<Container>
-				<div className={`flex items-center justify-between transition-all duration-300 ${onLight ? "h-[68px]" : "h-[80px]"}`}>
-					<Link href={`/${locale}`} className="shrink-0">
-						<Logo tone={onLight ? "light" : "dark"} height={onLight ? 32 : 36} />
+				<div
+					className={`flex items-center justify-between transition-all duration-300 ${
+						onLight
+							? "h-[68px]"
+							: "h-[80px]"
+					}`}
+				>
+					<Link
+						href="/"
+						className="shrink-0"
+					>
+						<Logo
+							tone={
+								onLight
+									? "light"
+									: "dark"
+							}
+							height={
+								onLight
+									? 32
+									: 36
+							}
+						/>
 					</Link>
 
 					<nav className="hidden lg:flex items-center gap-9">
-						{t.header.nav.map((item) => (
-							<Link
-								key={item.href}
-								href={item.href}
-								className={`group relative text-[13.5px] font-medium transition-colors ${
-									onLight
-										? "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
-										: "text-white/85 hover:text-white"
-								}`}
-							>
-								{item.label}
-								<span className={`absolute -bottom-1.5 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full ${isAr ? "right-0" : "left-0"}`} />
-							</Link>
-						))}
+						{t.header.nav.map(
+							(item) => (
+								<Link
+									key={
+										item.href
+									}
+									href={
+										item.href
+									}
+									className={`group relative text-[13.5px] font-medium transition-colors ${
+										onLight
+											? "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
+											: "text-white/85 hover:text-white"
+									}`}
+								>
+									{
+										item.label
+									}
+
+									<span
+										className={`absolute -bottom-1.5 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full ${
+											isAr
+												? "right-0"
+												: "left-0"
+										}`}
+									/>
+								</Link>
+							),
+						)}
 					</nav>
 
 					<div className="flex items-center gap-2.5">
-						<Link
-							href={otherPath}
+						<button
+							type="button"
+							onClick={
+								toggleLanguage
+							}
 							className={`hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-wider px-2.5 h-9 rounded-md transition-colors ${
 								onLight
 									? "text-[var(--color-slate)] hover:text-[var(--color-navy)]"
 									: "text-white/70 hover:text-white"
 							}`}
-							aria-label={t.header.langToggleLabel}
+							aria-label={
+								t.header
+									.langToggleLabel
+							}
 						>
 							<GlobeIcon className="h-4 w-4" />
-							{isAr ? "EN" : "AR"}
-						</Link>
+
+							{isAr
+								? "EN"
+								: "AR"}
+						</button>
 
 						<div className="hidden sm:block">
 							<Link
@@ -85,7 +154,14 @@ export function Header() {
 										: "bg-white text-[var(--color-navy)] hover:bg-[var(--color-gold)]"
 								}`}
 							>
-								<span>{t.header.cta}</span>
+								<span>
+									{
+										t
+											.header
+											.cta
+									}
+								</span>
+
 								<span
 									className={`grid h-7 w-7 place-items-center rounded-full transition-colors ${
 										onLight
@@ -93,7 +169,21 @@ export function Header() {
 											: "bg-[var(--color-navy)] text-white"
 									}`}
 								>
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" style={{ transform: isAr ? "scaleX(-1)" : undefined }}>
+									<svg
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										className="h-3.5 w-3.5"
+										style={{
+											transform:
+												isAr
+													? "scaleX(-1)"
+													: undefined,
+										}}
+									>
 										<path d="M5 12h14M13 6l6 6-6 6" />
 									</svg>
 								</span>
@@ -102,13 +192,21 @@ export function Header() {
 
 						<button
 							type="button"
-							onClick={() => setOpen(true)}
+							onClick={() =>
+								setOpen(
+									true,
+								)
+							}
 							className={`lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-md ${
 								onLight
 									? "text-[var(--color-ink)] hover:bg-[var(--color-line)]/40"
 									: "text-white hover:bg-white/10"
 							}`}
-							aria-label={t.header.mobileMenu.open}
+							aria-label={
+								t.header
+									.mobileMenu
+									.open
+							}
 						>
 							<MenuIcon className="h-5 w-5" />
 						</button>
@@ -119,48 +217,104 @@ export function Header() {
 			{/* Mobile menu */}
 			<div
 				className={`fixed inset-0 z-50 bg-[var(--color-navy-dark)] transition-opacity duration-300 lg:hidden ${
-					open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+					open
+						? "opacity-100 pointer-events-auto"
+						: "opacity-0 pointer-events-none"
 				}`}
 			>
 				<Container>
 					<div className="flex h-[88px] items-center justify-between">
 						<Logo tone="dark" />
+
 						<button
 							type="button"
-							onClick={() => setOpen(false)}
+							onClick={() =>
+								setOpen(
+									false,
+								)
+							}
 							className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/20 text-white"
-							aria-label={t.header.mobileMenu.close}
+							aria-label={
+								t.header
+									.mobileMenu
+									.close
+							}
 						>
 							<CloseIcon className="h-5 w-5" />
 						</button>
 					</div>
 				</Container>
+
 				<Container>
 					<nav className="mt-6 flex flex-col">
-						{t.header.nav.map((item) => (
-							<Link
-								key={item.href}
-								href={item.href}
-								onClick={() => setOpen(false)}
-								className="group flex items-center justify-between border-b border-white/10 py-5 text-white text-2xl font-display font-semibold"
-							>
-								{item.label}
-								<span className="text-[var(--color-gold)] opacity-0 transition-opacity group-hover:opacity-100">{isAr ? "←" : "→"}</span>
-							</Link>
-						))}
+						{t.header.nav.map(
+							(item) => (
+								<Link
+									key={
+										item.href
+									}
+									href={
+										item.href
+									}
+									onClick={() =>
+										setOpen(
+											false,
+										)
+									}
+									className="group flex items-center justify-between border-b border-white/10 py-5 text-white text-2xl font-display font-semibold"
+								>
+									{
+										item.label
+									}
+
+									<span className="text-[var(--color-gold)] opacity-0 transition-opacity group-hover:opacity-100">
+										{isAr
+											? "←"
+											: "→"}
+									</span>
+								</Link>
+							),
+						)}
 					</nav>
+
 					<div className="mt-8 flex flex-col gap-3">
-						<Button href="#contact" variant="gold" size="lg" withArrow>
-							{t.header.cta}
+						<Button
+							href="#contact"
+							variant="gold"
+							size="lg"
+							withArrow
+						>
+							{
+								t.header
+									.cta
+							}
 						</Button>
-						<Link
-							href={otherPath}
+
+						<button
+							type="button"
+							onClick={() => {
+								toggleLanguage();
+								setOpen(
+									false,
+								);
+							}}
 							className="inline-flex items-center justify-center gap-2 h-12 rounded-xl border border-white/20 text-white text-sm font-semibold tracking-wider"
-							onClick={() => setOpen(false)}
 						>
 							<GlobeIcon className="h-4 w-4" />
-							{t.header.mobileMenu.switchTo} {isAr ? t.header.mobileMenu.english : t.header.mobileMenu.arabic}
-						</Link>
+
+							{
+								t.header
+									.mobileMenu
+									.switchTo
+							}{" "}
+							{isAr
+								? t.header
+										.mobileMenu
+										.english
+								: t.header
+										.mobileMenu
+										.arabic}
+						</button>
 					</div>
 				</Container>
 			</div>
