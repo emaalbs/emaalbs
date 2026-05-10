@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
-export function Services() {
+export function HomeServices() {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
 	const services = t.services.list;

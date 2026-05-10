@@ -3,7 +3,7 @@
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 
-export function WhyEmaal() {
+export function HomeWhyEmaal() {
 	const { t } = useI18n();
 	const pillars = t.whyEmaal.pillars;
 	return (

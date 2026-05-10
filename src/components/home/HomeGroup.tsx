@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
-export function Group() {
+export function HomeGroup() {
 	const { t, dir } = useI18n();
 	const isRtl = dir === "rtl";
 	const brands = t.group.brands;

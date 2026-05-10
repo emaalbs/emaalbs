@@ -8,9 +8,9 @@ export const ar: Dictionary = {
   },
   header: {
     nav: [
-      { label: "من نحن", href: "#about" },
+      { label: "من نحن", href: "/about" },
       { label: "قمة الأعمال", href: "#ibs" },
-      { label: "خدماتنا", href: "#services" },
+      { label: "خدماتنا", href: "/whatWeDo" },
       { label: "المجموعة", href: "#group" },
       { label: "رؤى", href: "#insights" },
       { label: "تواصل", href: "#contact" },
@@ -36,8 +36,8 @@ export const ar: Dictionary = {
     getInTouch: "تواصل معنا",
     companyHeading: "الشركة",
     companyLinks: [
-      { label: "عن إيمال", href: "#about" },
-      { label: "خدماتنا", href: "#services" },
+      { label: "عن إيمال", href: "/about" },
+      { label: "خدماتنا", href: "/whatWeDo" },
       { label: "مجموعة إيمال", href: "#group" },
       { label: "لماذا إيمال", href: "#why" },
       { label: "رؤى", href: "#insights" },

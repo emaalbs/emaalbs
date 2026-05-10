@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowRightIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
-export function Highlights() {
+export function HomeHighlights() {
 	const { t, dir } = useI18n();
 	const isRtl = dir === "rtl";
 	const posts = t.highlights.posts;

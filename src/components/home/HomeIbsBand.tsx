@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { PlayIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
-export function IBSBand() {
+export function HomeIbsBand() {
 	const { t } = useI18n();
 	return (
 		<section

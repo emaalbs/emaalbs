@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 
-export function About() {
+export function HomeAbout() {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
 	return (

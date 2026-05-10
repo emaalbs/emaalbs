@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 
-export function Hero() {
+export function HomeHero() {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
 	return (

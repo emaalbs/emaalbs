@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { BRAND_LOGOS } from "@/components/site/BrandLogos";
 import { useI18n } from "@/i18n/provider";
 
-export function TrustStrip() {
+export function HomeTrustStrip() {
 	const { t } = useI18n();
 	// Duplicate the list many times so the marquee track is always wider than any viewport.
 	const loop = [

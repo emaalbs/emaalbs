@@ -6,9 +6,9 @@ export const en = {
   },
   header: {
     nav: [
-      { label: "About", href: "#about" },
+      { label: "About", href: "/about" },
       { label: "IBS", href: "#ibs" },
-      { label: "Services", href: "#services" },
+      { label: "Services", href: "/whatWeDo" },
       { label: "Group", href: "#group" },
       { label: "Insights", href: "#insights" },
       { label: "Contact", href: "#contact" },
@@ -37,8 +37,8 @@ export const en = {
     getInTouch: "Get in Touch",
     companyHeading: "Company",
     companyLinks: [
-      { label: "About EMAAL", href: "#about" },
-      { label: "Our Services", href: "#services" },
+      { label: "About EMAAL", href: "/about" },
+      { label: "Our Services", href: "/whatWeDo" },
       { label: "EMAAL Group", href: "#group" },
       { label: "Why EMAAL", href: "#why" },
       { label: "Insights", href: "#insights" },

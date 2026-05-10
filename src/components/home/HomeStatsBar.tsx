@@ -62,7 +62,7 @@ function StatItem({
 	);
 }
 
-export function StatsBar() {
+export function HomeStatsBar() {
 	const { t } = useI18n();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [start, setStart] = useState(false);

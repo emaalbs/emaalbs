@@ -34,14 +34,17 @@ const I18nContext = createContext<{
 
 export function I18nProvider({
 	children,
+	locale: initialLocale,
 }: {
 	children: ReactNode;
+	locale?: Locale;
 }) {
 	const [mounted, setMounted] =
 		useState(false);
 
 	const [locale, setLocale] =
 		useState<Locale>(() => {
+			if (initialLocale) return initialLocale;
 			if (
 				typeof window !== "undefined"
 			) {
