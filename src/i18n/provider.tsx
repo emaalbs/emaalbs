@@ -37,16 +37,27 @@ export function I18nProvider({
 }: {
 	children: ReactNode;
 }) {
+	const [mounted, setMounted] =
+		useState(false);
+
 	const [locale, setLocale] =
-		useState<Locale>(defaultLocale);
+		useState<Locale>(() => {
+			if (
+				typeof window !== "undefined"
+			) {
+				return (
+					(localStorage.getItem(
+						"locale",
+					) as Locale) ||
+					defaultLocale
+				);
+			}
+
+			return defaultLocale;
+		});
 
 	useEffect(() => {
-		const saved =
-			localStorage.getItem("locale") as Locale;
-
-		if (saved) {
-			setLocale(saved);
-		}
+		setMounted(true);
 	}, []);
 
 	const toggleLanguage = () => {
@@ -65,11 +76,15 @@ export function I18nProvider({
 		locale === "ar" ? "rtl" : "ltr";
 
 	useEffect(() => {
-		document.documentElement.lang = locale;
+		document.documentElement.lang =
+			locale;
+
 		document.documentElement.dir = dir;
 	}, [locale, dir]);
 
 	const t = dictionaries[locale];
+
+	if (!mounted) return null;
 
 	return (
 		<I18nContext.Provider

@@ -32,7 +32,8 @@ const notoSansArabic = Noto_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-	title: "EMAAL Business Space — Building Businesses. Scaling Growth.",
+	title:
+		"EMAAL Business Space — Building Businesses. Scaling Growth.",
 	description:
 		"EMAAL Business Space is a business platform builder and investment-driven group operating across Iraq and the region. Home of the Iraq Business Summit (IBS).",
 	icons: {
@@ -46,8 +47,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html
+			lang="en"
+			suppressHydrationWarning
+		>
 			<body
+				suppressHydrationWarning
 				className={`${plusJakartaSans.variable} ${inter.variable} ${notoSansArabic.variable} antialiased bg-warm text-ink`}
 			>
 				<I18nProvider>
