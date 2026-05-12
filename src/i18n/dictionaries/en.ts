@@ -745,6 +745,52 @@ ibsPage: {
     secondary: "Request Participation",
   },
 },
+// en.ts
+
+contact: {
+	hero: {
+		overline: "Contact Us",
+		title: ["Let’s Build", "Something Exceptional"],
+		description:
+			"Connect with Emmal Group to discuss partnerships, investments, ventures, or strategic opportunities across our sectors.",
+	},
+
+	info: {
+		title: "Get In Touch",
+		description:
+			"Our team is ready to answer your questions and help you explore the right opportunities with Emmal Group.",
+
+		addressLabel: "Office",
+		address: "Riyadh, Saudi Arabia",
+
+		phoneLabel: "Phone",
+		phone: "+966 50 000 0000",
+
+		emailLabel: "Email",
+		email: "info@emmalgroup.com",
+	},
+
+	form: {
+		title: "Send A Message",
+		description:
+			"Fill out the form below and our team will get back to you shortly.",
+
+		name: "Full Name",
+		email: "Email Address",
+		phone: "Phone Number",
+		company: "Company Name",
+		message: "Your Message",
+
+		button: "Send Message",
+	},
+
+	cta: {
+		title: "Start A Conversation With Us",
+		description:
+			"Whether you are looking for investment opportunities, partnerships, or strategic collaboration — we’re ready to connect.",
+		button: "Contact Our Team",
+	},
+},
 };
 
 export type Dictionary = typeof en;
