@@ -20,17 +20,26 @@ const dictionaries: Record<Locale, Dictionary> = {
 	ar,
 };
 
-const I18nContext = createContext<{
+type I18nContextType = {
 	locale: Locale;
+
 	dir: "ltr" | "rtl";
+
 	t: Dictionary;
+
 	toggleLanguage: () => void;
-}>({
-	locale: defaultLocale,
-	dir: "ltr",
-	t: en,
-	toggleLanguage: () => {},
-});
+};
+
+const I18nContext =
+	createContext<I18nContextType>({
+		locale: defaultLocale,
+
+		dir: "ltr",
+
+		t: en,
+
+		toggleLanguage: () => {},
+	});
 
 export function I18nProvider({
 	children,
@@ -82,7 +91,8 @@ export function I18nProvider({
 		document.documentElement.lang =
 			locale;
 
-		document.documentElement.dir = dir;
+		document.documentElement.dir =
+			dir;
 	}, [locale, dir]);
 
 	const t = dictionaries[locale];
