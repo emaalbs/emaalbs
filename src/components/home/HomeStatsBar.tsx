@@ -63,7 +63,8 @@ function StatItem({
 }
 
 export function HomeStatsBar() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 	const ref = useRef<HTMLDivElement | null>(null);
 	const [start, setStart] = useState(false);
 
@@ -114,7 +115,7 @@ export function HomeStatsBar() {
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
 							{t.statsBar.overline}
 						</div>
-						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,3vw,2.5rem)] leading-[1.1]">
+						<h2 className={`mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,3vw,2.5rem)] ${isAr ? "leading-[1.4]" : "leading-[1.1]"}`}>
 							{t.statsBar.title[0]}{" "}
 							<span className="italic font-medium text-white/60">{t.statsBar.title[1]}</span>{t.statsBar.title[2]}
 						</h2>

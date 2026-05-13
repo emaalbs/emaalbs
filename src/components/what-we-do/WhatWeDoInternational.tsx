@@ -6,7 +6,8 @@ import { useI18n } from "@/i18n/provider";
 import { fadeUp } from "./motion";
 
 export function WhatWeDoInternational() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	return (
 		<motion.section
@@ -27,7 +28,7 @@ export function WhatWeDoInternational() {
 				</div>
 
 				<div className="rounded-[40px] border border-white/10 bg-white/[0.04] p-12 backdrop-blur-xl">
-					<h2 className="text-4xl font-bold md:text-5xl">
+					<h2 className={`text-4xl font-bold md:text-5xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>
 						{t.whatWeDo.international.title}
 					</h2>
 					<div className="mt-5 h-1 w-24 rounded-full bg-gradient-to-r from-[#C8A45D] to-teal-400" />

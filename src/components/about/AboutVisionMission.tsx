@@ -47,7 +47,7 @@ export function AboutVisionMission() {
 							</div>
 						</div>
 
-						<h3 className="relative mt-7 font-display text-[clamp(1.75rem,2.4vw,2.5rem)] font-bold leading-[1.15] text-white">
+						<h3 className={`relative mt-7 font-display text-[clamp(1.75rem,2.4vw,2.5rem)] font-bold text-white ${isAr ? "leading-[1.4]" : "leading-[1.15]"}`}>
 							{t.aboutp.visionTitle1}
 							<br />
 							<span className="bg-gradient-to-r from-white to-[var(--color-teal-tint)] bg-clip-text text-transparent">
@@ -92,7 +92,7 @@ export function AboutVisionMission() {
 							</div>
 						</div>
 
-						<h3 className="relative mt-7 font-display text-[clamp(1.75rem,2.4vw,2.5rem)] font-bold leading-[1.15] text-white">
+						<h3 className={`relative mt-7 font-display text-[clamp(1.75rem,2.4vw,2.5rem)] font-bold text-white ${isAr ? "leading-[1.4]" : "leading-[1.15]"}`}>
 							{t.aboutp.missionTitle1}
 							<br />
 							<span className="bg-gradient-to-r from-white to-[var(--color-gold-tint)] bg-clip-text text-transparent">

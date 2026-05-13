@@ -6,7 +6,8 @@ import { useI18n } from "@/i18n/provider";
 import { fadeUp } from "./motion";
 
 export function WhatWeDoCta() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	return (
 		<motion.section {...fadeUp} className="bg-white pb-28 pt-14">
@@ -15,7 +16,7 @@ export function WhatWeDoCta() {
 					<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(200,164,93,0.15),transparent_45%)]" />
 
 					<div className="relative z-10 mx-auto max-w-3xl">
-						<h2 className="text-5xl font-bold">{t.whatWeDo.cta.title}</h2>
+						<h2 className={`text-5xl font-bold ${isAr ? "leading-[1.35]" : "leading-tight"}`}>{t.whatWeDo.cta.title}</h2>
 						<p className="mt-6 text-lg leading-8 text-white/70">
 							{t.whatWeDo.cta.description}
 						</p>

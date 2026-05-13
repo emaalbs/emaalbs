@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/provider";
 
 export function WhatWeDoHero() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	const [partners, setPartners] = useState(0);
 	const [projects, setProjects] = useState(0);
@@ -51,7 +52,7 @@ export function WhatWeDoHero() {
 					<span className="mb-6 inline-flex rounded-full border border-[#C8A45D]/30 bg-[#C8A45D]/10 px-5 py-2 text-sm font-medium text-[#E5C98B] backdrop-blur">
 						{t.whatWeDo.badge}
 					</span>
-					<h1 className="mb-8 text-5xl font-bold leading-tight md:text-7xl">
+					<h1 className={`mb-8 text-5xl font-bold md:text-7xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>
 						<span className="bg-gradient-to-r from-white to-[#C8A45D] bg-clip-text text-transparent">
 							{t.whatWeDo.hero.title}
 						</span>

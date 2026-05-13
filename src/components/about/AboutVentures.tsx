@@ -68,7 +68,7 @@ export function AboutVentures() {
 							</div>
 
 							<div className={`absolute inset-x-0 bottom-0 p-8 lg:p-10 ${align}`}>
-								<h3 className="font-display text-[clamp(1.75rem,3vw,2.75rem)] font-bold leading-tight text-white">
+								<h3 className={`font-display text-[clamp(1.75rem,3vw,2.75rem)] font-bold text-white ${isAr ? "leading-[1.4]" : "leading-tight"}`}>
 									{featuredData.title}
 								</h3>
 								<p className="mt-4 max-w-xl text-[15px] leading-[1.8] text-[var(--color-silver)]">
@@ -109,7 +109,7 @@ export function AboutVentures() {
 									</div>
 
 									<div className={`flex flex-1 flex-col justify-center p-5 ${align}`}>
-										<h3 className="text-lg font-bold text-[var(--color-navy)] leading-tight">
+										<h3 className={`text-lg font-bold text-[var(--color-navy)] ${isAr ? "leading-[1.5]" : "leading-tight"}`}>
 											{data.title}
 										</h3>
 										<p className="mt-2 line-clamp-3 text-[13px] leading-[1.6] text-[var(--color-slate)]">

@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import { useI18n } from "@/i18n/provider";
 
 type Props = {
 	children: ReactNode;
@@ -42,6 +45,8 @@ export function SectionHeading({
 	tone = "light",
 	className = "",
 }: HeadingProps) {
+	const { locale } = useI18n();
+	const isAr = locale === "ar";
 	const titleColor = tone === "light" ? "text-[var(--color-navy)]" : "text-white";
 	const subColor = tone === "light" ? "text-[var(--color-slate)]" : "text-[var(--color-silver)]";
 	const alignCls = align === "center" ? "text-center mx-auto" : "text-start";
@@ -54,7 +59,7 @@ export function SectionHeading({
 				</Overline>
 			) : null}
 			<h2
-				className={`mt-4 font-display font-bold tracking-display ${titleColor} text-[clamp(1.5rem,2.6vw,2.25rem)] leading-[1.2]`}
+				className={`mt-4 font-display font-bold tracking-display ${titleColor} text-[clamp(1.5rem,2.6vw,2.25rem)] ${isAr ? "leading-[1.4]" : "leading-[1.2]"}`}
 			>
 				{title}
 			</h2>

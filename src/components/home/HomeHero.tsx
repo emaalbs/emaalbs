@@ -35,7 +35,7 @@ export function HomeHero() {
 						{t.hero.overline}
 					</div>
 
-					<h1 className="reveal mt-6 font-display font-bold tracking-display text-white text-[clamp(1.9rem,4.2vw,3.2rem)] leading-[1.1]">
+					<h1 className={`reveal mt-6 font-display font-bold tracking-display text-white text-[clamp(1.9rem,4.2vw,3.2rem)] ${isAr ? "leading-[1.35]" : "leading-[1.1]"}`}>
 						{t.hero.title[0]}<br />
 						<span className="text-[var(--color-gold)] leading-[1.5]">{t.hero.title[1]}</span>
 					</h1>

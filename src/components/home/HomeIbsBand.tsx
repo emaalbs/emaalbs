@@ -7,7 +7,8 @@ import { PlayIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
 export function HomeIbsBand() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 	return (
 		<section
 			id="ibs"
@@ -26,7 +27,7 @@ export function HomeIbsBand() {
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
 							{t.ibsBand.overline}
 						</div>
-						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,2.8vw,2.5rem)] leading-[1.15]">
+						<h2 className={`mt-4 font-display font-bold tracking-display text-white text-[clamp(1.65rem,2.8vw,2.5rem)] ${isAr ? "leading-[1.4]" : "leading-[1.15]"}`}>
 							{t.ibsBand.title[0]}
 							<br />
 							<span className="text-[var(--color-gold)]">{t.ibsBand.title[1]}</span>

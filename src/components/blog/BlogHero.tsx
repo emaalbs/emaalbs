@@ -9,7 +9,7 @@ import { useI18n } from "@/i18n/provider";
 const fadeUp = {
 	initial: { opacity: 0, y: 30 },
 	whileInView: { opacity: 1, y: 0 },
-	transition: { duration: 0.7, ease: "easeOut" },
+	transition: { duration: 0.7, ease: "easeOut" as const },
 	viewport: { once: true, amount: 0.2 },
 };
 
@@ -53,7 +53,7 @@ export function BlogHero() {
 						{isAr ? "المدونة" : "Blog & Insights"}
 					</div>
 
-					<h1 className="mt-6 font-display text-[clamp(2.7rem,5vw,5.4rem)] font-bold leading-[1.02] tracking-display text-white">
+					<h1 className={`mt-6 font-display text-[clamp(2.7rem,5vw,5.4rem)] font-bold tracking-display text-white ${isAr ? "leading-[1.35]" : "leading-[1.02]"}`}>
 						{isAr ? "أحدث" : "Latest"}
 						<br />
 

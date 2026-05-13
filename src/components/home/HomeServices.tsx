@@ -31,7 +31,7 @@ export function HomeServices() {
 							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
 							{t.services.overline}
 						</div>
-						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.85rem,4vw,3.25rem)] leading-[1.05]">
+						<h2 className={`mt-4 font-display font-bold tracking-display text-white text-[clamp(1.85rem,4vw,3.25rem)] ${isAr ? "leading-[1.35]" : "leading-[1.05]"}`}>
 							{t.services.title[0]}
 							<br />
 							<span className="text-[var(--color-gold)]">{t.services.title[1]}</span>
@@ -72,8 +72,8 @@ export function HomeServices() {
 													{s.tag}
 												</div>
 											</div>
-											<h3
-												className={`mt-2 font-display font-semibold leading-tight transition-colors text-[clamp(1.35rem,2.4vw,2rem)] ${
+										<h3
+											className={`mt-2 font-display font-semibold transition-colors text-[clamp(1.35rem,2.4vw,2rem)] ${isAr ? "leading-[1.4]" : "leading-tight"} ${
 													isActive ? "text-[var(--color-gold)]" : "text-white"
 												}`}
 											>

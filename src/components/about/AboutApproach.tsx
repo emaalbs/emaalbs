@@ -5,7 +5,8 @@ import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 
 export function AboutApproach() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	const cards = [
 		{ title: t.aboutp.approachCards[0], icon: <Briefcase size={28} /> },
@@ -23,7 +24,7 @@ export function AboutApproach() {
 					<div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 						{t.aboutp.approachLabel}
 					</div>
-					<h2 className="mt-5 font-display text-4xl font-bold text-white">
+					<h2 className={`mt-5 font-display text-4xl font-bold text-white ${isAr ? "leading-[1.4]" : "leading-tight"}`}>
 						{t.aboutp.approachTitle1}
 						<span className="text-[var(--color-gold)]">
 							{" "}

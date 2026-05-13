@@ -31,7 +31,8 @@ const platforms = [
 ];
 
 export function WhatWeDoDelivery() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	return (
 		<motion.section
@@ -47,7 +48,7 @@ export function WhatWeDoDelivery() {
 						<span className="inline-block h-px w-6 bg-[var(--color-gold)]" />
 						{t.whatWeDo.badge}
 					</span>
-					<h2 className="mt-5 font-display text-4xl font-bold leading-tight text-[var(--color-navy)] md:text-5xl">
+					<h2 className={`mt-5 font-display text-4xl font-bold text-[var(--color-navy)] md:text-5xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>
 						{t.whatWeDo.delivery.title}
 					</h2>
 					<div className="mx-auto mt-5 h-1 w-24 rounded-full bg-[var(--color-gold)]" />
@@ -120,7 +121,7 @@ export function WhatWeDoDelivery() {
 										/>
 									</div>
 
-									<h3 className="mt-6 font-display text-3xl font-bold leading-tight text-[var(--color-navy)] md:text-4xl">
+									<h3 className={`mt-6 font-display text-3xl font-bold text-[var(--color-navy)] md:text-4xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>
 										{data.title}
 									</h3>
 									<p className="mt-5 text-base leading-8 text-[var(--color-slate)]">

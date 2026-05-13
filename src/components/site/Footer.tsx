@@ -40,7 +40,7 @@ export function Footer() {
 				<div className="grid grid-cols-1 gap-10 border-b border-white/8 py-16 lg:grid-cols-12 lg:gap-12">
 					<div className="lg:col-span-7">
 						<Logo tone="dark" height={36} />
-						<h3 className="mt-7 max-w-xl font-display text-[clamp(1.5rem,2.6vw,2rem)] font-semibold leading-[1.2] tracking-display text-white">
+						<h3 className={`mt-7 max-w-xl font-display text-[clamp(1.5rem,2.6vw,2rem)] font-semibold tracking-display text-white ${isAr ? "leading-[1.4]" : "leading-[1.2]"}`}>
 							{t.footer.tagline[0]}
 							<br />
 							<span className="text-white/50">{t.footer.tagline[1]}</span>
@@ -78,11 +78,11 @@ export function Footer() {
 							</div>
 							<div className={`flex items-start gap-2.5 ${isAr ? "flex-row-reverse" : ""}`}>
 								<PhoneIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--color-gold)]" />
-								<span>{t.footer.phones}</span>
+								<span dir="ltr">{t.footer.phones}</span>
 							</div>
 							<div className={`flex items-start gap-2.5 ${isAr ? "flex-row-reverse" : ""}`}>
 								<MailIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--color-gold)]" />
-								<a href={`mailto:${t.footer.email}`} className="hover:text-white">
+								<a href={`mailto:${t.footer.email}`} className="hover:text-white" dir="ltr">
 									{t.footer.email}
 								</a>
 							</div>

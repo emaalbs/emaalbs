@@ -146,8 +146,8 @@ export function Header() {
 						</button>
 
 						<div className="hidden sm:block">
-							<Link
-								href="#contact"
+						<Link
+							href="/contact"
 								className={`group inline-flex items-center gap-2 h-10 ps-5 pe-2 rounded-full text-[13px] font-semibold transition-all ${
 									onLight
 										? "bg-[var(--color-navy)] text-white hover:bg-[var(--color-navy-dark)]"
@@ -278,8 +278,8 @@ export function Header() {
 					</nav>
 
 					<div className="mt-8 flex flex-col gap-3">
-						<Button
-							href="#contact"
+					<Button
+						href="/contact"
 							variant="gold"
 							size="lg"
 							withArrow

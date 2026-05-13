@@ -8,7 +8,7 @@ import {
 	Megaphone,
 	Cpu,
 	Handshake,
-	ArrowUpRight,
+	ChevronDown,
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Overline";
@@ -124,14 +124,14 @@ export function AboutWhatWeDo() {
 											: "bg-transparent text-[var(--color-slate)] group-hover:bg-white group-hover:text-[var(--color-navy)]"
 									}`}
 								>
-									<ArrowUpRight
+									<ChevronDown
 										size={16}
 										className={`transition-transform duration-300 ${
-											isAr ? "-scale-x-100" : ""
+											isActive ? "rotate-180" : ""
 										} ${
-											isActive
-												? "rotate-0"
-												: "group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+											!isActive
+												? "group-hover:translate-y-0.5"
+												: ""
 										}`}
 									/>
 								</span>

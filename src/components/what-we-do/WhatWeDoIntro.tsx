@@ -6,7 +6,8 @@ import { useI18n } from "@/i18n/provider";
 import { fadeUp } from "./motion";
 
 export function WhatWeDoIntro() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	return (
 		<motion.section {...fadeUp} className="relative bg-white py-28 text-[#07131F]">
@@ -37,7 +38,7 @@ export function WhatWeDoIntro() {
 				</div>
 
 				<div>
-					<h2 className="text-4xl font-bold md:text-5xl">{t.whatWeDo.intro.title}</h2>
+					<h2 className={`text-4xl font-bold md:text-5xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>{t.whatWeDo.intro.title}</h2>
 					<div className="mt-5 h-1 w-24 rounded-full bg-gradient-to-r from-[#C8A45D] to-teal-400" />
 					<p className="mt-8 text-lg leading-9 text-gray-600">
 						{t.whatWeDo.intro.description}

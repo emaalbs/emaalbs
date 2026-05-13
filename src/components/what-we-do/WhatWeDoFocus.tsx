@@ -8,7 +8,8 @@ import { fadeUp } from "./motion";
 const focusIcons = [Network, Building2, Megaphone, Cpu];
 
 export function WhatWeDoFocus() {
-	const { t } = useI18n();
+	const { t, locale } = useI18n();
+	const isAr = locale === "ar";
 
 	return (
 		<motion.section
@@ -35,7 +36,7 @@ export function WhatWeDoFocus() {
 					<span className="inline-flex rounded-full border border-[#C8A45D]/30 bg-[#C8A45D]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.28em] text-[#E5C98B]">
 						{t.whatWeDo.badge}
 					</span>
-					<h2 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
+					<h2 className={`mt-6 text-4xl font-bold md:text-6xl ${isAr ? "leading-[1.35]" : "leading-tight"}`}>
 						<span className="bg-gradient-to-r from-white via-white to-[#C8A45D] bg-clip-text text-transparent">
 							{t.whatWeDo.focus.title}
 						</span>
@@ -90,7 +91,7 @@ export function WhatWeDoFocus() {
 											<div className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C8A45D]">
 												— 0{index + 1} —
 											</div>
-											<h3 className="mt-3 text-2xl font-semibold leading-tight md:text-3xl">
+											<h3 className={`mt-3 text-2xl font-semibold md:text-3xl ${isAr ? "leading-[1.4]" : "leading-tight"}`}>
 												{item.title}
 											</h3>
 											<div className="mt-4 h-px w-12 bg-gradient-to-r from-[#C8A45D] to-transparent" />

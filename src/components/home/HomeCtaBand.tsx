@@ -27,7 +27,7 @@ export function HomeCtaBand() {
 								<span className="inline-block h-px w-8 bg-[var(--color-gold-deep)]" />
 								{t.ctaBand.overline}
 							</div>
-							<h2 className="mt-5 font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.85rem,4vw,3rem)] leading-[1.1]">
+							<h2 className={`mt-5 font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.85rem,4vw,3rem)] ${isAr ? "leading-[1.35]" : "leading-[1.1]"}`}>
 								{t.ctaBand.title[0]}{" "}
 								<span className="italic font-medium text-[var(--color-gold-deep)]">
 									{t.ctaBand.title[1]}

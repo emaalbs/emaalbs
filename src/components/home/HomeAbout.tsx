@@ -21,7 +21,7 @@ export function HomeAbout() {
 							{t.about.sectionLabel}
 						</div>
 					</div>
-					<h2 className="font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.85rem,4vw,3.25rem)] leading-[1.08] lg:col-span-9">
+					<h2 className={`font-display font-bold tracking-display text-[var(--color-navy)] text-[clamp(1.85rem,4vw,3.25rem)] lg:col-span-9 ${isAr ? "leading-[1.35]" : "leading-[1.08]"}`}>
 						{t.about.title[0]}{" "}
 						<span className="italic font-medium text-[var(--color-slate)]">{t.about.title[1]}</span>
 						{t.about.title[2]}
