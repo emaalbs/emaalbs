@@ -9,7 +9,7 @@ export const ar: Dictionary = {
   header: {
     nav: [
       { label: "من نحن", href: "/about" },
-      { label: "قمة الأعمال", href: "#ibs" },
+      { label: "قمة الأعمال", href: "/ibs" },
       { label: "خدماتنا", href: "/whatWeDo" },
       { label: "المجموعة", href: "#group" },
       { label: "رؤى", href: "#insights" },

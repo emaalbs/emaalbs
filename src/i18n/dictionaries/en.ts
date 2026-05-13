@@ -7,7 +7,7 @@ export const en = {
   header: {
     nav: [
       { label: "About", href: "/about" },
-      { label: "IBS", href: "#ibs" },
+      { label: "IBS", href: "/ibs" },
       { label: "Services", href: "/whatWeDo" },
       { label: "Group", href: "#group" },
       { label: "Insights", href: "#insights" },
