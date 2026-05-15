@@ -2,90 +2,81 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { motion } from "framer-motion";
 
-type BlogCardProps = {
-	post: {
-		id: number;
-		slug: string;
-		title: {
-			en: string;
-			ar: string;
-		};
-		description: {
-			en: string;
-			ar: string;
-		};
-		image: string;
-		date: string;
-	};
-	locale: string;
+import { ArrowUpRight } from "lucide-react";
+
+import type { Blog } from "@/data/blogs";
+
+type Props = {
+	post: Blog;
+	locale: "en" | "ar";
+	index: number;
 };
 
-export function BlogCard({ post, locale }: BlogCardProps) {
+export function BlogCard({
+	post,
+	locale,
+	index,
+}: Props) {
 	const isAr = locale === "ar";
 
 	return (
-		<motion.article
-			initial={{ opacity: 0, y: 30 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.6 }}
-			viewport={{ once: true }}
-			className="group overflow-hidden rounded-[28px] border border-white/10 bg-[var(--color-navy-dark)]/90 shadow-[0_15px_50px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-teal)]/30"
+		<Link
+			href={`/${locale}/blog/${post.slug}`}
+			className={`group relative overflow-hidden rounded-[30px] border border-[var(--color-line)] bg-white/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_80px_-30px_rgba(1,30,47,0.28)] ${
+				index % 3 === 1
+					? "xl:translate-y-10"
+					: ""
+			}`}
 		>
-			{/* IMAGE */}
-			<Link href={`/${locale}/blog/${post.slug}`}>
-				<div className="relative h-[260px] overflow-hidden">
-					<Image
-						src={post.image}
-						alt={post.title[locale as "en" | "ar"]}
-						fill
-						className="object-cover transition-transform duration-700 group-hover:scale-105"
-					/>
+			{/* image */}
+			<div className="relative h-[260px] overflow-hidden">
+				<Image
+					src={post.image}
+					alt={post.title[locale]}
+					fill
+					className="object-cover transition-transform duration-700 group-hover:scale-110"
+				/>
 
-					{/* overlays */}
-					<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,30,47,0.88)] via-transparent to-transparent" />
+				<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,20,35,0.45)] to-transparent" />
+			</div>
 
-					<div className="absolute top-4 left-4 rounded-full border border-white/10 bg-[rgba(1,30,47,0.75)] px-4 py-2 text-[11px] font-medium tracking-wide text-white backdrop-blur-md">
+			{/* content */}
+			<div className="p-7">
+				<div className="flex items-center justify-between gap-4">
+					<div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold-deep)]">
 						{post.date}
 					</div>
+
+					<div className="h-[1px] flex-1 bg-gradient-to-r from-[var(--color-gold)]/40 to-transparent" />
 				</div>
-			</Link>
 
-			{/* CONTENT */}
-			<div className="relative p-7">
-				{/* subtle glow */}
-				<div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[var(--color-teal)]/10 blur-[60px]" />
+				<h3 className="mt-5 font-display text-[26px] font-bold leading-[1.15] transition-colors duration-300 group-hover:text-[var(--color-gold-deep)]">
+					{post.title[locale]}
+				</h3>
 
-				<div className="relative">
-					<h3 className="line-clamp-2 font-display text-[1.55rem] font-bold leading-[1.25] text-white transition-colors duration-300 group-hover:text-[var(--color-gold)]">
-						<Link href={`/${locale}/blog/${post.slug}`}>
-							{post.title[locale as "en" | "ar"]}
-						</Link>
-					</h3>
+				<p className="mt-4 text-[14px] leading-[1.9] text-[var(--color-slate)]">
+					{post.description[locale]}
+				</p>
 
-					<p className="mt-4 line-clamp-3 text-[15px] leading-[1.9] text-[var(--color-silver)]">
-						{post.description[locale as "en" | "ar"]}
-					</p>
+				<div className="mt-7 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.24em] text-[var(--color-navy)]">
+					<span>
+						{isAr
+							? "استكشف أكثر"
+							: "Explore More"}
+					</span>
 
-					{/* divider */}
-					<div className="mt-6 h-px w-full bg-gradient-to-r from-[var(--color-teal)]/30 to-transparent" />
-
-					{/* read more */}
-					<Link
-						href={`/${locale}/blog/${post.slug}`}
-						className="mt-6 inline-flex items-center gap-2 text-sm font-semibold tracking-wide text-[var(--color-gold)] transition-all duration-300 hover:gap-3"
-					>
-						{isAr ? "قراءة المقال" : "Read Article"}
-
-						<ArrowUpRight
-							size={17}
-							className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-						/>
-					</Link>
+					<ArrowUpRight
+						size={16}
+						className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+					/>
 				</div>
 			</div>
-		</motion.article>
+
+			{/* hover glow */}
+			<div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+				<div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[var(--color-gold)]/10 blur-3xl" />
+			</div>
+		</Link>
 	);
 }

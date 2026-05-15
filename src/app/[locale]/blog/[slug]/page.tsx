@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -8,150 +10,120 @@ import { Container } from "@/components/ui/Container";
 import { blogs } from "@/data/blogs";
 
 type Props = {
-	params: {
+	params: Promise<{
 		slug: string;
 		locale: string;
-	};
+	}>;
 };
 
-export default function BlogDetailsPage({ params }: Props) {
-	const post = blogs.find((item) => item.slug === params.slug);
+export default async function BlogDetailsPage({
+	params,
+}: Props) {
+	const { slug, locale } = await params;
+
+	const post = blogs.find((item) => item.slug === slug);
 
 	if (!post) {
 		notFound();
 	}
 
-	const isAr = params.locale === "ar";
+	const isAr = locale === "ar";
+
+	const currentLocale: "en" | "ar" =
+		locale === "ar" ? "ar" : "en";
+
+	const content = post.content[currentLocale];
 
 	return (
 		<main
 			dir={isAr ? "rtl" : "ltr"}
-			className="overflow-hidden bg-[var(--color-navy-dark)]"
+			className="overflow-hidden bg-[var(--color-navy-dark)] text-white"
 		>
 			<Header />
 
 			{/* HERO */}
-			<section className="relative isolate overflow-hidden pt-32 pb-20">
+			<section className="relative isolate overflow-hidden pb-24 pt-32 lg:pb-28">
 				{/* background */}
-				<div className="absolute inset-0 -z-10">
-					<Image
-						src={post.image}
-						alt=""
-						fill
-						priority
-						className="object-cover object-center blur-[3px]"
+				<div className="absolute inset-0 -z-10 bg-[var(--color-navy-dark)]">
+					<div
+						className="absolute inset-0 opacity-[0.04]"
+						style={{
+							backgroundImage:
+								"linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+							backgroundSize: "65px 65px",
+						}}
 					/>
-
-					<div className="absolute inset-0 bg-gradient-to-b from-[rgba(1,30,47,0.82)] via-[rgba(1,51,77,0.72)] to-[rgba(1,30,47,0.96)]" />
-
-					<div className="absolute inset-0 bg-gradient-to-r from-[rgba(1,30,47,0.78)] via-transparent to-transparent" />
-
-					<div className="absolute -left-20 bottom-0 h-[550px] w-[550px] rounded-full bg-[var(--color-teal)]/20 blur-[100px]" />
 				</div>
 
 				<Container>
-					<div className="mx-auto max-w-4xl text-center">
-						<div className="inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-md">
+					<div className="mx-auto max-w-5xl text-center">
+						{/* date */}
+						<div className="inline-flex rounded-full border border-[var(--color-gold)]/20 bg-white/[0.04] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)] backdrop-blur-sm">
 							{post.date}
 						</div>
 
-						<h1 className="mt-7 font-display text-[clamp(2.4rem,5vw,5rem)] font-bold leading-[1.05] tracking-display text-white">
-							{post.title[isAr ? "ar" : "en"]}
+						{/* title */}
+						<h1 className="mt-8 font-display text-[clamp(2.8rem,6vw,6rem)] font-black leading-[0.95] tracking-[-0.04em] text-[var(--color-gold)]">
+							{post.title[currentLocale]}
 						</h1>
 
-						<p className="mx-auto mt-6 max-w-2xl text-[16px] leading-[1.9] text-[var(--color-silver)]">
-							{post.description[isAr ? "ar" : "en"]}
+						{/* description */}
+						<p className="mx-auto mt-8 max-w-3xl text-[16px] leading-[2] text-[var(--color-silver)] md:text-[18px]">
+							{post.description[currentLocale]}
 						</p>
 
-						<div className="mx-auto mt-8 h-[2px] w-36 bg-gradient-to-r from-transparent via-[var(--color-teal)] to-transparent" />
+						<div className="mx-auto mt-10 h-[2px] w-40 bg-[var(--color-gold)]/40" />
+					</div>
+
+					{/* image */}
+					<div className="relative mt-20 overflow-hidden rounded-[36px] border border-white/10">
+						<Image
+							src={post.image}
+							alt={post.title[currentLocale]}
+							width={1600}
+							height={900}
+							priority
+							className="h-auto w-full object-cover"
+						/>
 					</div>
 				</Container>
 			</section>
 
 			{/* CONTENT */}
-			<section className="relative py-20">
-				{/* background */}
-				<div className="absolute inset-0">
-					<div className="absolute right-0 top-20 h-[320px] w-[320px] rounded-full bg-[var(--color-teal)]/10 blur-[100px]" />
-
-					<div className="absolute inset-0 opacity-[0.035]">
-						<div
-							className="h-full w-full"
-							style={{
-								backgroundImage:
-									"linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
-								backgroundSize: "65px 65px",
-							}}
-						/>
-					</div>
-				</div>
+			<section className="relative overflow-hidden bg-[var(--color-warm)] py-24 text-[var(--color-navy)] lg:py-32">
+				{/* pattern */}
+				<div
+					className="pointer-events-none absolute inset-0 opacity-[0.35]"
+					style={{
+						backgroundImage:
+							"radial-gradient(circle at 1px 1px, rgba(1,51,77,0.08) 1px, transparent 0)",
+						backgroundSize: "28px 28px",
+					}}
+				/>
 
 				<Container>
 					<div className="mx-auto max-w-4xl">
-						{/* featured image */}
-						<div className="relative overflow-hidden rounded-[32px] border border-white/10">
-							<Image
-								src={post.image}
-								alt={post.title[isAr ? "ar" : "en"]}
-								width={1400}
-								height={800}
-								className="h-auto w-full object-cover"
-							/>
-						</div>
+						<div className="overflow-hidden rounded-[36px] border border-[var(--color-line)] bg-white/70 p-8 backdrop-blur-sm sm:p-12">
+							<div className="prose prose-lg max-w-none prose-headings:font-display prose-p:text-[var(--color-slate)] prose-p:leading-[2]">
+								<p>{content.intro}</p>
 
-						{/* article */}
-						<div className="mt-14 rounded-[32px] border border-white/10 bg-white/[0.03] p-8 sm:p-10 backdrop-blur-sm">
-							<div className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:text-white prose-p:text-[var(--color-silver)] prose-p:leading-[2] prose-strong:text-white">
-								<p>
-									Lorem ipsum dolor sit amet consectetur
-									adipisicing elit. Doloribus possimus
-									perspiciatis pariatur consequatur magni
-									ipsam impedit voluptate quae eveniet
-									molestiae.
-								</p>
-
-								<h2>
-									{isAr
-										? "فرص النمو والتوسع"
-										: "Growth & Expansion Opportunities"}
+								<h2 className="mt-14 text-[var(--color-gold-deep)]">
+									{content.section1Title}
 								</h2>
 
-								<p>
-									Lorem ipsum dolor sit amet consectetur
-									adipisicing elit. Facilis voluptate
-									temporibus accusamus dignissimos dolore
-									aperiam.
-								</p>
+								<p>{content.section1Text}</p>
 
-								<p>
-									Lorem ipsum dolor sit amet consectetur
-									adipisicing elit. Voluptates aliquid quas
-									aliquam officiis repellendus voluptas.
-								</p>
-
-								<h2>
-									{isAr
-										? "الاستثمار والتطوير"
-										: "Investment & Development"}
+								<h2 className="mt-14 text-[var(--color-gold-deep)]">
+									{content.section2Title}
 								</h2>
 
-								<p>
-									Lorem ipsum dolor sit amet consectetur
-									adipisicing elit. Quos perferendis harum
-									illum sapiente exercitationem saepe.
-								</p>
+								<p>{content.section2Text}</p>
 
-								<blockquote>
-									{isAr
-										? "النجاح يبدأ من اتخاذ القرار الصحيح في الوقت المناسب."
-										: "Success starts with making the right decision at the right time."}
+								<blockquote className="my-12 border-l-2 border-[var(--color-gold)] bg-[var(--color-gold)]/5 py-6 pl-6 text-[24px] font-semibold leading-[1.6] italic text-[var(--color-navy)]">
+									{content.quote}
 								</blockquote>
 
-								<p>
-									Lorem ipsum dolor sit amet consectetur
-									adipisicing elit. Laudantium atque facere
-									ipsa pariatur ullam dignissimos.
-								</p>
+								<p>{content.conclusion}</p>
 							</div>
 						</div>
 					</div>
