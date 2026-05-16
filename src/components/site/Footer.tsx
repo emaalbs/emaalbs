@@ -94,7 +94,7 @@ export function Footer() {
 						<ul className="mt-5 space-y-3">
 							{t.footer.companyLinks.map((l) => (
 								<li key={l.label}>
-									<Link href={l.href} className={linkBase}>
+									<Link href={l.href.startsWith("#") ? l.href : `/${locale}${l.href}`} className={linkBase}>
 										{l.label}
 									</Link>
 								</li>
@@ -107,7 +107,7 @@ export function Footer() {
 						<ul className="mt-5 space-y-3">
 							{t.footer.ibsLinks.map((l) => (
 								<li key={l.label}>
-									<Link href={l.href} className={linkBase}>
+									<Link href={l.href.startsWith("#") ? l.href : `/${locale}${l.href}`} className={linkBase}>
 										{l.label}
 									</Link>
 								</li>

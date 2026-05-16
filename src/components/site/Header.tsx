@@ -81,7 +81,7 @@ export function Header() {
 						onLight ? "h-[68px]" : "h-[80px]"
 					}`}
 				>
-					<Link href="/" className="shrink-0">
+					<Link href={`/${locale}`} className="shrink-0">
 						<Logo
 							tone={onLight ? "light" : "dark"}
 							height={onLight ? 32 : 36}
@@ -195,7 +195,7 @@ export function Header() {
 							return (
 								<Link
 									key={item.href}
-									href={item.href}
+									href={`/${locale}${item.href}`}
 									className={`group relative text-[13.5px] font-medium transition-colors ${
 										onLight
 											? "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
@@ -230,7 +230,7 @@ export function Header() {
 
 						<div className="hidden sm:block">
 							<Link
-								href="/contact"
+								href={`/${locale}/contact`}
 								className={`group inline-flex items-center gap-2 h-10 ps-5 pe-2 rounded-full text-[13px] font-semibold transition-all ${
 									onLight
 										? "bg-[var(--color-navy)] text-white hover:bg-[var(--color-navy-dark)]"
@@ -346,7 +346,7 @@ export function Header() {
 							return (
 								<Link
 									key={item.href}
-									href={item.href}
+									href={`/${locale}${item.href}`}
 									onClick={() => setOpen(false)}
 									className="group flex items-center justify-between border-b border-white/10 py-5 text-white text-2xl font-display font-semibold"
 								>
@@ -360,7 +360,7 @@ export function Header() {
 					</nav>
 
 					<div className="mt-8 flex flex-col gap-3">
-						<Button href="/contact" variant="gold" size="lg" withArrow>
+						<Button href={`/${locale}/contact`} variant="gold" size="lg" withArrow>
 							{t.header.cta}
 						</Button>
 						<button
