@@ -16,22 +16,42 @@ export type Blog = {
 	content: {
 		en: {
 			intro: string;
+
 			section1Title: string;
 			section1Text: string;
+			section1Image: string;
+
 			section2Title: string;
 			section2Text: string;
+			section2Image: string;
+
 			quote: string;
+
 			conclusion: string;
+
+			highlights: string[];
+
+			gallery: string[];
 		};
 
 		ar: {
 			intro: string;
+
 			section1Title: string;
 			section1Text: string;
+			section1Image: string;
+
 			section2Title: string;
 			section2Text: string;
+			section2Image: string;
+
 			quote: string;
+
 			conclusion: string;
+
+			highlights: string[];
+
+			gallery: string[];
 		};
 	};
 
@@ -64,18 +84,35 @@ export const blogs: Blog[] = [
 				section1Title: "Growth & Expansion Opportunities",
 
 				section1Text:
-					"Businesses entering the Iraqi market are finding significant opportunities in construction, logistics, digital transformation, and regional partnerships. The country’s economic transformation is opening doors for long-term strategic investments.",
+					"Businesses entering the Iraqi market are finding significant opportunities in construction, logistics, digital transformation, and regional partnerships.",
+
+				section1Image: "/images/highlight-1.jpg",
 
 				section2Title: "Investment & Development",
 
 				section2Text:
-					"Public and private sector collaboration is accelerating development initiatives and creating a stronger environment for international partnerships and economic growth.",
+					"Public and private sector collaboration is accelerating development initiatives and creating a stronger environment for international partnerships.",
+
+				section2Image: "/images/group-tech.jpg",
 
 				quote:
 					"Success starts with making the right decision at the right time.",
 
 				conclusion:
 					"Companies that position themselves early in emerging sectors will gain a major competitive advantage in the coming years.",
+
+				highlights: [
+					"Rapid infrastructure growth",
+					"Strong regional partnerships",
+					"High demand for technology",
+					"Expanding investment ecosystem",
+				],
+
+				gallery: [
+					"/images/highlight-1.jpg",
+					"/images/group-ibs.jpg",
+					"/images/group-iraq24.jpg",
+				],
 			},
 
 			ar: {
@@ -85,87 +122,40 @@ export const blogs: Blog[] = [
 				section1Title: "فرص النمو والتوسع",
 
 				section1Text:
-					"تشهد الشركات التي تدخل السوق العراقي فرصًا كبيرة في مجالات الإنشاءات والخدمات اللوجستية والتحول الرقمي والشراكات الإقليمية، مما يفتح المجال أمام استثمارات استراتيجية طويلة المدى.",
+					"تشهد الشركات التي تدخل السوق العراقي فرصًا كبيرة في مجالات الإنشاءات والخدمات اللوجستية والتحول الرقمي والشراكات الإقليمية.",
+
+				section1Image: "/images/highlight-1.jpg",
 
 				section2Title: "الاستثمار والتطوير",
 
 				section2Text:
-					"يساهم التعاون بين القطاعين العام والخاص في تسريع مشاريع التطوير وخلق بيئة أقوى للشراكات الدولية والنمو الاقتصادي.",
+					"يساهم التعاون بين القطاعين العام والخاص في تسريع مشاريع التطوير وخلق بيئة أقوى للشراكات الدولية.",
+
+				section2Image: "/images/group-tech.jpg",
 
 				quote:
 					"النجاح يبدأ من اتخاذ القرار الصحيح في الوقت المناسب.",
 
 				conclusion:
 					"الشركات التي تتمركز مبكرًا في القطاعات الناشئة ستحقق ميزة تنافسية قوية خلال السنوات القادمة.",
+
+				highlights: [
+					"نمو سريع للبنية التحتية",
+					"شراكات إقليمية قوية",
+					"طلب مرتفع على التكنولوجيا",
+					"توسع بيئة الاستثمار",
+				],
+
+				gallery: [
+					"/images/highlight-1.jpg",
+					"/images/group-ibs.jpg",
+					"/images/group-iraq24.jpg",
+				],
 			},
 		},
 
 		image: "/images/hero-summit.jpg",
 
 		date: "10 Jan 2026",
-	},
-
-	{
-		id: 2,
-
-		slug: "business-expansion",
-
-		title: {
-			en: "Business Expansion Strategies",
-			ar: "استراتيجيات توسع الأعمال",
-		},
-
-		description: {
-			en: "How companies scale successfully in emerging markets.",
-			ar: "كيف تتوسع الشركات بنجاح في الأسواق الناشئة.",
-		},
-
-		content: {
-			en: {
-				intro:
-					"Expanding into emerging markets requires a strong strategy, local partnerships, and a deep understanding of economic trends.",
-
-				section1Title: "Strategic Market Positioning",
-
-				section1Text:
-					"Successful businesses focus on identifying underserved sectors and building strong operational foundations before scaling rapidly.",
-
-				section2Title: "Building Sustainable Partnerships",
-
-				section2Text:
-					"Partnerships with local stakeholders and institutions help companies establish trust and accelerate market penetration.",
-
-				quote:
-					"Growth is never accidental. It is the result of strategy and execution.",
-
-				conclusion:
-					"Companies that adapt quickly to market conditions are more likely to sustain long-term expansion and profitability.",
-			},
-
-			ar: {
-				intro:
-					"يتطلب التوسع في الأسواق الناشئة استراتيجية قوية وشراكات محلية وفهمًا عميقًا للاتجاهات الاقتصادية.",
-
-				section1Title: "التمركز الاستراتيجي في السوق",
-
-				section1Text:
-					"تركز الشركات الناجحة على تحديد القطاعات غير المستغلة وبناء أسس تشغيلية قوية قبل التوسع السريع.",
-
-				section2Title: "بناء شراكات مستدامة",
-
-				section2Text:
-					"تساعد الشراكات مع الجهات المحلية والمؤسسات المختلفة الشركات على بناء الثقة وتسريع التوسع في السوق.",
-
-				quote:
-					"النمو لا يحدث بالصدفة، بل هو نتيجة للاستراتيجية والتنفيذ.",
-
-				conclusion:
-					"الشركات القادرة على التكيف السريع مع ظروف السوق تحقق فرصًا أكبر للاستمرار والربحية طويلة المدى.",
-			},
-		},
-
-		image: "/images/hero-summit.jpg",
-
-		date: "15 Jan 2026",
 	},
 ];

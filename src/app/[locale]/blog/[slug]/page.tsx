@@ -90,45 +90,116 @@ export default async function BlogDetailsPage({
 			</section>
 
 			{/* CONTENT */}
-			<section className="relative overflow-hidden bg-[var(--color-warm)] py-24 text-[var(--color-navy)] lg:py-32">
-				{/* pattern */}
-				<div
-					className="pointer-events-none absolute inset-0 opacity-[0.35]"
-					style={{
-						backgroundImage:
-							"radial-gradient(circle at 1px 1px, rgba(1,51,77,0.08) 1px, transparent 0)",
-						backgroundSize: "28px 28px",
-					}}
-				/>
+<section className="relative overflow-hidden bg-[var(--color-warm)] py-24 text-[var(--color-navy)] lg:py-32">
+	<div
+		className="pointer-events-none absolute inset-0 opacity-[0.35]"
+		style={{
+			backgroundImage:
+				"radial-gradient(circle at 1px 1px, rgba(1,51,77,0.08) 1px, transparent 0)",
+			backgroundSize: "28px 28px",
+		}}
+	/>
 
-				<Container>
-					<div className="mx-auto max-w-4xl">
-						<div className="overflow-hidden rounded-[36px] border border-[var(--color-line)] bg-white/70 p-8 backdrop-blur-sm sm:p-12">
-							<div className="prose prose-lg max-w-none prose-headings:font-display prose-p:text-[var(--color-slate)] prose-p:leading-[2]">
-								<p>{content.intro}</p>
+	<Container>
+		<div className="mx-auto max-w-5xl">
+			<div className="overflow-hidden rounded-[36px] border border-[var(--color-line)] bg-white/70 p-8 backdrop-blur-sm sm:p-14">
+				<div className="prose prose-lg max-w-none prose-headings:font-display prose-p:leading-[2] prose-p:text-[var(--color-slate)]">
 
-								<h2 className="mt-14 text-[var(--color-gold-deep)]">
-									{content.section1Title}
-								</h2>
+					{/* INTRO */}
+					<p className="text-[20px] leading-[2]">
+						{content.intro}
+					</p>
 
-								<p>{content.section1Text}</p>
+					{/* HIGHLIGHTS */}
+					<div className="my-14 grid gap-4 md:grid-cols-2">
+						{content.highlights.map((item, index) => (
+							<div
+								key={index}
+								className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-warm)]/60 p-5"
+							>
+								<div className="flex items-center gap-3">
+									<div className="h-3 w-3 rounded-full bg-[var(--color-gold)]" />
 
-								<h2 className="mt-14 text-[var(--color-gold-deep)]">
-									{content.section2Title}
-								</h2>
-
-								<p>{content.section2Text}</p>
-
-								<blockquote className="my-12 border-l-2 border-[var(--color-gold)] bg-[var(--color-gold)]/5 py-6 pl-6 text-[24px] font-semibold leading-[1.6] italic text-[var(--color-navy)]">
-									{content.quote}
-								</blockquote>
-
-								<p>{content.conclusion}</p>
+									<p className="m-0 font-semibold text-[var(--color-navy)]">
+										{item}
+									</p>
+								</div>
 							</div>
-						</div>
+						))}
 					</div>
-				</Container>
-			</section>
+
+					{/* SECTION 1 */}
+					<h2 className="mt-14 text-[var(--color-gold-deep)]">
+						{content.section1Title}
+					</h2>
+
+					<p>{content.section1Text}</p>
+
+					<div className="my-10 overflow-hidden rounded-[28px]">
+						<Image
+							src={content.section1Image}
+							alt={content.section1Title}
+							width={1400}
+							height={800}
+							className="h-auto w-full object-cover"
+						/>
+					</div>
+
+					{/* SECTION 2 */}
+					<h2 className="mt-16 text-[var(--color-gold-deep)]">
+						{content.section2Title}
+					</h2>
+
+					<p>{content.section2Text}</p>
+
+					<div className="my-10 overflow-hidden rounded-[28px]">
+						<Image
+							src={content.section2Image}
+							alt={content.section2Title}
+							width={1400}
+							height={800}
+							className="h-auto w-full object-cover"
+						/>
+					</div>
+
+					{/* QUOTE */}
+					<blockquote className="my-16 border-l-4 border-[var(--color-gold)] bg-[var(--color-gold)]/5 py-8 pl-8 text-[26px] font-semibold italic leading-[1.7] text-[var(--color-navy)]">
+						{content.quote}
+					</blockquote>
+
+					{/* GALLERY */}
+					<div className="mt-16 grid gap-6 md:grid-cols-3">
+						{content.gallery.map((image, index) => (
+							<div
+								key={index}
+								className="overflow-hidden rounded-[24px]"
+							>
+								<Image
+									src={image}
+									alt="Gallery"
+									width={600}
+									height={500}
+									className="h-full w-full object-cover transition duration-500 hover:scale-105"
+								/>
+							</div>
+						))}
+					</div>
+
+					{/* CONCLUSION */}
+					<div className="mt-16 rounded-[30px] bg-[var(--color-navy)] p-10 text-white">
+						<h3 className="font-display text-3xl font-bold text-[var(--color-gold)]">
+							{isAr ? "الخلاصة" : "Conclusion"}
+						</h3>
+
+						<p className="mt-6 text-[18px] leading-[2] text-white/80">
+							{content.conclusion}
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</Container>
+</section>
 
 			<Footer />
 		</main>
