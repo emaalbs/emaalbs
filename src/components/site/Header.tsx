@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Calendar, Users, Lightbulb, Rocket, HeartHandshake, Images } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/site/Logo";
@@ -24,8 +24,18 @@ export function Header() {
 	const editions = getEditionsSync();
 	const [ibsOpen, setIbsOpen] = useState(false);
 	const [ibsMobileOpen, setIbsMobileOpen] = useState(false);
+	const [hoveredEdition, setHoveredEdition] = useState<string | null>(null);
 	const ibsTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const ibsRef = useRef<HTMLDivElement | null>(null);
+
+	const quickSections = [
+		{ id: "agenda", icon: Calendar, label: { en: "Agenda", ar: "الأجندة" } },
+		{ id: "themes", icon: Lightbulb, label: { en: "Themes", ar: "المواضيع" } },
+		{ id: "speakers", icon: Users, label: { en: "Speakers", ar: "المتحدثون" } },
+		{ id: "initiatives", icon: Rocket, label: { en: "Initiatives", ar: "المبادرات" } },
+		{ id: "sponsors", icon: HeartHandshake, label: { en: "Sponsors", ar: "الرعاة" } },
+		{ id: "gallery", icon: Images, label: { en: "Gallery", ar: "المعرض" } },
+	];
 	const openIbs = () => {
 		if (ibsTimeout.current) clearTimeout(ibsTimeout.current);
 		setIbsOpen(true);
@@ -167,24 +177,51 @@ export function Header() {
 													{ibsOverview.editions.overline[locale]}
 												</div>
 												{editions.map((e) => (
-													<Link
+													<div
 														key={e.slug}
-														href={`/${locale}/ibs/${e.slug}`}
-														className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-[var(--color-warm)]"
+														className="relative"
+														onMouseEnter={() => setHoveredEdition(e.slug)}
+														onMouseLeave={() => setHoveredEdition(null)}
 													>
-														<span className="text-[13.5px] font-medium text-[var(--color-ink)]">
-															{e.title[locale]}
-														</span>
-														<span
-															className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-																e.status === "upcoming"
-																	? "bg-[var(--color-gold)]/15 text-[var(--color-gold-deep)]"
-																	: "bg-[var(--color-line)] text-[var(--color-slate)]"
+														<Link
+															href={`/${locale}/ibs/${e.slug}`}
+															className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-[var(--color-warm)]"
+														>
+															<span className="text-[13.5px] font-medium text-[var(--color-ink)]">
+																{e.title[locale]}
+															</span>
+															<span
+																className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+																	e.status === "upcoming"
+																		? "bg-[var(--color-gold)]/15 text-[var(--color-gold-deep)]"
+																		: "bg-[var(--color-line)] text-[var(--color-slate)]"
+																}`}
+															>
+																{e.year}
+															</span>
+														</Link>
+														<div
+															className={`flex flex-wrap gap-1.5 px-5 pb-3 transition-all ${
+																hoveredEdition === e.slug
+																	? "opacity-100 max-h-40"
+																	: "opacity-0 max-h-0 overflow-hidden pointer-events-none"
 															}`}
 														>
-															{e.year}
-														</span>
-													</Link>
+															{quickSections.map((q) => {
+																const Icon = q.icon;
+																return (
+																	<Link
+																		key={q.id}
+																		href={`/${locale}/ibs/${e.slug}#${q.id}`}
+																		className="inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-warm)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-navy)] hover:border-[var(--color-gold)] hover:text-[var(--color-gold-deep)] transition-colors"
+																	>
+																		<Icon size={11} />
+																		{q.label[locale]}
+																	</Link>
+																);
+															})}
+														</div>
+													</div>
 												))}
 											</div>
 										</div>

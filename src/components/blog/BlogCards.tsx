@@ -23,11 +23,7 @@ export function BlogCard({
 	return (
 		<Link
 			href={`/${locale}/blog/${post.slug}`}
-			className={`group relative overflow-hidden rounded-[30px] border border-[var(--color-line)] bg-white/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_80px_-30px_rgba(1,30,47,0.28)] ${
-				index % 3 === 1
-					? "xl:translate-y-10"
-					: ""
-			}`}
+			className="group relative flex h-full flex-col overflow-hidden rounded-[30px] border border-[var(--color-line)] bg-white/70 backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_80px_-30px_rgba(1,30,47,0.28)]"
 		>
 			{/* image */}
 			<div className="relative h-[260px] overflow-hidden">

@@ -148,11 +148,11 @@ export const editions: IbsEdition[] = [
 			},
 		],
 		sponsors: [
-			{ id: "idb", name: "International Development Bank", tier: "strategic" },
-			{ id: "tbi", name: "Trade Bank of Iraq", tier: "strategic" },
-			{ id: "ahli", name: "Al Ahli Iraqi Bank", tier: "platinum" },
-			{ id: "asiacell", name: "Asiacell", tier: "platinum" },
-			{ id: "ports", name: "General Company for Iraqi Ports", tier: "gold" },
+			{ id: "idb", name: "International Development Bank", tier: "strategic", logo: "/logos/ibs-general/idb.png" },
+			{ id: "tbi", name: "Trade Bank of Iraq", tier: "strategic", logo: "/logos/ibs-general/bgt.png" },
+			{ id: "ahli", name: "Al Ahli Iraqi Bank", tier: "platinum", logo: "/logos/ibs-general/icc.png" },
+			{ id: "asiacell", name: "Asiacell", tier: "platinum", logo: "/logos/ibs-general/nokia.png" },
+			{ id: "ports", name: "General Company for Iraqi Ports", tier: "gold", logo: "/logos/ibs-general/visa.png" },
 		],
 		gallery: [
 			{
@@ -184,6 +184,136 @@ export const editions: IbsEdition[] = [
 				id: "g6",
 				src: "/images/leaders.JPG",
 				alt: { en: "Leadership delegation", ar: "وفد القيادة" },
+			},
+		],
+		agenda: [
+			{
+				dateLabel: { en: "Day 1 — 15 April 2025", ar: "اليوم الأول — ١٥ نيسان ٢٠٢٥" },
+				items: [
+					{
+						time: "08:30",
+						title: { en: "Registration & Welcome Coffee", ar: "التسجيل وقهوة الترحيب" },
+						note: { en: "Main entrance hall", ar: "قاعة الاستقبال الرئيسية" },
+					},
+					{
+						time: "09:30",
+						title: { en: "Opening Ceremony", ar: "حفل الافتتاح" },
+						description: {
+							en: "Official welcome by the Chairman of the National Investment Commission and keynote on Iraq's economic vision.",
+							ar: "ترحيب رسمي من رئيس هيئة الاستثمار الوطنية وكلمة رئيسية حول الرؤية الاقتصادية للعراق.",
+						},
+						speakers: [
+							{
+								id: "makkiya",
+								name: { en: "Dr. Haider Mohammed Makkiya", ar: "د. حيدر محمد مكية" },
+								photo: "https://randomuser.me/api/portraits/men/32.jpg",
+								org: { en: "National Investment Commission", ar: "هيئة الاستثمار الوطنية" },
+							},
+						],
+					},
+					{
+						time: "10:15",
+						title: { en: "Banking & Financial Services Panel", ar: "جلسة الخدمات المصرفية والمالية" },
+						description: {
+							en: "Expanding access to finance, SME support, and the role of private banks in economic growth.",
+							ar: "توسيع الوصول إلى التمويل ودعم المشاريع الصغيرة ودور المصارف الخاصة في النمو الاقتصادي.",
+						},
+						speakers: [
+							{
+								id: "fadi",
+								name: { en: "Fadi Al-Faqiyah", ar: "فادي الفقيه" },
+								photo: "https://randomuser.me/api/portraits/men/76.jpg",
+								org: { en: "Bank of International Development", ar: "بنك التنمية الدولي" },
+							},
+							{
+								id: "saman",
+								name: { en: "Saman Bojan", ar: "سامان بوجان" },
+								photo: "https://randomuser.me/api/portraits/men/85.jpg",
+								org: { en: "Asiacell", ar: "آسياسيل" },
+							},
+						],
+					},
+					{
+						time: "11:45",
+						title: { en: "Networking Break", ar: "استراحة تواصل" },
+						note: { en: "Coffee & B2B lounge", ar: "ركن القهوة والأعمال" },
+					},
+					{
+						time: "12:15",
+						title: { en: "Telecom & Digital Infrastructure", ar: "الاتصالات والبنية الرقمية" },
+						description: {
+							en: "Positioning telecom as the foundation for Iraq's digital transformation.",
+							ar: "ترسيخ الاتصالات أساساً للتحول الرقمي في العراق.",
+						},
+						speakers: [
+							{
+								id: "yasiri",
+								name: { en: "Hayam Al-Yasiri", ar: "هيام الياسري" },
+								photo: "https://randomuser.me/api/portraits/women/44.jpg",
+								org: { en: "Minister of Communications", ar: "وزيرة الاتصالات" },
+							},
+						],
+					},
+					{
+						time: "13:30",
+						title: { en: "Lunch — Executive Roundtables", ar: "الغداء — الطاولات المستديرة التنفيذية" },
+						note: { en: "By invitation only", ar: "بدعوة فقط" },
+					},
+				],
+			},
+			{
+				dateLabel: { en: "Day 2 — 16 April 2025", ar: "اليوم الثاني — ١٦ نيسان ٢٠٢٥" },
+				items: [
+					{
+						time: "09:00",
+						title: { en: "Energy & Infrastructure Session", ar: "جلسة الطاقة والبنية التحتية" },
+						description: {
+							en: "Investment opportunities and operational development across Iraq's energy sector.",
+							ar: "فرص الاستثمار وتطوير العمليات عبر قطاع الطاقة في العراق.",
+						},
+						speakers: [
+							{
+								id: "khalid",
+								name: { en: "Khalid Batal", ar: "خالد بتال" },
+								photo: "https://randomuser.me/api/portraits/men/41.jpg",
+								org: { en: "Minister of Industry", ar: "وزير الصناعة" },
+							},
+						],
+					},
+					{
+						time: "10:30",
+						title: { en: "Logistics & Trade Corridors", ar: "اللوجستيات وممرات التجارة" },
+						description: {
+							en: "Enhancing Iraq's role in regional trade and the Development Road project.",
+							ar: "تعزيز دور العراق في التجارة الإقليمية ومشروع طريق التنمية.",
+						},
+						speakers: [
+							{
+								id: "fartousi",
+								name: { en: "Dr. Eng. Farhan Al-Fartousi", ar: "د. م. فرحان الفرطوسي" },
+								photo: "https://randomuser.me/api/portraits/men/52.jpg",
+								org: { en: "General Company for Iraqi Ports", ar: "الشركة العامة لموانئ العراق" },
+							},
+						],
+					},
+					{
+						time: "11:45",
+						title: { en: "SME Initiative Launch", ar: "إطلاق مبادرة المشاريع الصغيرة والمتوسطة" },
+						description: {
+							en: "On-site company registration, bank account opening, and direct government coordination.",
+							ar: "تسجيل الشركات وفتح الحسابات المصرفية فوراً والتنسيق المباشر مع الحكومة.",
+						},
+						note: { en: "100 companies registered in a single day", ar: "تسجيل 100 شركة في يوم واحد" },
+					},
+					{
+						time: "12:30",
+						title: { en: "Closing Remarks & Future Outlook", ar: "الكلمات الختامية والآفاق المستقبلية" },
+						description: {
+							en: "Summary of outcomes and announcement of IBS 2026.",
+							ar: "ملخص النتائج وإعلان قمة 2026.",
+						},
+					},
+				],
 			},
 		],
 		nextEditionSlug: "2026",

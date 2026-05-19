@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
@@ -59,11 +60,27 @@ export function EditionSponsors({ edition }: { edition: IbsEdition }) {
 								{g.sponsors.map((s) => (
 									<div
 										key={s.id}
-										className="grid h-24 place-items-center rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] px-4 text-center"
+										className="group flex h-24 items-center justify-center rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] px-5 transition-all hover:-translate-y-0.5 hover:border-[var(--color-gold)] hover:shadow-[0_12px_32px_rgba(238,193,59,0.18)]"
 									>
-										<span className="font-display text-sm font-semibold leading-tight text-[var(--color-ink)]">
-											{s.name}
-										</span>
+										{s.logo ? (
+											<Image
+												src={s.logo}
+												alt={s.name}
+												width={140}
+												height={56}
+												className="max-h-12 w-auto object-contain opacity-80 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+												unoptimized
+											/>
+										) : (
+											<div className="flex flex-col items-center gap-1">
+												<div className="grid h-9 w-9 place-items-center rounded-lg bg-[var(--color-navy)] text-[11px] font-bold text-white">
+													{s.name.slice(0, 2).toUpperCase()}
+												</div>
+												<span className="text-[11px] font-semibold text-[var(--color-slate)]">
+													{s.name}
+												</span>
+											</div>
+										)}
 									</div>
 								))}
 							</div>

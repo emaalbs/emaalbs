@@ -101,6 +101,33 @@ CREATE TABLE ibs_gallery (
   sort_order INTEGER
 );
 
+CREATE TABLE ibs_agenda_days (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  edition_slug TEXT REFERENCES ibs_editions(slug) ON DELETE CASCADE,
+  date_label_en TEXT,
+  date_label_ar TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ibs_agenda_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  day_id INTEGER REFERENCES ibs_agenda_days(id) ON DELETE CASCADE,
+  time TEXT NOT NULL,         -- "09:30"
+  title_en TEXT, title_ar TEXT,
+  description_en TEXT, description_ar TEXT,
+  note_en TEXT, note_ar TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE ibs_agenda_speakers (
+  id TEXT PRIMARY KEY,
+  item_id INTEGER REFERENCES ibs_agenda_items(id) ON DELETE CASCADE,
+  name_en TEXT, name_ar TEXT,
+  org_en TEXT, org_ar TEXT,
+  photo TEXT,                 -- R2 key
+  sort_order INTEGER
+);
+
 -- Overview blocks (for /[locale]/ibs page) — keyed by block name + locale
 CREATE TABLE ibs_overview_blocks (
   block TEXT NOT NULL,        -- 'hero','why','who','sectors',...

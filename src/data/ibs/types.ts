@@ -59,6 +59,26 @@ export type GalleryItem = {
 	height?: number;
 };
 
+export type AgendaSpeaker = {
+	id: string;
+	name: Localized;
+	photo?: string;
+	org?: Localized;
+};
+
+export type AgendaItem = {
+	time: string; // e.g. "09:00"
+	title: Localized;
+	description?: Localized;
+	speakers?: AgendaSpeaker[];
+	note?: Localized; // e.g. "Networking break"
+};
+
+export type AgendaDay = {
+	dateLabel: Localized; // e.g. "Day 1 — April 15"
+	items: AgendaItem[];
+};
+
 export type IbsEdition = {
 	slug: string; // "2025", "ports-2025", "2026"
 	year: number;
@@ -78,6 +98,7 @@ export type IbsEdition = {
 	initiatives: Initiative[];
 	sponsors: Sponsor[];
 	gallery: GalleryItem[];
+	agenda?: AgendaDay[];
 	registrationUrl?: string;
 	nextEditionSlug?: string;
 };

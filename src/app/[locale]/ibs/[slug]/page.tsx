@@ -7,9 +7,11 @@ import { EditionThemes } from "@/components/ibs/EditionThemes";
 import { EditionSpeakers } from "@/components/ibs/EditionSpeakers";
 import { EditionInitiatives } from "@/components/ibs/EditionInitiatives";
 import { EditionSectorShares } from "@/components/ibs/EditionSectorShares";
+import { EditionAgenda } from "@/components/ibs/EditionAgenda";
 import { EditionSponsors } from "@/components/ibs/EditionSponsors";
 import { EditionGallery } from "@/components/ibs/EditionGallery";
 import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
+import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
 import { locales } from "@/i18n/config";
 
@@ -40,9 +42,11 @@ export default async function IbsEditionPage({
 }: {
 	params: Promise<{ locale: string; slug: string }>;
 }) {
-	const { slug } = await params;
+	const { slug, locale } = await params;
 	const edition = await getEditionBySlug(slug);
 	if (!edition) notFound();
+
+	const currentLocale = locale === "ar" ? "ar" : "en";
 
 	return (
 		<>
@@ -50,14 +54,28 @@ export default async function IbsEditionPage({
 			<main>
 				<EditionHero edition={edition} />
 				<EditionStats edition={edition} />
-				<EditionThemes edition={edition} />
-				<EditionSpeakers edition={edition} />
-				<EditionInitiatives edition={edition} />
+				<section id="themes">
+					<EditionThemes edition={edition} />
+				</section>
+				<section id="agenda">
+					<EditionAgenda edition={edition} />
+				</section>
+				<section id="speakers">
+					<EditionSpeakers edition={edition} />
+				</section>
+				<section id="initiatives">
+					<EditionInitiatives edition={edition} />
+				</section>
 				<EditionSectorShares edition={edition} />
-				<EditionSponsors edition={edition} />
-				<EditionGallery edition={edition} />
+				<section id="sponsors">
+					<EditionSponsors edition={edition} />
+				</section>
+				<section id="gallery">
+					<EditionGallery edition={edition} />
+				</section>
 				<EditionCtaBand edition={edition} />
 			</main>
+			<EditionQuickNav locale={currentLocale} />
 			<Footer />
 		</>
 	);
