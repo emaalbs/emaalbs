@@ -1,5 +1,3 @@
-"use client";
-
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 
@@ -8,14 +6,19 @@ import { BlogCard } from "@/components/blog/BlogCards";
 
 import { Container } from "@/components/ui/Container";
 
-import { blogs } from "@/data/blogs";
+import { listBlogs } from "@/lib/db/blogs";
 
-import { useI18n } from "@/i18n/provider";
+export const dynamic = "force-dynamic";
 
-export default function BlogPage() {
-	const { locale } = useI18n();
+export default async function BlogPage({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}) {
+	const { locale } = await params;
 	const isAr = locale === "ar";
 
+	const blogs = await listBlogs();
 	const featuredPost = blogs[0];
 	const otherPosts = blogs.slice(1);
 
@@ -24,10 +27,21 @@ export default function BlogPage() {
 			<Header />
 
 			{/* HERO */}
-			<BlogHero
-				featuredPost={featuredPost}
-				locale={locale as "en" | "ar"}
-			/>
+			{featuredPost ? (
+				<BlogHero
+					featuredPost={featuredPost}
+					locale={locale as "en" | "ar"}
+				/>
+			) : (
+				<div className="flex flex-col items-center justify-center py-32 text-center">
+					<h2 className="font-display text-3xl font-bold text-white">
+						{isAr ? "لا توجد مقالات بعد" : "No posts yet"}
+					</h2>
+					<p className="mt-4 text-white/60">
+						{isAr ? "تحقق لاحقاً" : "Check back soon"}
+					</p>
+				</div>
+			)}
 
 			{/* ARTICLES */}
 			<section className="relative overflow-hidden bg-[var(--color-warm)] py-24 text-[var(--color-navy)] lg:py-32">

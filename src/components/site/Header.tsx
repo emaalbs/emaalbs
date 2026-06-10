@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ChevronDown, Calendar, Users, Lightbulb, Rocket, HeartHandshake, Images } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -18,8 +19,20 @@ import { getEditionsSync, ibsOverview } from "@/data/ibs";
 export function Header() {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
+	const [isPending, startTransition] = useTransition();
 	const { locale, t, toggleLanguage } = useI18n();
 	const isAr = locale === "ar";
+	const pathname = usePathname();
+	const router = useRouter();
+
+	function handleToggleLanguage() {
+		const newLocale = locale === "en" ? "ar" : "en";
+		const newPath = pathname.replace(new RegExp(`^/${locale}(/|$)`), `/${newLocale}$1`);
+		toggleLanguage();
+		startTransition(() => {
+			router.push(newPath);
+		});
+	}
 
 	const editions = getEditionsSync();
 	const [ibsOpen, setIbsOpen] = useState(false);
@@ -253,7 +266,7 @@ export function Header() {
 					<div className="flex items-center gap-2.5">
 						<button
 							type="button"
-							onClick={toggleLanguage}
+							onClick={handleToggleLanguage}
 							className={`hidden sm:inline-flex items-center gap-1.5 text-[12px] font-semibold tracking-wider px-2.5 h-9 rounded-md transition-colors ${
 								onLight
 									? "text-[var(--color-slate)] hover:text-[var(--color-navy)]"
@@ -403,7 +416,7 @@ export function Header() {
 						<button
 							type="button"
 							onClick={() => {
-								toggleLanguage();
+								handleToggleLanguage();
 								setOpen(false);
 							}}
 							className="inline-flex items-center justify-center gap-2 h-12 rounded-xl border border-white/20 text-white text-sm font-semibold tracking-wider"
@@ -417,6 +430,16 @@ export function Header() {
 					</div>
 				</Container>
 			</div>
+
+			{/* Locale transition overlay */}
+			{isPending && (
+				<div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--color-navy-dark)]/95 backdrop-blur-sm transition-opacity duration-300">
+					<div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--color-gold)]/20 border-t-[var(--color-gold)]" />
+					<p className="mt-4 text-sm font-medium text-white/80">
+						{locale === "en" ? "Switching language..." : "جاري تغيير اللغة..."}
+					</p>
+				</div>
+			)}
 		</header>
 	);
 }

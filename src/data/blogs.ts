@@ -14,6 +14,7 @@ export type Blog = {
 	content: { en: BlogBlock[]; ar: BlogBlock[] };
 	image: string;
 	date: string;
+	featured: boolean;
 };
 
 export const blogs: Blog[] = [
@@ -169,6 +170,7 @@ export const blogs: Blog[] = [
 		},
 		image: "/images/hero-summit.jpg",
 		date: "10 Jan 2026",
+		featured: true,
 	},
 	{
 		id: 2,
@@ -187,6 +189,7 @@ export const blogs: Blog[] = [
 		},
 		image: "/images/group-tech.jpg",
 		date: "15 Feb 2026",
+		featured: false,
 	},
 	{
 		id: 3,
@@ -205,6 +208,7 @@ export const blogs: Blog[] = [
 		},
 		image: "/images/group-ibs.jpg",
 		date: "22 Mar 2026",
+		featured: false,
 	},
 	{
 		id: 4,
@@ -223,5 +227,6 @@ export const blogs: Blog[] = [
 		},
 		image: "/images/group-iraq24.jpg",
 		date: "5 Apr 2026",
+		featured: false,
 	},
 ];

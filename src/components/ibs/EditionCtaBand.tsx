@@ -5,15 +5,15 @@ import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
-import { ibsOverview, getEditionsSync } from "@/data/ibs";
+import { ibsOverview } from "@/data/ibs";
 import type { IbsEdition } from "@/data/ibs/types";
 
-export function EditionCtaBand({ edition }: { edition: IbsEdition }) {
+export function EditionCtaBand({ edition, allEditions }: { edition: IbsEdition; allEditions: IbsEdition[] }) {
 	const { locale, dir } = useI18n();
 	const labels = ibsOverview.editionLabels;
 	const isAr = dir === "rtl";
 	const next = edition.nextEditionSlug
-		? getEditionsSync().find((e) => e.slug === edition.nextEditionSlug)
+		? allEditions.find((e) => e.slug === edition.nextEditionSlug)
 		: undefined;
 
 	return (

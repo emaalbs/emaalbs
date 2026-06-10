@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	turbopack: {
+		resolveAlias: {
+			tailwindcss: "./node_modules/tailwindcss/index.css",
+		},
+	},
 	images: {
 		remotePatterns: [
 			{ protocol: "https", hostname: "randomuser.me" },

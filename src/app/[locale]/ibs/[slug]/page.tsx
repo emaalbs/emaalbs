@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -43,7 +45,10 @@ export default async function IbsEditionPage({
 	params: Promise<{ locale: string; slug: string }>;
 }) {
 	const { slug, locale } = await params;
-	const edition = await getEditionBySlug(slug);
+	const [edition, allEditions] = await Promise.all([
+		getEditionBySlug(slug),
+		getEditions(),
+	]);
 	if (!edition) notFound();
 
 	const currentLocale = locale === "ar" ? "ar" : "en";
@@ -73,7 +78,7 @@ export default async function IbsEditionPage({
 				<section id="gallery">
 					<EditionGallery edition={edition} />
 				</section>
-				<EditionCtaBand edition={edition} />
+				<EditionCtaBand edition={edition} allEditions={allEditions} />
 			</main>
 			<EditionQuickNav locale={currentLocale} />
 			<Footer />

@@ -12,6 +12,7 @@ import { HousePlatform } from "@/components/ibs/HousePlatform";
 import { BeyondASummit } from "@/components/ibs/BeyondASummit";
 import { EditionsRail } from "@/components/ibs/EditionsRail";
 import { IbsCtaBand } from "@/components/ibs/IbsCtaBand";
+import { getEditions } from "@/data/ibs";
 
 export const metadata = {
 	title: "Iraq Business Summit (IBS) — by EMAAL",
@@ -19,19 +20,22 @@ export const metadata = {
 		"A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
 };
 
-export default function IbsOverviewPage() {
+export const dynamic = "force-dynamic";
+
+export default async function IbsOverviewPage() {
+	const editions = await getEditions();
 	return (
 		<>
 			<Header />
 			<main>
-				<OverviewHero />
-				<OverviewStatsTeaser />
+				<OverviewHero editions={editions} />
+				<OverviewStatsTeaser editions={editions} />
 				<WhyIbs />
 				<WhoParticipated />
 				<KeySectors />
 				<NotableLeaders />
 				<IbsGeneralSponsors />
-				<EditionsRail />
+				<EditionsRail editions={editions} />
 				<SponsorshipTiers />
 				<HousePlatform />
 				<BeyondASummit />

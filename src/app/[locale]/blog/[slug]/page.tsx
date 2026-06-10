@@ -7,7 +7,8 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/ui/Container";
 
-import { blogs, type BlogBlock } from "@/data/blogs";
+import { getBlogBySlug } from "@/lib/db/blogs";
+import type { BlogBlock } from "@/data/blogs";
 
 type Props = {
 	params: Promise<{
@@ -105,7 +106,7 @@ export default async function BlogDetailsPage({
 }: Props) {
 	const { slug, locale } = await params;
 
-	const post = blogs.find((item) => item.slug === slug);
+	const post = await getBlogBySlug(slug);
 
 	if (!post) {
 		notFound();

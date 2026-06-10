@@ -5,13 +5,13 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
-import { ibsOverview, getEditionsSync } from "@/data/ibs";
+import { ibsOverview } from "@/data/ibs";
+import type { IbsEdition } from "@/data/ibs/types";
 import { IbsSectionHeading } from "./IbsSectionHeading";
 
-export function EditionsRail() {
+export function EditionsRail({ editions }: { editions: IbsEdition[] }) {
 	const { locale, dir } = useI18n();
 	const t = ibsOverview.editions;
-	const editions = getEditionsSync();
 	const isAr = dir === "rtl";
 
 	const statusLabel = (s: string) =>

@@ -4,14 +4,14 @@ import Link from "next/link";
 import { ArrowRight, Users, Mic, Building2, Layers } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
-import { getEditionsSync } from "@/data/ibs";
+import type { IbsEdition } from "@/data/ibs/types";
 
 const ICONS = [Users, Mic, Building2, Layers];
 
-export function OverviewStatsTeaser() {
+export function OverviewStatsTeaser({ editions }: { editions: IbsEdition[] }) {
 	const { locale, dir } = useI18n();
 	const isAr = dir === "rtl";
-	const past = getEditionsSync().find((e) => e.status === "past");
+	const past = editions.find((e) => e.status === "past");
 	if (!past || !past.stats.length) return null;
 
 	return (

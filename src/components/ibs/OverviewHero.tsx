@@ -5,13 +5,13 @@ import { ArrowDown, Calendar, MapPin, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
-import { ibsOverview, getEditionsSync } from "@/data/ibs";
+import { ibsOverview } from "@/data/ibs";
+import type { IbsEdition } from "@/data/ibs/types";
 
-export function OverviewHero() {
+export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 	const { locale, dir } = useI18n();
 	const isAr = dir === "rtl";
 	const hero = ibsOverview.hero;
-	const editions = getEditionsSync();
 	const upcoming = editions.find((e) => e.status === "upcoming");
 	const past = editions.find((e) => e.status === "past");
 
