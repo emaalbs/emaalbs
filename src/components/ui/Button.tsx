@@ -39,6 +39,7 @@ type Props = {
 	className?: string;
 	withArrow?: boolean;
 	external?: boolean;
+	onClick?: () => void;
 };
 
 export function Button({
@@ -49,6 +50,7 @@ export function Button({
 	className = "",
 	withArrow = false,
 	external = false,
+	onClick,
 }: Props) {
 	const { dir } = useI18n();
 	const isRtl = dir === "rtl";
@@ -73,5 +75,5 @@ export function Button({
 			</Link>
 		);
 	}
-	return <button className={cls}>{inner}</button>;
+	return <button className={cls} onClick={onClick}>{inner}</button>;
 }

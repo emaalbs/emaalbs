@@ -1,4 +1,4 @@
-"use client";
+﻿﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -201,16 +201,14 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 										return next;
 									});
 								}}
-								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
-							/>
+								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500" />
 						</div>
 						<div>
 							<label className="mb-1 block text-sm font-medium text-gray-700">Edition Label ({activeLocale})</label>
 							<input
 								value={edition.editionLabel[activeLocale]}
 								onChange={(e) => setLocalized("editionLabel", e.target.value)}
-								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
-							/>
+								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500" />
 						</div>
 					</div>
 
@@ -220,16 +218,14 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 							<input
 								value={edition.dates[activeLocale]}
 								onChange={(e) => setLocalized("dates", e.target.value)}
-								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
-							/>
+								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500" />
 						</div>
 						<div>
 							<label className="mb-1 block text-sm font-medium text-gray-700">Location ({activeLocale})</label>
 							<input
 								value={edition.location[activeLocale]}
 								onChange={(e) => setLocalized("location", e.target.value)}
-								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
-							/>
+								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500" />
 						</div>
 					</div>
 
@@ -240,8 +236,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 								type="number"
 								value={edition.year}
 								onChange={(e) => setField("year", Number(e.target.value))}
-								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
-							/>
+								className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500" />
 						</div>
 						<div>
 							<label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
@@ -263,6 +258,8 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 							onChange={(url) => setField("heroImage", url)}
 							label="Hero Image"
 							hint="Recommended: 1920 × 1080 (16:9)"
+							preset="ibs-hero"
+							prefix="ibs/"
 						/>
 					</div>
 
@@ -354,8 +351,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 										})
 									}
 									placeholder="Title"
-									className="mb-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-								/>
+									className="mb-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500" />
 								<textarea
 									value={theme.description[activeLocale]}
 									onChange={(e) =>
@@ -366,8 +362,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 									}
 									placeholder="Description"
 									rows={2}
-									className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-								/>
+									className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500" />
 							</div>
 						))}
 						{edition.themes.length === 0 && (
@@ -409,8 +404,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 											})
 										}
 										placeholder="Name"
-										className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-									/>
+										className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500" />
 									<input
 										value={speaker.title[activeLocale]}
 										onChange={(e) =>
@@ -420,8 +414,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 											})
 										}
 										placeholder="Title / Role"
-										className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-									/>
+										className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500" />
 								</div>
 							</div>
 						))}

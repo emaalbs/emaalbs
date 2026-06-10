@@ -321,6 +321,8 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 							label={<>Featured Image <span className="text-red-500">*</span></>}
 							hint="Recommended: 1200 × 630 (2:1)"
 							error={errors.image}
+							preset="blog-cover"
+							prefix="blogs/"
 						/>
 					</div>
 				</div>
