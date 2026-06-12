@@ -24,11 +24,15 @@ function rowToBlog(row: Record<string, unknown>): Blog {
 }
 
 export async function listBlogs(): Promise<Blog[]> {
-	const db = await getDB();
-	const { results } = await db.prepare(
-		"SELECT id, slug, title_en, title_ar, description_en, description_ar, image, date, featured FROM blogs WHERE published = 1 ORDER BY featured DESC, created_at DESC"
-	).all();
-	return (results || []).map(rowToBlog);
+	try {
+		const db = await getDB();
+		const { results } = await db.prepare(
+			"SELECT id, slug, title_en, title_ar, description_en, description_ar, image, date, featured FROM blogs WHERE published = 1 ORDER BY featured DESC, created_at DESC"
+		).all();
+		return (results || []).map(rowToBlog);
+	} catch {
+		return [];
+	}
 }
 
 export async function getBlogBySlug(slug: string): Promise<Blog | null> {
