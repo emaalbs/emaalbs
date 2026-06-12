@@ -27,6 +27,10 @@ export async function uploadToR2(
 	return { key, url };
 }
 
+export function getPublicUrl(key: string): string {
+	return `/api/media/${key}`;
+}
+
 export async function getR2Object(
 	bucket: R2Bucket,
 	key: string,

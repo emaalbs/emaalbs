@@ -15,14 +15,6 @@ import { EditionGallery } from "@/components/ibs/EditionGallery";
 import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
-import { locales } from "@/i18n/config";
-
-export async function generateStaticParams() {
-	const editions = await getEditions();
-	return locales.flatMap((locale) =>
-		editions.map((e) => ({ locale, slug: e.slug })),
-	);
-}
 
 export async function generateMetadata({
 	params,

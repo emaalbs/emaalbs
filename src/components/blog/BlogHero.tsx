@@ -44,7 +44,7 @@ export function BlogHero({
 							: "Strategic Insights & Articles"}
 					</div>
 
-					<h1 className="mt-8 font-display text-[clamp(3rem,7vw,7rem)] font-black leading-[0.95] tracking-[-0.04em] text-white">
+					<h1 className="mt-8 font-display text-[clamp(3rem,6vw,6rem)] font-black leading-[1.1] tracking-[-0.04em] text-white">
 						{isAr ? (
 							<>
 								أفكار تقود

@@ -8,10 +8,18 @@ import { listEditions, getEditionBySlug as getEditionFromDB } from "@/lib/db/ibs
 export { ibsOverview } from "./overview";
 export type { IbsEdition } from "./types";
 
+const SELF_BASE = "http://localhost:3000";
+
 export async function getEditions(): Promise<IbsEdition[]> {
 	try {
 		return await listEditions();
 	} catch {
+		// In next dev, D1 bindings are unavailable in Server Components.
+		// Fall back to self-API fetch before mock data.
+		try {
+			const res = await fetch(`${SELF_BASE}/api/ibs/editions`, { cache: "no-store" });
+			if (res.ok) return (await res.json()) as IbsEdition[];
+		} catch {}
 		return editions;
 	}
 }
@@ -22,6 +30,10 @@ export async function getEditionBySlug(
 	try {
 		return (await getEditionFromDB(slug)) ?? undefined;
 	} catch {
+		try {
+			const res = await fetch(`${SELF_BASE}/api/ibs/editions/${encodeURIComponent(slug)}`, { cache: "no-store" });
+			if (res.ok) return (await res.json()) as IbsEdition;
+		} catch {}
 		return editions.find((e) => e.slug === slug);
 	}
 }

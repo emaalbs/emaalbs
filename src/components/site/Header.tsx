@@ -16,7 +16,7 @@ import {
 import { useI18n } from "@/i18n/provider";
 import { getEditionsSync, ibsOverview } from "@/data/ibs";
 
-export function Header() {
+export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 	const [scrolled, setScrolled] = useState(false);
 	const [open, setOpen] = useState(false);
 	const [isPending, startTransition] = useTransition();
@@ -34,7 +34,13 @@ export function Header() {
 		});
 	}
 
-	const editions = getEditionsSync();
+	const [editions, setEditions] = useState<ReturnType<typeof getEditionsSync>>(getEditionsSync);
+	useEffect(() => {
+		fetch("/api/ibs/editions")
+			.then((r) => r.ok ? r.json() : null)
+			.then((data) => { if (Array.isArray(data) && data.length > 0) setEditions(data); })
+			.catch(() => {});
+	}, []);
 	const [ibsOpen, setIbsOpen] = useState(false);
 	const [ibsMobileOpen, setIbsMobileOpen] = useState(false);
 	const [hoveredEdition, setHoveredEdition] = useState<string | null>(null);
@@ -88,7 +94,7 @@ export function Header() {
 		document.body.style.overflow = open ? "hidden" : "";
 	}, [open]);
 
-	const onLight = scrolled;
+	const onLight = forceLight || scrolled;
 
 	return (
 		<header

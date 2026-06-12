@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getEditionBySlug, deleteEdition, replaceEditionNested } from "@/lib/db/ibs";
+import { getEditionBySlug, deleteEdition, replaceEditionNested, updateEdition } from "@/lib/db/ibs";
 import { requireAuth } from "@/lib/auth";
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -9,6 +9,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 		if (!edition) return NextResponse.json({ error: "Not found" }, { status: 404 });
 		return NextResponse.json(edition);
 	} catch (err) {
+		console.error("GET /api/ibs/editions/[slug] error:", err);
 		return NextResponse.json({ error: "Failed to fetch edition" }, { status: 500 });
 	}
 }
@@ -18,6 +19,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ slug
 		await requireAuth(request);
 		const { slug } = await params;
 		const body = (await request.json()) as import("@/data/ibs/types").IbsEdition;
+		await updateEdition(slug, body);
 		await replaceEditionNested(slug, body);
 		return NextResponse.json({ success: true });
 	} catch (err) {

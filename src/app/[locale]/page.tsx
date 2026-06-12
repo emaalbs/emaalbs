@@ -10,8 +10,15 @@ import { HomeWhyEmaal } from "@/components/home/HomeWhyEmaal";
 import { HomeHighlights } from "@/components/home/HomeHighlights";
 import { HomeStatsBar } from "@/components/home/HomeStatsBar";
 import { HomeCtaBand } from "@/components/home/HomeCtaBand";
+import { listBlogs } from "@/lib/db/blogs";
 
-export default function Home() {
+type Props = {
+	params: Promise<{ locale: string }>;
+};
+
+export default async function Home({ params }: Props) {
+	const { locale } = await params;
+	const blogs = await listBlogs();
 	return (
 		<>
 			<Header />
@@ -23,7 +30,7 @@ export default function Home() {
 				<HomeServices />
 				<HomeGroup />
 				<HomeWhyEmaal />
-				<HomeHighlights />
+				<HomeHighlights blogs={blogs.slice(0, 3)} locale={locale} />
 				<HomeStatsBar />
 				<HomeCtaBand />
 			</main>

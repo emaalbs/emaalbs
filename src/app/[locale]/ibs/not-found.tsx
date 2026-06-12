@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/ui/Container";
+import { useI18n } from "@/i18n/provider";
 
 export default function IbsNotFound() {
+	const { t, locale } = useI18n();
+	const tr = t.errors.editionNotFound;
 	return (
 		<>
 			<Header />
@@ -14,17 +19,16 @@ export default function IbsNotFound() {
 							404
 						</div>
 						<h1 className="mt-4 font-display text-4xl font-bold">
-							Edition not found
+							{tr.title}
 						</h1>
 						<p className="mt-4 text-[var(--color-silver)]">
-							This IBS edition doesn&apos;t exist yet — explore other editions
-							instead.
+							{tr.description}
 						</p>
 						<Link
-							href="/ibs"
+							href={`/${locale}/ibs`}
 							className="mt-8 inline-flex h-12 items-center rounded-xl bg-[var(--color-gold)] px-6 font-semibold text-[var(--color-navy)]"
 						>
-							All editions
+							{tr.cta}
 						</Link>
 					</div>
 				</Container>

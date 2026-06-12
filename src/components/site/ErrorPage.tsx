@@ -19,7 +19,7 @@ export function ErrorPage({
 
 	return (
 		<>
-			<Header />
+			<Header forceLight />
 			<main className="flex flex-col items-center justify-center bg-warm py-24 min-h-[60vh]">
 				<Container className="text-center">
 					<p className="text-[var(--color-gold)] text-sm font-semibold uppercase tracking-widest mb-4">

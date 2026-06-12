@@ -803,6 +803,11 @@ export const en = {
       cta: "Back to Home",
       retry: "Try Again",
     },
+    editionNotFound: {
+      title: "Edition not found",
+      description: "This IBS edition doesn't exist yet — explore other editions instead.",
+      cta: "All editions",
+    },
   },
 };
 
