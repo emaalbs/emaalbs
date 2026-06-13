@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Overline";
@@ -47,8 +48,8 @@ export function AboutVentures() {
 
 				<div className="mt-16 grid gap-6 lg:grid-cols-5">
 					{/* Featured venture */}
-					<a
-						href="#"
+					<Link
+						href={`/${locale}/whatWeDo`}
 						className="group relative col-span-1 overflow-hidden rounded-[28px] border border-[var(--color-line)] bg-[var(--color-navy-dark)] lg:col-span-3"
 					>
 						<div className="relative h-[300px] lg:h-full lg:min-h-[520px]">
@@ -83,16 +84,16 @@ export function AboutVentures() {
 								</div>
 							</div>
 						</div>
-					</a>
+					</Link>
 
 					{/* Secondary ventures */}
 					<div className="col-span-1 grid gap-6 lg:col-span-2">
 						{rest.map((item) => {
 							const data = t.aboutp.ventureCards[item.dataKey];
 							return (
-								<a
+								<Link
 									key={data.title}
-									href="#"
+									href={`/${locale}/whatWeDo`}
 									className="group relative flex overflow-hidden rounded-[24px] border border-[var(--color-line)] bg-white transition-all duration-500 hover:-translate-y-1 hover:border-[var(--color-teal)]/60 hover:shadow-[0_24px_50px_-20px_rgba(0,0,0,0.2)]"
 								>
 									<div className="relative h-auto w-2/5 shrink-0 overflow-hidden">
@@ -123,7 +124,7 @@ export function AboutVentures() {
 											/>
 										</div>
 									</div>
-								</a>
+								</Link>
 							);
 						})}
 					</div>

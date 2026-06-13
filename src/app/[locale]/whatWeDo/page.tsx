@@ -1,28 +1,23 @@
-"use client";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { WhatWeDoContent } from "./WhatWeDoContent";
 
-import { useI18n } from "@/i18n/provider";
-import { Header } from "@/components/site/Header";
-import { WhatWeDoHero } from "@/components/what-we-do/WhatWeDoHero";
-import { WhatWeDoIntro } from "@/components/what-we-do/WhatWeDoIntro";
-import { WhatWeDoFocus } from "@/components/what-we-do/WhatWeDoFocus";
-import { WhatWeDoDelivery } from "@/components/what-we-do/WhatWeDoDelivery";
-import { WhatWeDoInternational } from "@/components/what-we-do/WhatWeDoInternational";
-import { WhatWeDoCta } from "@/components/what-we-do/WhatWeDoCta";
-import { Footer } from "@/components/site/Footer";
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const { locale } = await params;
+	return buildMetadata({
+		type: "whatWeDo",
+		locale: locale === "ar" ? "ar" : "en",
+	});
+}
 
-export default function WhatWeDoPage() {
-	const { dir } = useI18n();
-
-	return (
-		<main dir={dir} className="overflow-hidden bg-white">
-			<Header />
-			<WhatWeDoHero />
-			<WhatWeDoIntro />
-			<WhatWeDoFocus />
-			<WhatWeDoDelivery />
-			<WhatWeDoInternational />
-			<WhatWeDoCta />
-			<Footer />
-		</main>
-	);
+export default async function WhatWeDoPage({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}) {
+	return <WhatWeDoContent />;
 }

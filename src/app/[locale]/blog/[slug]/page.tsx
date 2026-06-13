@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
@@ -9,6 +10,8 @@ import { Container } from "@/components/ui/Container";
 
 import { getBlogBySlug } from "@/lib/db/blogs";
 import type { BlogBlock } from "@/data/blogs";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { articleJsonLd } from "@/lib/seo/structured-data";
 
 type Props = {
 	params: Promise<{
@@ -16,6 +19,22 @@ type Props = {
 		locale: string;
 	}>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug, locale } = await params;
+	const post = await getBlogBySlug(slug);
+	if (!post) return {};
+	const isAr = locale === "ar";
+	return buildMetadata({
+		type: "blogDetail",
+		locale: isAr ? "ar" : "en",
+		slug,
+		title: post.title[isAr ? "ar" : "en"],
+		description: post.description[isAr ? "ar" : "en"],
+		image: post.image,
+		date: post.date,
+	});
+}
 
 function renderBlock(block: BlogBlock, index: number, isAr: boolean) {
 	switch (block.type) {
@@ -117,10 +136,27 @@ export default async function BlogDetailsPage({
 	const content = post.content[currentLocale];
 
 	return (
-		<main
-			dir={isAr ? "rtl" : "ltr"}
-			className="overflow-hidden bg-white text-[var(--color-navy)]"
-		>
+		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(
+						articleJsonLd({
+							title: post.title[currentLocale],
+							description: post.description[currentLocale],
+							image: post.image,
+							datePublished: post.date,
+							dateModified: post.date,
+							slug,
+							locale: currentLocale,
+						})
+					),
+				}}
+			/>
+			<main
+				dir={isAr ? "rtl" : "ltr"}
+				className="overflow-hidden bg-white text-[var(--color-navy)]"
+			>
 			<Header />
 
 			{/* HERO */}
@@ -176,5 +212,6 @@ export default async function BlogDetailsPage({
 
 			<Footer />
 		</main>
+		</>
 	);
 }

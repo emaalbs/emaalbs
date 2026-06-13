@@ -121,7 +121,9 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 						{t.header.nav.map((item) => {
 							const isIbs =
 								item.href === "/ibs" || item.href === "#ibs";
+							const isActive = item.href === "/" ? pathname === `/${locale}` : pathname === `/${locale}${item.href}`;
 							if (isIbs) {
+								const isActiveIbs = pathname.startsWith(`/${locale}/ibs`);
 								return (
 									<div
 										key="ibs"
@@ -135,14 +137,20 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 												href={`/${locale}/ibs`}
 												className={`group relative text-[13.5px] font-medium transition-colors ${
 													onLight
-														? "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
-														: "text-white/85 hover:text-white"
+														? isActiveIbs
+															? "text-[var(--color-navy)]"
+															: "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
+														: isActiveIbs
+															? "text-white"
+															: "text-white/85 hover:text-white"
 												}`}
 												onFocus={openIbs}
 											>
 												{item.label}
 												<span
-													className={`absolute -bottom-1.5 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full ${
+													className={`absolute -bottom-1.5 h-[2px] bg-[var(--color-teal)] transition-all duration-300 ${
+														isActiveIbs ? "w-full" : "w-0 group-hover:w-full"
+													} ${
 														isAr ? "right-0" : "left-0"
 													}`}
 												/>
@@ -254,13 +262,19 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 									href={`/${locale}${item.href}`}
 									className={`group relative text-[13.5px] font-medium transition-colors ${
 										onLight
-											? "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
-											: "text-white/85 hover:text-white"
+											? isActive
+												? "text-[var(--color-navy)]"
+												: "text-[var(--color-ink)] hover:text-[var(--color-navy)]"
+											: isActive
+												? "text-white"
+												: "text-white/85 hover:text-white"
 									}`}
 								>
 									{item.label}
 									<span
-										className={`absolute -bottom-1.5 h-[2px] w-0 bg-[var(--color-teal)] transition-all duration-300 group-hover:w-full ${
+										className={`absolute -bottom-1.5 h-[2px] bg-[var(--color-teal)] transition-all duration-300 ${
+											isActive ? "w-full" : "w-0 group-hover:w-full"
+										} ${
 											isAr ? "right-0" : "left-0"
 										}`}
 									/>
@@ -360,18 +374,24 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 						{t.header.nav.map((item) => {
 							const isIbs =
 								item.href === "/ibs" || item.href === "#ibs";
+							const isActive = item.href === "/" ? pathname === `/${locale}` : pathname === `/${locale}${item.href}`;
 							if (isIbs) {
+								const isActiveIbs = pathname.startsWith(`/${locale}/ibs`);
 								return (
 									<div key="ibs" className="border-b border-white/10">
 										<button
 											type="button"
 											onClick={() => setIbsMobileOpen((v) => !v)}
-											className="flex w-full items-center justify-between py-5 text-start text-white text-2xl font-display font-semibold"
+											className={`flex w-full items-center justify-between py-5 text-start text-2xl font-display font-semibold ${
+												isActiveIbs ? "text-[var(--color-gold)]" : "text-white"
+											}`}
 										>
 											<span>{item.label}</span>
 											<ChevronDown
-												className={`h-5 w-5 text-[var(--color-gold)] transition-transform ${
+												className={`h-5 w-5 transition-transform ${
 													ibsMobileOpen ? "rotate-180" : ""
+												} ${
+													isActiveIbs ? "text-[var(--color-gold)]" : "text-[var(--color-gold)]"
 												}`}
 											/>
 										</button>
@@ -404,10 +424,14 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 									key={item.href}
 									href={`/${locale}${item.href}`}
 									onClick={() => setOpen(false)}
-									className="group flex items-center justify-between border-b border-white/10 py-5 text-white text-2xl font-display font-semibold"
+									className={`group flex items-center justify-between border-b border-white/10 py-5 text-2xl font-display font-semibold ${
+										isActive ? "text-[var(--color-gold)]" : "text-white"
+									}`}
 								>
 									{item.label}
-									<span className="text-[var(--color-gold)] opacity-0 transition-opacity group-hover:opacity-100">
+									<span className={`opacity-0 transition-opacity group-hover:opacity-100 ${
+										isActive ? "text-[var(--color-gold)]" : "text-[var(--color-gold)]"
+									}`}>
 										{isAr ? "←" : "→"}
 									</span>
 								</Link>

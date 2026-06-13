@@ -32,8 +32,8 @@ export const ibsOverview = {
 		} as Localized,
 		ctaPrimary: { en: "Become a Partner", ar: "كن شريكاً" } as Localized,
 		ctaSecondary: {
-			en: "Request Participation",
-			ar: "اطلب المشاركة",
+			en: "Become a Sponsor",
+			ar: "كن راعياً",
 		} as Localized,
 	},
 	why: {

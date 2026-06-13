@@ -30,7 +30,7 @@ export function AboutImpact() {
 						{t.aboutp.impactText}
 					</p>
 					<div className="mt-10">
-						<Button href="#contact" variant="gold" withArrow>
+						<Button href={`/${locale}/contact`} variant="gold" withArrow>
 							{t.aboutp.impactButton}
 						</Button>
 					</div>

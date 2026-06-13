@@ -48,10 +48,10 @@ export function HomeHero() {
 					<div className={`reveal mt-8 h-[2px] w-32 bg-gradient-to-${isAr ? "l" : "r"} from-[var(--color-teal)] via-[var(--color-teal)]/50 to-transparent`} />
 
 					<div className="reveal mt-6 flex flex-col gap-3 sm:flex-row">
-						<Button href="#ibs" variant="gold" size="md" withArrow>
+						<Button href={`/${locale}/ibs`} variant="gold" size="md" withArrow>
 							{t.hero.ctaPrimary}
 						</Button>
-						<Button href="#group" variant="outline-teal" size="md">
+						<Button href={`/${locale}/contact`} variant="outline-teal" size="md" withArrow>
 							{t.hero.ctaSecondary}
 						</Button>
 					</div>

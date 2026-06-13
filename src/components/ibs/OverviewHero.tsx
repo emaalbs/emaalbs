@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowDown, Calendar, MapPin, Sparkles } from "lucide-react";
+import { ArrowDown, Calendar, MapPin } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
@@ -48,11 +48,7 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 			<Container>
 				<div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-10">
 					<div className="lg:col-span-7">
-						<div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)] backdrop-blur-sm">
-							<Sparkles className="h-3.5 w-3.5" />
-							{hero.overline[locale]}
-						</div>
-						<h1 className="mt-7 font-display font-bold tracking-display text-[clamp(2.6rem,6vw,5rem)] leading-[1.02]">
+						<h1 className="mt-2 font-display font-bold tracking-display text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.05]">
 							<span className="block">{hero.title[locale]}</span>
 							<span className="mt-2 block bg-gradient-to-r from-[var(--color-gold)] via-[#f5d65e] to-[var(--color-gold)] bg-clip-text text-transparent">
 								{locale === "ar"
@@ -64,11 +60,11 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 							{hero.description[locale]}
 						</p>
 						<div className="mt-9 flex flex-col gap-3 sm:flex-row">
-							<Button href="/contact" variant="gold" size="lg" withArrow>
+							<Button href={`/${locale}/contact?subject=partner`} variant="gold" size="lg" withArrow>
 								{hero.ctaPrimary[locale]}
 							</Button>
 							<Button
-								href="/contact"
+								href={`/${locale}/contact?subject=sponsor`}
 								variant="outline-white"
 								size="lg"
 								withArrow

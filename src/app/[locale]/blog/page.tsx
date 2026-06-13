@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 
@@ -7,8 +8,22 @@ import { BlogCard } from "@/components/blog/BlogCards";
 import { Container } from "@/components/ui/Container";
 
 import { listBlogs } from "@/lib/db/blogs";
+import { listMagazines } from "@/lib/db/magazines";
+import { buildMetadata } from "@/lib/seo/metadata";
+import type { Blog } from "@/data/blogs";
 
 export const dynamic = "force-dynamic";
+
+type NewsItem = Blog & { isPdf?: boolean; resolvedHref?: string };
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const { locale } = await params;
+	return buildMetadata({ type: "blog", locale: locale === "ar" ? "ar" : "en" });
+}
 
 export default async function BlogPage({
 	params,
@@ -17,20 +32,44 @@ export default async function BlogPage({
 }) {
 	const { locale } = await params;
 	const isAr = locale === "ar";
+	const loc = locale as "en" | "ar";
 
-	const blogs = await listBlogs();
-	const featuredPost = blogs[0];
-	const otherPosts = blogs.slice(1);
+	const [blogs, magazines] = await Promise.all([listBlogs(), listMagazines()]);
+
+	const blogItems: NewsItem[] = blogs.map((b) => ({
+		...b,
+		isPdf: false,
+		resolvedHref: `/${locale}/blog/${b.slug}`,
+	}));
+
+	const magazineItems: NewsItem[] = magazines.map((m) => ({
+		id: m.id,
+		slug: m.slug,
+		title: m.title,
+		description: m.description,
+		content: { en: [], ar: [] },
+		image: m.cover_image,
+		date: m.date,
+		featured: false,
+		isPdf: true,
+		resolvedHref: m.pdf_url,
+	}));
+
+	const allItems: NewsItem[] = [...blogItems, ...magazineItems];
+	const featuredItem = allItems[0];
+	const otherItems = allItems.slice(1);
 
 	return (
 		<main className="overflow-hidden bg-[var(--color-navy-dark)] text-white">
 			<Header />
 
 			{/* HERO */}
-			{featuredPost ? (
+			{featuredItem ? (
 				<BlogHero
-					featuredPost={featuredPost}
-					locale={locale as "en" | "ar"}
+					featuredPost={featuredItem}
+					locale={loc}
+					href={featuredItem.resolvedHref}
+					isPdf={featuredItem.isPdf}
 				/>
 			) : (
 				<div className="flex flex-col items-center justify-center py-32 text-center">
@@ -76,12 +115,14 @@ export default async function BlogPage({
 					</div>
 
 					<div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-						{otherPosts.map((post, index) => (
+						{otherItems.map((item, index) => (
 							<BlogCard
-								key={post.id}
-								post={post}
-								locale={locale as "en" | "ar"}
+								key={`${item.isPdf ? "mag" : "blog"}-${item.id}`}
+								post={item}
+								locale={loc}
 								index={index}
+								href={item.resolvedHref}
+								isPdf={item.isPdf}
 							/>
 						))}
 					</div>

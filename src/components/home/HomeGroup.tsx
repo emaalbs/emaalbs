@@ -4,12 +4,10 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/Overline";
 import { Button } from "@/components/ui/Button";
-import { ArrowRightIcon } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
 
 export function HomeGroup() {
-	const { t, dir } = useI18n();
-	const isRtl = dir === "rtl";
+	const { t, locale } = useI18n();
 	const brands = t.group.brands;
 	return (
 		<section id="group" className="relative bg-white py-20 lg:py-28">
@@ -29,16 +27,15 @@ export function HomeGroup() {
 						}
 						subtitle={t.group.subtitle}
 					/>
-					<Button href="#" variant="outline-navy" withArrow>
+					<Button href={`/${locale}/whatWeDo`} variant="outline-navy" withArrow>
 						{t.group.cta}
 					</Button>
 				</div>
 
 				<div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
 					{brands.map((b) => (
-						<a
+						<div
 							key={b.name}
-							href="#"
 							className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--color-line)] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-teal)] hover:shadow-[0_20px_50px_rgba(0,102,102,0.15)]"
 						>
 							<div className="relative aspect-[4/5] overflow-hidden">
@@ -61,13 +58,10 @@ export function HomeGroup() {
 									</h3>
 								</div>
 							</div>
-							<div className="flex flex-1 flex-col justify-between p-6">
+							<div className="flex flex-1 flex-col p-6">
 								<p className="text-[14px] leading-[1.6] text-[var(--color-slate)]">{b.desc}</p>
-								<div className="mt-5 inline-flex items-center gap-2 text-[13px] font-semibold text-[var(--color-teal)] transition-all group-hover:gap-3 group-hover:text-[var(--color-navy)]">
-									{t.group.visit} <ArrowRightIcon className={`h-4 w-4 ${isRtl ? "rotate-180" : ""}`} />
-								</div>
 							</div>
-						</a>
+						</div>
 					))}
 				</div>
 			</Container>

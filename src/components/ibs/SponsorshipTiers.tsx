@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Award, Check, Crown, Gem, Star } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
 import { IbsSectionHeading } from "./IbsSectionHeading";
@@ -120,6 +121,16 @@ export function SponsorshipTiers() {
 									</li>
 								))}
 							</ul>
+							<div className="relative mt-8">
+								<Button
+									href={`/${locale}/contact?subject=sponsor`}
+									variant="gold"
+									size="md"
+									withArrow
+								>
+									{locale === "ar" ? "كن راعياً" : "Become a Sponsor"}
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>

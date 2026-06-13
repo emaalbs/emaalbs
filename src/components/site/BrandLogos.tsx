@@ -33,7 +33,6 @@ export const BRAND_LOGOS: { name: string; src: string; scale?: number }[] = [
 	{ name: "Ministry of Oil", src: "/logos/وزارة_النفط_العراقية.svg.png", scale: 1.0 },
 
 	// --- Additional logos from public/logos ---
-	{ name: "1", src: "/logos/1.png", scale: 1.0 },
 	{ name: "2", src: "/logos/2.png", scale: 1.0 },
 	{ name: "4", src: "/logos/4.png", scale: 1.0 },
 	{ name: "4k logo", src: "/logos/4k logo.png", scale: 1.0 },
@@ -50,7 +49,6 @@ export const BRAND_LOGOS: { name: string; src: string; scale?: number }[] = [
 	{ name: "Picture 7", src: "/logos/Picture7.png", scale: 1.0 },
 	{ name: "Picture 9", src: "/logos/Picture9.png", scale: 1.0 },
 	{ name: "Picture 12", src: "/logos/Picture12.png", scale: 1.0 },
-	{ name: "Picture 14", src: "/logos/Picture14.png", scale: 0.2 },
 	{ name: "Picture 17", src: "/logos/Picture17.png", scale: 1.0 },
 	{ name: "Picture 18", src: "/logos/Picture18 (1).png", scale: 1.0 },
 	{ name: "Picture 182", src: "/logos/Picture182.png", scale: 1.0 },

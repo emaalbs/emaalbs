@@ -54,7 +54,7 @@ export function AboutHero() {
 					</p>
 
 					<div className="mt-8 flex flex-col gap-3 sm:flex-row">
-						<Button href="#contact" variant="gold" withArrow>
+						<Button href={`/${locale}/contact`} variant="gold" withArrow>
 							{t.aboutp.contact}
 						</Button>
 						<Button href="#ventures" variant="outline-teal">

@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/site/Logo";
 import {
+	FacebookIcon,
 	InstagramIcon,
 	LinkedInIcon,
 	MailIcon,
@@ -13,10 +15,41 @@ import {
 	YouTubeIcon,
 } from "@/components/ui/icons";
 import { useI18n } from "@/i18n/provider";
+import { getEditionsSync } from "@/data/ibs";
 
 export function Footer() {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
+	const [email, setEmail] = useState("");
+	const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+	const [editions, setEditions] = useState<ReturnType<typeof getEditionsSync>>(getEditionsSync);
+	useEffect(() => {
+		fetch("/api/ibs/editions")
+			.then((r) => r.ok ? r.json() : null)
+			.then((data) => { if (Array.isArray(data) && data.length > 0) setEditions(data); })
+			.catch(() => {});
+	}, []);
+
+	async function handleSubscribe(e: React.FormEvent) {
+		e.preventDefault();
+		if (!email.trim()) return;
+		setSubStatus("loading");
+		try {
+			const res = await fetch("/api/subscribers", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email: email.trim() }),
+			});
+			if (res.ok) {
+				setSubStatus("success");
+				setEmail("");
+			} else {
+				setSubStatus("error");
+			}
+		} catch {
+			setSubStatus("error");
+		}
+	}
 	const heading = "text-[10px] font-bold uppercase tracking-[0.22em] text-white/50";
 	const linkBase = "text-[13px] text-white/70 transition-colors hover:text-white";
 	const socialIcons = [
@@ -24,6 +57,7 @@ export function Footer() {
 		{ Icon: XIcon, label: t.footer.social[1].label, href: t.footer.social[1].href },
 		{ Icon: InstagramIcon, label: t.footer.social[2].label, href: t.footer.social[2].href },
 		{ Icon: YouTubeIcon, label: t.footer.social[3].label, href: t.footer.social[3].href },
+		{ Icon: FacebookIcon, label: t.footer.social[4].label, href: t.footer.social[4].href },
 	];
 	return (
 		<footer
@@ -51,25 +85,39 @@ export function Footer() {
 						<p className="mt-3 text-[13.5px] leading-[1.6] text-white/65">
 							{t.footer.newsletterText}
 						</p>
-						<form className="mt-4 flex gap-2">
+						<form className="mt-4 flex gap-2" onSubmit={handleSubscribe}>
 							<input
 								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
 								placeholder={t.footer.emailPlaceholder}
 								className="h-11 flex-1 rounded-md border border-white/15 bg-white/[0.04] px-3.5 text-[13px] text-white placeholder:text-white/40 focus:border-[var(--color-teal)] focus:bg-white/[0.08] focus:outline-none"
 							/>
 							<button
 								type="submit"
-								className="h-11 rounded-md bg-[var(--color-gold)] px-4 text-[12.5px] font-semibold text-[var(--color-navy)] hover:bg-[var(--color-gold-deep)] hover:text-white transition-colors"
+								disabled={subStatus === "loading"}
+								className="h-11 rounded-md bg-[var(--color-gold)] px-4 text-[12.5px] font-semibold text-[var(--color-navy)] hover:bg-[var(--color-gold-deep)] hover:text-white transition-colors disabled:opacity-60"
 							>
-								{t.footer.subscribe}
+								{subStatus === "loading" ? (isAr ? "جاري..." : "...") : t.footer.subscribe}
 							</button>
 						</form>
+						{subStatus === "success" && (
+							<p className="mt-2 text-[12px] text-[var(--color-teal)]">
+								{isAr ? "تم الاشتراك بنجاح!" : "Subscribed successfully!"}
+							</p>
+						)}
+						{subStatus === "error" && (
+							<p className="mt-2 text-[12px] text-red-400">
+								{isAr ? "حدث خطأ. حاول مرة أخرى." : "Something went wrong. Please try again."}
+							</p>
+						)}
 					</div>
 				</div>
 
 				{/* Link columns */}
 				<div className="grid grid-cols-2 gap-y-10 py-14 lg:grid-cols-12 lg:gap-x-8">
-					<div className="col-span-2 lg:col-span-4">
+					{/* Get In Touch */}
+					<div className="col-span-2 lg:col-span-3">
 						<div className={heading}>{t.footer.getInTouch}</div>
 						<div className="mt-5 space-y-3 text-[13px] text-white/70">
 							<div className={`flex items-start gap-2.5 ${isAr ? "flex-row-reverse" : ""}`}>
@@ -89,10 +137,11 @@ export function Footer() {
 						</div>
 					</div>
 
+					{/* Pages */}
 					<div className="lg:col-span-2">
-						<div className={heading}>{t.footer.companyHeading}</div>
+						<div className={heading}>{t.footer.pagesHeading}</div>
 						<ul className="mt-5 space-y-3">
-							{t.footer.companyLinks.map((l) => (
+							{t.footer.pageLinks.map((l) => (
 								<li key={l.label}>
 									<Link href={l.href.startsWith("#") ? l.href : `/${locale}${l.href}`} className={linkBase}>
 										{l.label}
@@ -102,6 +151,7 @@ export function Footer() {
 						</ul>
 					</div>
 
+					{/* IBS */}
 					<div className="lg:col-span-2">
 						<div className={heading}>{t.footer.ibsHeading}</div>
 						<ul className="mt-5 space-y-3">
@@ -112,10 +162,32 @@ export function Footer() {
 									</Link>
 								</li>
 							))}
+							{editions.map((e) => (
+								<li key={e.slug}>
+									<Link href={`/${locale}/ibs/${e.slug}`} className={linkBase}>
+										{e.title[locale]}
+									</Link>
+								</li>
+							))}
 						</ul>
 					</div>
 
-					<div className="col-span-2 lg:col-span-4">
+					{/* Get Involved */}
+					<div className="lg:col-span-2">
+						<div className={heading}>{t.footer.ctaHeading}</div>
+						<ul className="mt-5 space-y-3">
+							{t.footer.ctaLinks.map((l) => (
+								<li key={l.label}>
+									<Link href={l.href.startsWith("#") ? l.href : `/${locale}${l.href}`} className={linkBase}>
+										{l.label}
+									</Link>
+								</li>
+							))}
+						</ul>
+					</div>
+
+					{/* Follow */}
+					<div className="col-span-2 lg:col-span-3">
 						<div className={heading}>{t.footer.followHeading}</div>
 						<div className={`mt-5 flex items-center divide-x divide-white/10 border-y border-white/10 ${isAr ? "divide-x-reverse" : ""}`}>
 							{socialIcons.map(({ Icon, label, href }) => (
@@ -136,9 +208,7 @@ export function Footer() {
 				<div className="flex flex-col items-start justify-between gap-2 border-t border-white/8 py-6 text-[11.5px] text-white/40 sm:flex-row sm:items-center">
 					<div>© {new Date().getFullYear()} {t.footer.copyright}</div>
 					<div className="flex gap-5">
-						<Link href="#" className="hover:text-white">{t.footer.privacy}</Link>
-						<Link href="#" className="hover:text-white">{t.footer.terms}</Link>
-						<Link href="#" className="hover:text-white">{t.footer.cookies}</Link>
+						<Link href={`/${locale}/privacy`} className="hover:text-white">{t.footer.privacy}</Link>
 					</div>
 				</div>
 			</Container>

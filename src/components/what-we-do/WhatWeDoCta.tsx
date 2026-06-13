@@ -22,7 +22,7 @@ export function WhatWeDoCta() {
 						</p>
 
 						<div className="mt-10">
-							<Link href="/contact">
+							<Link href={`/${locale}/contact`}>
 								<button className="group inline-flex items-center gap-3 rounded-full bg-[var(--color-gold)] px-8 py-4 text-[12px] font-bold uppercase tracking-[0.18em] text-[var(--color-navy-dark)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#9F7A33] hover:text-white hover:shadow-[0_10px_30px_rgba(201,169,110,0.28)]">
 									{t.whatWeDo.cta.button}
 									<span className="transition-transform duration-300 group-hover:translate-x-1">

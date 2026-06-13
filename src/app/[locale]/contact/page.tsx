@@ -1,11 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 import Image from "next/image";
 
@@ -16,10 +17,73 @@ const fadeUp = {
 	viewport: { once: true, amount: 0.2 },
 };
 
+const prefilledMessages: Record<string, Record<string, string>> = {
+  partner: {
+    en: "I am interested in becoming a partner for the Iraq Business Summit (IBS). Please provide more information about partnership opportunities and packages available.",
+    ar: "أرغب في أن أصبح شريكاً لقمة العراق للأعمال (IBS). يرجى تزويدي بمزيد من المعلومات حول فرص الشراكة والباقات المتاحة.",
+  },
+  interest: {
+    en: "I would like to register my interest in participating in the Iraq Business Summit (IBS). Please share details on how I can get involved and the next steps.",
+    ar: "أود التسجيل لإبداء اهتمامي بالمشاركة في قمة العراق للأعمال (IBS). يرجى مشاركة التفاصيل حول كيفية المشاركة والخطوات التالية.",
+  },
+  sponsor: {
+    en: "I am interested in becoming a sponsor for the Iraq Business Summit (IBS). Please provide more information about sponsorship opportunities, packages, and pricing.",
+    ar: "أرغب في أن أصبح راعياً لقمة العراق للأعمال (IBS). يرجى تزويدي بمزيد من المعلومات حول فرص الرعاية والباقات والأسعار.",
+  },
+};
+
 export default function ContactPage() {
   const { t, locale } = useI18n();
-
+  const searchParams = useSearchParams();
   const isAr = locale === "ar";
+
+  const subject = searchParams.get("subject");
+  const initialMessage =
+    subject && prefilledMessages[subject]
+      ? prefilledMessages[subject][locale] || prefilledMessages[subject].en
+      : "";
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  useEffect(() => {
+    if (initialMessage) {
+      setForm((prev) => ({ ...prev, message: initialMessage }));
+    }
+  }, [initialMessage]);
+
+  useEffect(() => {
+    const el = document.getElementById("contact-form");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, subject: subject || "other" }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setForm({ name: "", email: "", phone: "", company: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
 
   const inputClass =
     "h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-[15px] text-[var(--color-navy-dark)] outline-none transition-colors placeholder:text-slate-400 focus:border-[var(--color-teal)] focus:shadow-[0_0_0_3px_rgba(0,180,170,0.10)]";
@@ -72,7 +136,7 @@ export default function ContactPage() {
       </section>
 
       {/* CONTACT SECTION */}
-      <section className="relative bg-[#f7f8fa] py-20">
+      <section id="contact-form" className="relative bg-[#f7f8fa] py-20">
         <Container className="flex justify-center">
           <motion.div
             {...fadeUp}
@@ -149,16 +213,29 @@ export default function ContactPage() {
                     {t.contact.form.description}
                   </p>
 
-                  <form className="mt-7 space-y-4">
+                  <form
+                    className="mt-7 space-y-4"
+                    onSubmit={handleSubmit}
+                  >
                     <div className="grid gap-4 md:grid-cols-2">
                       <input
                         type="text"
+                        name="name"
                         placeholder={t.contact.form.name}
+                        value={form.name}
+                        onChange={(e) =>
+                          setForm((prev) => ({ ...prev, name: e.target.value }))
+                        }
                         className={inputClass}
                       />
                       <input
                         type="email"
+                        name="email"
                         placeholder={t.contact.form.email}
+                        value={form.email}
+                        onChange={(e) =>
+                          setForm((prev) => ({ ...prev, email: e.target.value }))
+                        }
                         className={inputClass}
                       />
                     </div>
@@ -166,32 +243,77 @@ export default function ContactPage() {
                     <div className="grid gap-4 md:grid-cols-2">
                       <input
                         type="text"
+                        name="phone"
                         placeholder={t.contact.form.phone}
+                        value={form.phone}
+                        onChange={(e) =>
+                          setForm((prev) => ({ ...prev, phone: e.target.value }))
+                        }
                         className={inputClass}
                       />
                       <input
                         type="text"
+                        name="company"
                         placeholder={t.contact.form.company}
+                        value={form.company}
+                        onChange={(e) =>
+                          setForm((prev) => ({
+                            ...prev,
+                            company: e.target.value,
+                          }))
+                        }
                         className={inputClass}
                       />
                     </div>
 
                     <textarea
+                      name="message"
                       rows={5}
                       placeholder={t.contact.form.message}
+                      value={form.message}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          message: e.target.value,
+                        }))
+                      }
                       className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-[15px] text-[var(--color-navy-dark)] outline-none transition-colors placeholder:text-slate-400 focus:border-[var(--color-teal)] focus:shadow-[0_0_0_3px_rgba(0,180,170,0.10)]"
                     />
 
                     <div className="pt-2">
-                      <Button
-                        href="#"
-                        variant="gold"
-                        size="md"
-                        withArrow
+                      <button
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-gold)] px-5 h-11 text-sm font-semibold text-[var(--color-navy)] transition-all duration-200 hover:bg-[var(--color-gold-deep)] hover:text-white shadow-[0_4px_24px_rgba(238,193,59,0.25)] hover:shadow-[0_6px_30px_rgba(238,193,59,0.45)] disabled:opacity-60"
                       >
-                        {t.contact.form.button}
-                      </Button>
+                        <span>{status === "loading" ? (isAr ? "جاري الإرسال..." : "Sending...") : t.contact.form.button}</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={isAr ? "rotate-180" : ""}
+                        >
+                          <path d="M5 12h14" />
+                          <path d="m12 5 7 7-7 7" />
+                        </svg>
+                      </button>
                     </div>
+                    {status === "success" && (
+                      <p className="text-sm text-[var(--color-teal)]">
+                        {isAr ? "تم إرسال رسالتك بنجاح!" : "Your message has been sent successfully!"}
+                      </p>
+                    )}
+                    {status === "error" && (
+                      <p className="text-sm text-red-500">
+                        {isAr ? "حدث خطأ أثناء الإرسال. حاول مرة أخرى." : "Something went wrong. Please try again."}
+                      </p>
+                    )}
                   </form>
                 </div>
               </div>

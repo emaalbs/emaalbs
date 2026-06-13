@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OverviewHero } from "@/components/ibs/OverviewHero";
@@ -13,16 +14,25 @@ import { BeyondASummit } from "@/components/ibs/BeyondASummit";
 import { EditionsRail } from "@/components/ibs/EditionsRail";
 import { IbsCtaBand } from "@/components/ibs/IbsCtaBand";
 import { getEditions } from "@/data/ibs";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-	title: "Iraq Business Summit (IBS) — by EMAAL",
-	description:
-		"A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
-};
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const { locale } = await params;
+	return buildMetadata({ type: "ibs", locale: locale === "ar" ? "ar" : "en" });
+}
 
 export const dynamic = "force-dynamic";
 
-export default async function IbsOverviewPage() {
+export default async function IbsOverviewPage({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}) {
+	const { locale } = await params;
 	const editions = await getEditions();
 	return (
 		<>

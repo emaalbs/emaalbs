@@ -128,7 +128,7 @@ export function HomeServices() {
 							</div>
 
 							<a
-								href="#contact"
+								href={`/${locale}/contact`}
 								className="group mt-5 flex items-center justify-between gap-4 rounded-xl border border-[var(--color-teal)]/30 bg-[var(--color-teal)]/[0.06] p-5 transition-colors duration-300 hover:border-[var(--color-teal)]/60 hover:bg-[var(--color-teal)]/[0.12]"
 							>
 								<div>

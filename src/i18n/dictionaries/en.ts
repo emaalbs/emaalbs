@@ -6,10 +6,11 @@ export const en = {
   },
   header: {
     nav: [
+      { label: "Home", href: "/" },
       { label: "About", href: "/about" },
       { label: "IBS", href: "/ibs" },
       { label: "Services", href: "/whatWeDo" },
-      { label: "Blog", href: "/blog" },
+      { label: "News", href: "/news" },
       { label: "Contact", href: "/contact" },
     ],
     cta: "Get in Touch",
@@ -34,28 +35,30 @@ export const en = {
     emailPlaceholder: "you@company.com",
     subscribe: "Subscribe",
     getInTouch: "Get in Touch",
-    companyHeading: "Company",
-    companyLinks: [
+    pagesHeading: "Pages",
+    pageLinks: [
+      { label: "Home", href: "/" },
       { label: "About EMAAL", href: "/about" },
       { label: "Our Services", href: "/whatWeDo" },
-      { label: "EMAAL Group", href: "#group" },
-      { label: "Why EMAAL", href: "#why" },
-      { label: "Insights", href: "#insights" },
+      { label: "News", href: "/news" },
     ],
     ibsHeading: "IBS",
     ibsLinks: [
-      { label: "About IBS", href: "#ibs" },
-      { label: "IBS 2026", href: "#ibs" },
-      { label: "Ports Summit", href: "#ibs" },
-      { label: "Sponsors", href: "#ibs" },
-      { label: "Publications", href: "#insights" },
+      { label: "About IBS", href: "/ibs" },
+    ],
+    ctaHeading: "Get Involved",
+    ctaLinks: [
+      { label: "Become a Partner", href: "/contact?subject=partner" },
+      { label: "Become a Sponsor", href: "/contact?subject=sponsor" },
+      { label: "Contact Us", href: "/contact?subject=contact" },
     ],
     followHeading: "Follow EMAAL",
     social: [
-      { label: "LinkedIn", href: "#" },
-      { label: "X / Twitter", href: "#" },
-      { label: "Instagram", href: "#" },
-      { label: "YouTube", href: "#" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/iraq-business-summit/" },
+      { label: "X / Twitter", href: "http://x.com/IB_Summit" },
+      { label: "Instagram", href: "https://www.instagram.com/iraq_business_summit/" },
+      { label: "YouTube", href: "https://www.youtube.com/@IraqBusinessSummit" },
+      { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61573903317269" },
     ],
     copyright: "EMAAL Business Space. All rights reserved.",
     privacy: "Privacy",
@@ -71,7 +74,7 @@ export const en = {
     description:
       "A business platform builder and investment-driven group operating across Iraq and the region — building ventures, investing in growth, and helping companies expand through market access and high-level business platforms.",
     ctaPrimary: "Explore Iraq Business Summit",
-    ctaSecondary: "Discover EMAAL Group",
+    ctaSecondary: "Contact Us",
   },
   trustStrip: {
     label: "Trusted by leaders across sectors",
@@ -82,9 +85,12 @@ export const en = {
     description:
       "IBS brings together government decision-makers, investors, and private sector leaders to unlock real opportunities across Iraq's key sectors.",
     stats: [
-      { value: "XX+", label: "Companies" },
-      { value: "XX+", label: "Gov Entities" },
-      { value: "XX+", label: "Partnerships" },
+      { value: "75+", label: "Speakers" },
+      { value: "50+", label: "Sessions" },
+      { value: "15+", label: "Ministers & Officials" },
+      { value: "150+", label: "CEOs & Chairpersons" },
+      { value: "5M+", label: "Reach & Views" },
+      { value: "175+", label: "International Participants" },
     ],
     ctaPrimary: "Become a Partner",
     ctaSecondary: "Register Interest",
@@ -172,7 +178,7 @@ export const en = {
     title: ["One group.", "Four", "platforms", "."],
     subtitle:
       "Each company in the EMAAL Group plays a specific role in connecting markets, institutions, and opportunities — together they form a single, coordinated business ecosystem.",
-    cta: "Explore EMAAL Group",
+    cta: "Explore Services",
     brands: [
       {
         name: "Iraq Business Summit",
@@ -367,25 +373,25 @@ export const en = {
         title: "IBS",
         description:
           "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "Visit Website",
+        button: "View Services",
       },
       {
         title: "Iraq 24 HD",
         description:
           "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "Visit Website",
+        button: "View Services",
       },
       {
         title: "EMAAL Tech",
         description:
           "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "Visit Website",
+        button: "View Services",
       },
       {
         title: "F1Gaming Empire",
         description:
           "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "Visit Website",
+        button: "View Services",
       },
     ],
     whatWeDoLabel: "WHAT WE DO",
@@ -789,6 +795,21 @@ export const en = {
         "Whether you are looking for investment opportunities, partnerships, or strategic collaboration — we’re ready to connect.",
       button: "Contact Our Team",
     },
+  },
+
+  privacy: {
+    overline: "Your Privacy Matters",
+    title: "Privacy Policy",
+    welcome: "Welcome to EMAAL Privacy Policy",
+    paragraphs: [
+      "At EMAAL Business Space, we are deeply committed to safeguarding the privacy and confidentiality of all personal information collected through our business consultancy services and website. This Privacy Policy outlines how we collect, use, store, and protect your data in accordance with applicable data protection laws.",
+      "We collect personal information such as your name, contact details, business information, and communication records solely for the purpose of providing professional consultancy services, enhancing user experience, and maintaining effective communication. Additionally, our website uses cookies and similar tracking technologies to improve functionality, analyze site usage, and tailor content to your preferences. You may manage or disable cookies through your browser settings; however, please note that certain features of the website may be limited as a result.",
+      "We may engage trusted third-party service providers to assist in delivering our services, such as IT hosting, analytics, and marketing support. These third parties are contractually obligated to maintain the confidentiality and security of your information and are prohibited from using your data for any other purpose.",
+      "We do not sell, rent, or trade your personal information to external parties without your explicit consent, except where required by law or to protect our legal rights.",
+      "We implement appropriate technical and organizational measures to protect your data from unauthorized access, disclosure, alteration, or destruction.",
+      "By using our services and accessing our website, you acknowledge and consent to the practices described in this Privacy Policy.",
+    ],
+    contactText: "Should you have any questions or concerns regarding your personal data or this policy, please contact us at",
   },
 
   errors: {

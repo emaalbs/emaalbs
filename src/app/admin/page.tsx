@@ -2,22 +2,34 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FileText, CalendarDays, ArrowRight } from "lucide-react";
+import { FileText, CalendarDays, Mail, Users, ArrowRight, BookOpen } from "lucide-react";
 
 export default function AdminDashboard() {
-	const [stats, setStats] = useState({ blogs: 0, editions: 0 });
+	const [stats, setStats] = useState({ blogs: 0, editions: 0, magazines: 0, contacts: 0, subscribers: 0 });
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		async function load() {
 			try {
-				const [blogsRes, editionsRes] = await Promise.all([
+				const [blogsRes, editionsRes, magazinesRes, contactsRes, subscribersRes] = await Promise.all([
 					fetch("/api/blogs"),
 					fetch("/api/ibs/editions"),
+					fetch("/api/magazines"),
+					fetch("/api/contact"),
+					fetch("/api/subscribers"),
 				]);
 				const blogs = (await blogsRes.json()) as unknown[];
 				const editions = (await editionsRes.json()) as unknown[];
-				setStats({ blogs: blogs.length, editions: editions.length });
+				const magazines = (await magazinesRes.json()) as unknown[];
+				const contacts = (await contactsRes.json()) as unknown[];
+				const subscribers = (await subscribersRes.json()) as unknown[];
+				setStats({
+					blogs: blogs.length,
+					editions: editions.length,
+					magazines: magazines.length,
+					contacts: contacts.length,
+					subscribers: subscribers.length,
+				});
 			} catch {
 				// ignore
 			} finally {
@@ -57,6 +69,39 @@ export default function AdminDashboard() {
 						</div>
 					</div>
 				</div>
+				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50">
+							<Mail className="h-5 w-5 text-emerald-600" />
+						</div>
+						<div>
+							<div className="text-sm text-gray-500">Contacts</div>
+							<div className="text-2xl font-bold text-gray-900">{stats.contacts}</div>
+						</div>
+					</div>
+				</div>
+				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
+							<Users className="h-5 w-5 text-purple-600" />
+						</div>
+						<div>
+							<div className="text-sm text-gray-500">Subscribers</div>
+							<div className="text-2xl font-bold text-gray-900">{stats.subscribers}</div>
+						</div>
+					</div>
+				</div>
+				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50">
+							<BookOpen className="h-5 w-5 text-rose-600" />
+						</div>
+						<div>
+							<div className="text-sm text-gray-500">Total Magazines</div>
+							<div className="text-2xl font-bold text-gray-900">{stats.magazines}</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			{/* Quick actions */}
@@ -92,6 +137,51 @@ export default function AdminDashboard() {
 					</div>
 					<ArrowRight className="h-5 w-5 text-gray-400" />
 				</Link>
+			<Link
+				href="/admin/contacts"
+				className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+			>
+				<div className="flex items-center gap-3">
+					<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50">
+						<Mail className="h-5 w-5 text-emerald-600" />
+					</div>
+					<div>
+						<div className="font-medium text-gray-900">View Contacts</div>
+						<div className="text-sm text-gray-500">See all contact submissions</div>
+					</div>
+				</div>
+				<ArrowRight className="h-5 w-5 text-gray-400" />
+			</Link>
+				<Link
+					href="/admin/magazines/new"
+					className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-rose-300 hover:shadow-md"
+				>
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50">
+							<BookOpen className="h-5 w-5 text-rose-600" />
+						</div>
+						<div>
+							<div className="font-medium text-gray-900">Create Magazine</div>
+							<div className="text-sm text-gray-500">Upload a new magazine PDF</div>
+						</div>
+					</div>
+					<ArrowRight className="h-5 w-5 text-gray-400" />
+				</Link>
+			<Link
+				href="/admin/subscribers"
+				className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-purple-300 hover:shadow-md"
+			>
+				<div className="flex items-center gap-3">
+					<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
+						<Users className="h-5 w-5 text-purple-600" />
+					</div>
+					<div>
+						<div className="font-medium text-gray-900">View Subscribers</div>
+						<div className="text-sm text-gray-500">See all newsletter subscribers</div>
+					</div>
+				</div>
+				<ArrowRight className="h-5 w-5 text-gray-400" />
+			</Link>
 			</div>
 		</div>
 	);

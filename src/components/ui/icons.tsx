@@ -43,6 +43,33 @@ export function PlayIcon(props: IconProps) {
 	);
 }
 
+export function PauseIcon(props: IconProps) {
+	return (
+		<svg {...baseProps} {...props}>
+			<path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+		</svg>
+	);
+}
+
+export function VolumeIcon(props: IconProps) {
+	return (
+		<svg {...baseProps} {...props}>
+			<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+			<path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a9 9 0 010 14.14" />
+		</svg>
+	);
+}
+
+export function VolumeOffIcon(props: IconProps) {
+	return (
+		<svg {...baseProps} {...props}>
+			<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+			<line x1="23" y1="9" x2="17" y2="15" />
+			<line x1="17" y1="9" x2="23" y2="15" />
+		</svg>
+	);
+}
+
 export function MenuIcon(props: IconProps) {
 	return (
 		<svg {...baseProps} {...props}>
@@ -180,6 +207,14 @@ export function YouTubeIcon(props: IconProps) {
 	return (
 		<svg {...baseProps} fill="currentColor" stroke="none" {...props}>
 			<path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31 31 0 000 12a31 31 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31 31 0 0024 12a31 31 0 00-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z" />
+		</svg>
+	);
+}
+
+export function FacebookIcon(props: IconProps) {
+	return (
+		<svg {...baseProps} fill="currentColor" stroke="none" {...props}>
+			<path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.12 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.33l-.53 3.49H13.88V24C19.61 23.1 24 18.1 24 12.07z" />
 		</svg>
 	);
 }

@@ -43,7 +43,7 @@ export function HomeCtaBand() {
 							<div className="flex flex-col gap-3">
 								{/* Primary — navy filled */}
 								<a
-									href="#contact"
+									href={`/${locale}/contact`}
 									className="group flex items-center justify-between gap-4 rounded-xl bg-[var(--color-navy)] p-5 transition-colors hover:bg-[var(--color-navy-dark)]"
 								>
 									<div>
@@ -61,7 +61,7 @@ export function HomeCtaBand() {
 
 								{/* Secondary — outline */}
 								<a
-									href="#contact"
+									href={`/${locale}/contact?subject=partner`}
 									className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--color-line)] bg-white p-5 transition-colors hover:border-[var(--color-teal)] hover:bg-[var(--color-teal-tint)]"
 								>
 									<div>

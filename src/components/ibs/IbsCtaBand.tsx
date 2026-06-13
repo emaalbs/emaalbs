@@ -35,11 +35,11 @@ export function IbsCtaBand() {
 						{cta.title[locale]}
 					</h2>
 					<div className="mt-10 flex flex-col gap-3 sm:flex-row">
-						<Button href="/contact" variant="gold" size="lg" withArrow>
+						<Button href={`/${locale}/contact?subject=partner`} variant="gold" size="lg" withArrow>
 							{cta.primary[locale]}
 						</Button>
 						<Button
-							href="/contact"
+							href={`/${locale}/contact?subject=interest`}
 							variant="outline-white"
 							size="lg"
 							withArrow
@@ -51,7 +51,7 @@ export function IbsCtaBand() {
 						<span>info@ib_summite.com</span>
 						<span className="inline-block h-1 w-1 rounded-full bg-white/40" />
 						<a
-							href="/contact"
+							href={`/${locale}/contact`}
 							className="inline-flex items-center gap-1.5 font-semibold text-[var(--color-gold)] transition-colors hover:text-white"
 						>
 							{locale === "ar" ? "الفريق" : "Talk to the team"}

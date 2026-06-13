@@ -45,7 +45,7 @@ export function EditionCtaBand({ edition, allEditions }: { edition: IbsEdition; 
 					</div>
 					<div className="lg:col-span-5">
 						<div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-							<Button href="/contact" variant="gold" size="lg" withArrow>
+							<Button href={`/${locale}/contact?subject=interest`} variant="gold" size="lg" withArrow>
 								{labels.register[locale]}
 							</Button>
 							{next ? (

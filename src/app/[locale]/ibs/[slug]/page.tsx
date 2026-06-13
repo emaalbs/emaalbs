@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { EditionHero } from "@/components/ibs/EditionHero";
@@ -15,20 +16,26 @@ import { EditionGallery } from "@/components/ibs/EditionGallery";
 import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { eventJsonLd } from "@/lib/seo/structured-data";
 
 export async function generateMetadata({
 	params,
 }: {
 	params: Promise<{ locale: string; slug: string }>;
-}) {
+}): Promise<Metadata> {
 	const { slug, locale } = await params;
 	const edition = await getEditionBySlug(slug);
 	if (!edition) return {};
 	const isAr = locale === "ar";
-	return {
-		title: `${edition.title[isAr ? "ar" : "en"]} — IBS by EMAAL`,
+	return buildMetadata({
+		type: "ibsEdition",
+		locale: isAr ? "ar" : "en",
+		slug,
+		title: edition.title[isAr ? "ar" : "en"],
 		description: edition.summary[isAr ? "ar" : "en"],
-	};
+		image: edition.heroImage,
+	});
 }
 
 export default async function IbsEditionPage({
@@ -47,6 +54,22 @@ export default async function IbsEditionPage({
 
 	return (
 		<>
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(
+						eventJsonLd({
+							title: edition.title[currentLocale],
+							description: edition.summary[currentLocale],
+							image: edition.heroImage,
+							startDate: edition.dates?.en,
+							location: edition.location?.[currentLocale],
+							slug,
+							locale: currentLocale,
+						})
+					),
+				}}
+			/>
 			<Header />
 			<main>
 				<EditionHero edition={edition} />

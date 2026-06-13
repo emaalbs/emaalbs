@@ -35,7 +35,7 @@ export function HomeHighlights({ blogs, locale }: Props) {
 						}
 						subtitle={t.highlights.subtitle}
 					/>
-					<Button href={`/${locale}/blog`} variant="ghost-navy" withArrow>
+					<Button href={`/${locale}/news`} variant="ghost-navy" withArrow>
 						{t.highlights.cta}
 					</Button>
 				</div>
@@ -44,7 +44,7 @@ export function HomeHighlights({ blogs, locale }: Props) {
 					{blogs.map((blog, i) => (
 						<Link
 							key={blog.slug}
-							href={`/${locale}/blog/${blog.slug}`}
+							href={`/${locale}/news/${blog.slug}`}
 							className={`group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--color-line)] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(1,30,47,0.12)] ${
 								i === 0 ? "md:col-span-2 lg:col-span-1" : ""
 							}`}

@@ -15,6 +15,7 @@
     "optimize-images": "node scripts/optimize-images.mjs",
     "optimize-logos": "node scripts/optimize-images.mjs --dir=public/logos --maxWidth=400",
     "normalize-logos": "node scripts/normalize-logos.mjs",
+    "optimize-videos": "node scripts/optimize-videos.mjs",
     "migrate:local": "wrangler d1 migrations apply emmal --local",
     "migrate:prod": "npx wrangler d1 migrations apply emmal --remote"
   },

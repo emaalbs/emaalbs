@@ -1,5 +1,3 @@
-import type { Metadata } from "next";
-
 import {
 	Plus_Jakarta_Sans,
 	Inter,
@@ -31,16 +29,6 @@ const notoSansArabic = Noto_Sans_Arabic({
 	display: "swap",
 });
 
-export const metadata: Metadata = {
-	title:
-		"EMAAL Business Space — Building Businesses. Scaling Growth.",
-	description:
-		"EMAAL Business Space is a business platform builder and investment-driven group operating across Iraq and the region. Home of the Iraq Business Summit (IBS).",
-	icons: {
-		icon: "/favicon.svg",
-	},
-};
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -48,7 +36,6 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
-			lang="en"
 			suppressHydrationWarning
 			data-scroll-behavior="smooth"
 		>

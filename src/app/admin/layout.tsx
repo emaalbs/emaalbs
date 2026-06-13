@@ -3,12 +3,15 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FileText, CalendarDays, Shield, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen } from "lucide-react";
 
 const baseNav = [
 	{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
 	{ label: "Blogs", href: "/admin/blogs", icon: FileText },
+	{ label: "Magazines", href: "/admin/magazines", icon: BookOpen },
 	{ label: "IBS Editions", href: "/admin/ibs/editions", icon: CalendarDays },
+	{ label: "Contacts", href: "/admin/contacts", icon: Mail },
+	{ label: "Subscribers", href: "/admin/subscribers", icon: Users },
 ];
 
 type Me = { id: number; username: string; isSuperAdmin: boolean };
