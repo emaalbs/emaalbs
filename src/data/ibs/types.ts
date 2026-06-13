@@ -47,6 +47,7 @@ export type Theme = {
 export type Initiative = {
 	title: Localized;
 	description: Localized;
+	image?: string;
 	highlight?: Localized; // e.g. "100 companies registered in a single day"
 	partners?: string[];
 };

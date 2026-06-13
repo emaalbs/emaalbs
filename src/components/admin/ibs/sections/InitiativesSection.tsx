@@ -1,7 +1,8 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import type { Initiative } from "@/data/ibs/types";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -17,74 +18,100 @@ export function InitiativesSection({ initiatives, onAdd, onUpdate, onRemove }: P
 	return (
 		<div className="space-y-3">
 			{initiatives.map((init, i) => (
-				<div key={i} className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-3">
+				<div key={i} className="rounded-lg border border-gray-100 bg-white p-3 space-y-2">
 					<div className="flex items-center justify-between">
-						<span className="text-xs font-bold uppercase tracking-wider text-gray-400">Initiative {i + 1}</span>
+						<span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Initiative {i + 1}</span>
 						<button onClick={() => onRemove(i)} className="text-red-400 hover:text-red-600 transition">
-							<Trash2 className="h-4 w-4" />
+							<Trash2 className="h-3.5 w-3.5" />
 						</button>
 					</div>
-					<div className="grid gap-3 md:grid-cols-2">
-						<input
-							type="text"
-							value={init.title.en}
-							onChange={(e) => onUpdate(i, { ...init, title: { ...init.title, en: e.target.value } })}
-							placeholder="Title EN"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-						/>
-						<input
-							type="text"
-							value={init.title.ar}
-							onChange={(e) => onUpdate(i, { ...init, title: { ...init.title, ar: e.target.value } })}
-							placeholder="Title AR"
-							dir="rtl"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-						/>
+					<div className="grid gap-2 md:grid-cols-[1fr_140px]">
+						<div className="grid gap-1.5">
+							<div className="grid gap-1.5 md:grid-cols-2">
+								<input
+									type="text"
+									value={init.title.en}
+									onChange={(e) => onUpdate(i, { ...init, title: { ...init.title, en: e.target.value } })}
+									placeholder="Title EN"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+								<input
+									type="text"
+									value={init.title.ar}
+									onChange={(e) => onUpdate(i, { ...init, title: { ...init.title, ar: e.target.value } })}
+									placeholder="Title AR"
+									dir="rtl"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+							</div>
+							<div className="grid gap-1.5 md:grid-cols-2">
+								<input
+									type="text"
+									value={init.description.en}
+									onChange={(e) => onUpdate(i, { ...init, description: { ...init.description, en: e.target.value } })}
+									placeholder="Description EN"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+								<input
+									type="text"
+									value={init.description.ar}
+									onChange={(e) => onUpdate(i, { ...init, description: { ...init.description, ar: e.target.value } })}
+									placeholder="Description AR"
+									dir="rtl"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+							</div>
+							<div className="grid gap-1.5 md:grid-cols-2">
+								<input
+									type="text"
+									value={init.highlight?.en || ""}
+									onChange={(e) => onUpdate(i, { ...init, highlight: { en: e.target.value, ar: init.highlight?.ar || "" } })}
+									placeholder="Highlight EN"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+								<input
+									type="text"
+									value={init.highlight?.ar || ""}
+									onChange={(e) => onUpdate(i, { ...init, highlight: { en: init.highlight?.en || "", ar: e.target.value } })}
+									placeholder="Highlight AR"
+									dir="rtl"
+									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
+								/>
+							</div>
+							{/* Partners as boxes */}
+							<div className="flex flex-wrap items-center gap-1.5">
+								{(init.partners ?? []).map((p, pi) => (
+									<span key={pi} className="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700">
+										{p}
+										<button
+											onClick={() => onUpdate(i, { ...init, partners: init.partners?.filter((_, j) => j !== pi) })}
+											className="text-gray-400 hover:text-red-500"
+										>
+											<X className="h-2.5 w-2.5" />
+										</button>
+									</span>
+								))}
+								<button
+									onClick={() => {
+										const name = window.prompt("Partner name:");
+										if (name?.trim()) onUpdate(i, { ...init, partners: [...(init.partners || []), name.trim()] });
+									}}
+									className="inline-flex items-center gap-0.5 rounded border border-dashed border-gray-300 px-2 py-0.5 text-[10px] text-gray-500 hover:border-gray-400 hover:text-gray-600 transition"
+								>
+									<Plus className="h-2.5 w-2.5" /> Add
+								</button>
+							</div>
+						</div>
+						<div className="w-[140px] shrink-0">
+							<ImageUpload
+								value={init.image || ""}
+								onChange={(url) => onUpdate(i, { ...init, image: url })}
+								label=""
+								compact
+								prefix="ibs/initiatives/"
+							/>
+						</div>
 					</div>
-					<div className="grid gap-3 md:grid-cols-2">
-						<textarea
-							value={init.description.en}
-							onChange={(e) => onUpdate(i, { ...init, description: { ...init.description, en: e.target.value } })}
-							placeholder="Description EN"
-							rows={2}
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)] resize-y"
-						/>
-						<textarea
-							value={init.description.ar}
-							onChange={(e) => onUpdate(i, { ...init, description: { ...init.description, ar: e.target.value } })}
-							placeholder="Description AR"
-							rows={2}
-							dir="rtl"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)] resize-y"
-						/>
-					</div>
-					<div className="grid gap-3 md:grid-cols-2">
-						<input
-							type="text"
-							value={init.highlight?.en || ""}
-							onChange={(e) => onUpdate(i, { ...init, highlight: { en: e.target.value, ar: init.highlight?.ar || "" } })}
-							placeholder="Highlight EN (optional)"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-						/>
-						<input
-							type="text"
-							value={init.highlight?.ar || ""}
-							onChange={(e) => onUpdate(i, { ...init, highlight: { en: init.highlight?.en || "", ar: e.target.value } })}
-							placeholder="Highlight AR (optional)"
-							dir="rtl"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-						/>
-					</div>
-					<input
-						type="text"
-						value={init.partners?.join(", ") || ""}
-						onChange={(e) => {
-							const val = e.target.value.trim();
-							onUpdate(i, { ...init, partners: val ? val.split(",").map((p) => p.trim()) : [] });
-						}}
-						placeholder="Partners (comma separated)"
-						className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-					/>
 				</div>
 			))}
 			<button

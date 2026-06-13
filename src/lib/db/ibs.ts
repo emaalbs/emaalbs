@@ -126,6 +126,7 @@ export async function getEditionBySlug(slug: string): Promise<IbsEdition | null>
 		initiatives: (initiatives.results || []).map((r) => ({
 			title: localize(r.title_en as string | null, r.title_ar as string | null),
 			description: localize(r.description_en as string | null, r.description_ar as string | null),
+			image: (r.image as string) || undefined,
 			highlight: localize(r.highlight_en as string | null, r.highlight_ar as string | null) || undefined,
 			partners: r.partners_json ? JSON.parse(r.partners_json as string) as string[] : undefined,
 		})) as Initiative[],
@@ -190,8 +191,8 @@ export async function createEdition(data: IbsEdition): Promise<void> {
 	}
 	// initiatives
 	for (const i of data.initiatives) {
-		await db.prepare("INSERT INTO ibs_initiatives (edition_slug, title_en, title_ar, description_en, description_ar, highlight_en, highlight_ar, partners_json, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-			.bind(data.slug, i.title.en, i.title.ar, i.description.en, i.description.ar, i.highlight?.en || null, i.highlight?.ar || null, i.partners ? JSON.stringify(i.partners) : null, 0).run();
+		await db.prepare("INSERT INTO ibs_initiatives (edition_slug, title_en, title_ar, description_en, description_ar, image, highlight_en, highlight_ar, partners_json, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(data.slug, i.title.en, i.title.ar, i.description.en, i.description.ar, i.image || null, i.highlight?.en || null, i.highlight?.ar || null, i.partners ? JSON.stringify(i.partners) : null, 0).run();
 	}
 	// gallery
 	for (const g of data.gallery) {
@@ -283,8 +284,8 @@ export async function replaceEditionNested(slug: string, data: IbsEdition): Prom
 			.bind(slug, s.sector.en, s.sector.ar, s.percent, 0).run();
 	}
 	for (const i of data.initiatives) {
-		await db.prepare("INSERT INTO ibs_initiatives (edition_slug, title_en, title_ar, description_en, description_ar, highlight_en, highlight_ar, partners_json, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-			.bind(slug, i.title.en, i.title.ar, i.description.en, i.description.ar, i.highlight?.en || null, i.highlight?.ar || null, i.partners ? JSON.stringify(i.partners) : null, 0).run();
+		await db.prepare("INSERT INTO ibs_initiatives (edition_slug, title_en, title_ar, description_en, description_ar, image, highlight_en, highlight_ar, partners_json, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(slug, i.title.en, i.title.ar, i.description.en, i.description.ar, i.image || null, i.highlight?.en || null, i.highlight?.ar || null, i.partners ? JSON.stringify(i.partners) : null, 0).run();
 	}
 	for (const g of data.gallery) {
 		await db.prepare("INSERT INTO ibs_gallery (id, edition_slug, src, alt_en, alt_ar, width, height, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")

@@ -10,12 +10,13 @@ interface Props {
 	label?: React.ReactNode;
 	hint?: string;
 	compact?: boolean;
+	fit?: "cover" | "contain";
 	error?: string;
 	preset?: ImagePreset;
 	prefix?: string;
 }
 
-export function ImageUpload({ value, onChange, label = "Image", hint, compact, error, preset = "blog-cover", prefix = "" }: Props) {
+export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "" }: Props) {
 	const [uploading, setUploading] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +55,7 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, e
 			)}
 			{value ? (
 				<div className="relative overflow-hidden rounded-lg border border-gray-200">
-					<img src={value} alt="" className={`${heightClass} w-full object-cover`} />
+					<img src={value} alt="" className={`${heightClass} w-full object-${fit}`} />
 					<div className="absolute right-2 top-2 flex gap-2">
 						<button
 							onClick={() => inputRef.current?.click()}

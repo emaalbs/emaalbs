@@ -27,7 +27,7 @@ export function SponsorsSection({ sponsors, onAdd, onUpdate, onRemove }: Props) 
 							<Trash2 className="h-4 w-4" />
 						</button>
 					</div>
-					<div className="grid gap-3 md:grid-cols-3">
+					<div className="grid gap-3 md:grid-cols-2">
 						<input
 							type="text"
 							value={s.name}
@@ -46,13 +46,6 @@ export function SponsorsSection({ sponsors, onAdd, onUpdate, onRemove }: Props) 
 								</option>
 							))}
 						</select>
-						<input
-							type="url"
-							value={s.href || ""}
-							onChange={(e) => onUpdate(i, { ...s, href: e.target.value })}
-							placeholder="Website URL"
-							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
-						/>
 					</div>
 					<div className="max-w-[200px]">
 						<ImageUpload
