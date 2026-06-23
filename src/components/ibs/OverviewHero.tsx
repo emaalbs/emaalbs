@@ -52,8 +52,8 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 							<span className="block">{hero.title[locale]}</span>
 							<span className="mt-2 block bg-gradient-to-r from-[var(--color-gold)] via-[#f5d65e] to-[var(--color-gold)] bg-clip-text text-transparent">
 								{locale === "ar"
-									? "تجمع الحكومة والسوق."
-									: "Where decisions meet capital."}
+									? "منصة للأعمال."
+									: "A Platform For Business."}									
 							</span>
 						</h1>
 						<p className="mt-7 max-w-xl text-[16.5px] leading-[1.7] text-[var(--color-silver)]">
@@ -105,7 +105,7 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 							<div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.55)]">
 								<Image
 									src="/images/leaders.JPG"
-									alt="IBS leadership and decision-makers"
+									alt="IBS leadership and decision makers"
 									fill
 									sizes="(min-width: 1024px) 35vw, 80vw"
 									className="object-cover"

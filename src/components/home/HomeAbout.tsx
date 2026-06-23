@@ -71,8 +71,8 @@ export function HomeAbout() {
 					))}
 				</div>
 
-				{/* Working process — clean connected timeline (no giant numerals) */}
-				<div className="mt-24 lg:mt-28">
+				{/* Working process — clean connected timeline (no giant numerals) — HIDDEN FOR NOW */}
+				{/* <div className="mt-24 lg:mt-28">
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 						<div>
 							<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-teal)]">
@@ -87,14 +87,11 @@ export function HomeAbout() {
 						</div>
 					</div>
 
-					{/* Connected timeline */}
 					<div className="relative mt-12">
-						{/* horizontal connector line (desktop) */}
 						<div className={`absolute ${isAr ? "right-0 left-0" : "left-0 right-0"} top-3 hidden h-px bg-gradient-to-r from-[var(--color-teal)]/40 via-[var(--color-teal)]/20 to-[var(--color-teal)]/40 lg:block`} />
 						<div className="grid grid-cols-1 gap-y-10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4 lg:gap-x-10">
 							{t.about.steps.map((s) => (
 								<div key={s.n} className="relative">
-									{/* dot on the timeline */}
 									<div className="flex items-center gap-3">
 										<div className="relative grid h-6 w-6 place-items-center rounded-full bg-white ring-2 ring-[var(--color-teal)]">
 											<div className="h-2 w-2 rounded-full bg-[var(--color-teal)]" />
@@ -113,7 +110,7 @@ export function HomeAbout() {
 							))}
 						</div>
 					</div>
-				</div>
+				</div> */}
 			</Container>
 		</section>
 	);

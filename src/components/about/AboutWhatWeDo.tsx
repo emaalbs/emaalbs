@@ -59,7 +59,7 @@ export function AboutWhatWeDo() {
 
 						return (
 							<button
-								key={item}
+								key={item.title}
 								type="button"
 								onClick={() => setActive(isActive ? -1 : i)}
 								aria-expanded={isActive}
@@ -78,7 +78,7 @@ export function AboutWhatWeDo() {
 												: "text-[var(--color-navy)]/85 group-hover:text-[var(--color-navy)]"
 										}`}
 									>
-										{item}
+										{item.title}
 									</h3>
 
 									<div
@@ -89,7 +89,7 @@ export function AboutWhatWeDo() {
 										}`}
 									>
 										<p className="min-h-0 text-[13px] leading-[1.7] text-[var(--color-slate)]">
-											{t.aboutp.whatWeDoDescription}
+											{item.description}
 										</p>
 									</div>
 								</div>

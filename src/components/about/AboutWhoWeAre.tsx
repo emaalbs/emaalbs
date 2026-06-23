@@ -26,21 +26,8 @@ export function AboutWhoWeAre() {
 					}`}
 				>
 					<div className="w-full lg:w-1/2">
-						<SectionHeading
-							overline={t.aboutp.whoWeAre}
-							title={
-								<>
-									{t.aboutp.businessTitle}
-									<br />
-									<span className="text-[var(--color-gold-deep)]">
-										{t.aboutp.ecosystemTitle}
-									</span>
-								</>
-							}
-							subtitle={t.aboutp.whoSubtitle}
-						/>
 						<p
-							className={`mt-6 text-[15px] leading-[1.8] ${
+							className={`text-[20px] leading-[1.8] ${
 								isAr ? "text-right" : "text-left"
 							} text-[var(--color-slate)]`}
 						>

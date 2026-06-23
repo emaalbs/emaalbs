@@ -31,7 +31,7 @@ export function WhatWeDoIntro() {
 							/>
 							<div className="rounded-[30px] bg-[#07131F] p-10 text-white">
 								<h3 className="text-4xl font-bold text-[#C8A45D]">2026</h3>
-								<p className="mt-3 text-white/70">Building future-ready experiences</p>
+								<p className="mt-3 text-white/70">Building future ready experiences</p>
 							</div>
 						</div>
 					</div>

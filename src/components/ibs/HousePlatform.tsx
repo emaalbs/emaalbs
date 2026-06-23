@@ -21,7 +21,7 @@ export function HousePlatform() {
 						<div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
 							<Image
 								src="/images/House.JPG"
-								alt="HOUSE Platform — branded stage at IBS"
+								alt="HOUSE Platform, branded stage at IBS"
 								width={1200}
 								height={900}
 								className="aspect-[4/3] w-full object-cover"
@@ -34,7 +34,7 @@ export function HousePlatform() {
 								<div className="mt-1 font-display text-base font-semibold text-white">
 									{locale === "ar"
 										? "منصة قمة مصغّرة باسم الشريك."
-										: "A mini-summit branded under the partner's name."}
+										: "A mini summit branded under the partner's name."}
 								</div>
 							</div>
 						</div>

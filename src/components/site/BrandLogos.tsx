@@ -23,7 +23,7 @@ export const BRAND_LOGOS: { name: string; src: string; scale?: number }[] = [
 	{ name: "SuperCell", src: "/logos/SuperCell.png", scale: 1.0 },
 	{ name: "Technital", src: "/logos/Technital.png", scale: 1.0 },
 	{ name: "Tiryaki Agro", src: "/logos/Tiryaki Agro.png", scale: 1.0 },
-	{ name: "Visa", src: "/logos/Visa_Inc._logo.svg.png", scale: 1.0 },
+	{ name: "Visa", src: "/logos/Visa_Inc._logo.png", scale: 1.0 },
 	{ name: "Genesys", src: "/logos/genesys.png", scale: 1.0 },
 	{ name: "Imathia", src: "/logos/imathia.png", scale: 1.0 },
 	{ name: "JIB", src: "/logos/jib.png", scale: 1.0 },

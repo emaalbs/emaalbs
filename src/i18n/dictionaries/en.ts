@@ -1,8 +1,8 @@
 export const en = {
   meta: {
-    title: "EMAAL Business Space — Building Businesses. Scaling Growth.",
+    title: "EMAAL Business Space. Building Businesses. Scaling Growth.",
     description:
-      "EMAAL Business Space is a business platform builder and investment-driven group operating across Iraq and the region. Home of the Iraq Business Summit (IBS).",
+      "EMAAL Business Space is a business platform builder and investment driven group operating across Iraq and the region. Home of the Iraq Business Summit (IBS).",
   },
   header: {
     nav: [
@@ -26,12 +26,12 @@ export const en = {
   },
   footer: {
     tagline: [
-      "A platform for business —",
+      "A platform for business.",
       "connecting Iraq's economy to the world.",
     ],
     stayInformed: "Stay Informed",
     newsletterText:
-      "Quarterly insights from Iraq's business platform — straight to your inbox.",
+      "Quarterly insights from Iraq's business platform, straight to your inbox.",
     emailPlaceholder: "you@company.com",
     subscribe: "Subscribe",
     getInTouch: "Get in Touch",
@@ -72,7 +72,7 @@ export const en = {
     overline: "EMAAL Business Space",
     title: ["Building Businesses. Scaling Growth.", "Connecting Opportunity."],
     description:
-      "A business platform builder and investment-driven group operating across Iraq and the region — building ventures, investing in growth, and helping companies expand through market access and high-level business platforms.",
+      "EMAAL Business Space is a business platform builder and investment driven group operating across Iraq and the region. We build and scale ventures, invest in growth, and help established companies expand through strategic positioning, market access, and high level business platforms",
     ctaPrimary: "Explore Iraq Business Summit",
     ctaSecondary: "Contact Us",
   },
@@ -81,9 +81,9 @@ export const en = {
   },
   ibsBand: {
     overline: "Flagship Platform",
-    title: ["Iraq Business Summit —", "a platform for business."],
+    title: ["Iraq Business Summit.", "A platform for Business."],
     description:
-      "IBS brings together government decision-makers, investors, and private sector leaders to unlock real opportunities across Iraq's key sectors.",
+      "IBS brings together government decision makers, investors, and private sector leaders to unlock real opportunities across Iraq's key sectors.",
     stats: [
       { value: "75+", label: "Speakers" },
       { value: "50+", label: "Sessions" },
@@ -102,28 +102,24 @@ export const en = {
     overline: "About EMAAL",
     sectionLabel: "/ Section 02",
     title: [
-      "We don't just",
-      "consult",
-      ".",
       "We",
-      "build, invest, and execute",
-      "across Iraq's economy.",
+      "build, invest, and execute ",
+      "across  Iraq's  economy.",
     ],
-    bannerOverline: "Iraq · UAE",
-    bannerTitle: "Two markets. One institutional alliance.",
+    bannerOverline: "How we do it",
+    bannerTitle: "We do this through platform parnerships",
     bannerDescription:
-      "Operating across Baghdad and Dubai — connecting the public and private sectors.",
+      "With strategic execution that connect markets, institutions, and opportunites.",
     ribbon: [
       { v: "45+", k: "Active Clients" },
       { v: "6", k: "Economic Sectors" },
       { v: "3", k: "Core Companies" },
-      { v: "2", k: "Markets · IQ + UAE" },
     ],
     processOverline: "How We Work",
-    processTitle: "A simple, four-step engagement.",
+    processTitle: "A simple, four step engagement.",
     processLabel: "Touch Base → Feedback",
     steps: [
-      { n: "01", t: "Touch Base", d: "Kick-off meeting to align on goals." },
+      { n: "01", t: "Touch Base", d: "Kick off meeting to align on goals." },
       {
         n: "02",
         t: "Evaluation",
@@ -144,7 +140,7 @@ export const en = {
       {
         tag: "Build",
         title: "Venture Building & Growth",
-        desc: "Building and scaling businesses — from ground-up launches to growth playbooks for established companies.",
+        desc: "Building and scaling businesses from ground up launches to growth playbooks for established companies.",
         img: "/images/group-tech.jpg",
       },
       {
@@ -156,28 +152,28 @@ export const en = {
       {
         tag: "Connect",
         title: "Government & Market Access",
-        desc: "Direct connections to the institutions and regulators that move sectors — opening doors that matter.",
+        desc: "Direct connections to the institutions and regulators that move sectors, opening doors that matter.",
         img: "/images/ibs-feature.jpg",
       },
       {
         tag: "Convene",
         title: "International Engagement",
-        desc: "Participation in global and regional conferences, plus Iraq's flagship business summits — by EMAAL.",
+        desc: "Participation in global and regional conferences, plus Iraq's flagship business summits by EMAAL.",
         img: "/images/hero-summit.jpg",
       },
-      {
-        tag: "Support",
-        title: "Strategic Business Services",
-        desc: "Branding, PR, training, research, and operations — full-stack support for sustained business growth.",
-        img: "/images/highlight-2.jpg",
-      },
+      // {
+      //   tag: "Support",
+      //   title: "Strategic Business Services",
+      //   desc: "Branding, PR, training, research, and operations. Full stack support for sustained business growth.",
+      //   img: "/images/highlight-2.jpg",
+      // },
     ],
   },
   group: {
     overline: "EMAAL Group",
     title: ["One group.", "Four", "platforms", "."],
     subtitle:
-      "Each company in the EMAAL Group plays a specific role in connecting markets, institutions, and opportunities — together they form a single, coordinated business ecosystem.",
+      "Each company in the EMAAL Group plays a specific role in connecting markets, institutions, and opportunities. Together they form a single, coordinated business ecosystem.",
     cta: "Explore Services",
     brands: [
       {
@@ -189,7 +185,7 @@ export const en = {
       {
         name: "Iraq 24 HD",
         tag: "Media",
-        desc: "Iraq's first business & economy channel — the voice of the country's economic conversation.",
+        desc: "Iraq's first business & economy channel, the voice of the country's economic conversation.",
         img: "/images/group-iraq24.jpg",
       },
       {
@@ -216,12 +212,12 @@ export const en = {
       ", positioning, and execution.",
     ],
     description:
-      "EMAAL, through IBS and EMAAL Tech, doesn't just connect opportunities — we help you execute them. A platform not just for visibility, but for outcomes.",
+      "EMAAL, through IBS and EMAAL Tech, doesn't just connect opportunities. We help you execute them. A platform not just for visibility, but for outcomes.",
     pillars: [
       {
         k: "Access",
         t: "Government & regulators",
-        d: "Pre-qualified introductions to the ministries, agencies, and decision-makers that shape sectors.",
+        d: "Pre qualified introductions to the ministries, agencies, and decision makers that shape sectors.",
       },
       {
         k: "Positioning",
@@ -231,7 +227,7 @@ export const en = {
       {
         k: "Execution",
         t: "Curated B2B meetings",
-        d: "Hand-matched meetings with the buyers, investors, and partners who move strategy forward.",
+        d: "Hand matched meetings with the buyers, investors, and partners who move strategy forward.",
       },
     ],
   },
@@ -239,7 +235,7 @@ export const en = {
     overline: "Latest Highlights",
     title: ["Stories, signals, and", "market intelligence", "."],
     subtitle:
-      "From the EMAAL platform — what we're seeing across Iraq's sectors, our IBS events, and the partnerships we're enabling.",
+      "From the EMAAL platform, what we're seeing across Iraq's sectors, our IBS events, and the partnerships we're enabling.",
     cta: "View all insights",
     posts: [
       {
@@ -303,7 +299,7 @@ export const en = {
     overline: "Get Started",
     title: ["Let's build", "what's next", "."],
     description:
-      "Whether you are a startup, an established company, or an investor — EMAAL provides the platform to connect, grow, and move forward.",
+      "Whether you are a startup, an established company, or an investor. EMAAL provides the platform to connect, grow, and move forward.",
     primaryLabel: "Talk to us",
     primaryTitle: "Contact our team",
     secondaryLabel: "Collaborate",
@@ -312,46 +308,45 @@ export const en = {
 
   aboutp: {
     overline: "ABOUT EMAAL",
-    title1: "Building Platforms,",
-    title2: "Enabling Growth.",
+    title1: "Who We Are",
+    title2: "",
     description:
       "EMAAL is a business platform builder and ecosystem that supports companies, investors, startups, nonprofit organizations, and public institutions to grow, connect, and operate in Iraq.",
 
     contact: "Contact Us",
     explore: "Explore Ventures",
 
-    whoWeAre: "WHO WE ARE",
-
-    businessTitle: "Business Platform",
-    ecosystemTitle: "& Ecosystem",
+    whoWeAre: "Who We Are",
 
     whoSubtitle:
-      "Through its platforms and ventures, EMAAL enables market access, business visibility, strategic partnerships, and practical execution support across key sectors.",
+      "EMAAL is a business platform builder and ecosystem that supports companies, investors, startups, nonprofit organizations, and public institutions to grow, connect, and operate in Iraq.",
 
     whoDescription:
-      "EMAAL supports companies, investors, startups, nonprofit organizations, and public institutions in growing, connecting, and expanding their presence across Iraq and the region.",
+      "Through its platforms and ventures, EMAAL enables market access, business visibility, strategic partnerships, and practical execution support across key sectors.",
+
     visionLabel: "OUR VISION",
 
-    visionTitle1: "Leading Business",
+    visionTitle1: "Our Vision",
 
-    visionTitle2: "Ecosystem",
+    visionTitle2: "",
 
     visionText:
       "To be a leading platform and business ecosystem driving and accelerating business growth, strengthening market connectivity, and creating investment opportunities across Iraq and the region.",
 
     missionLabel: "OUR MISSION",
 
-    missionTitle1: "Enable Growth",
+    missionTitle1: "Our Mission",
 
-    missionTitle2: "& Execution",
+    missionTitle2: "",
 
     missionText:
-      "We enable businesses to grow, expand, and accelerate by providing access, positioning, and execution through EMAAL’s integrated platforms and ventures.",
+      "To enable businesses to grow, expand, and accelerate by providing access, positioning, and execution through EMAAL's integrated platforms and ventures. We do this by connecting stakeholders, creating high level business platforms, enhancing media and market visibility, and supporting implementation through technology, infrastructure, and strategic partnerships.",
+
     approachLabel: "OUR APPROACH",
 
-    approachTitle1: "How EMAAL Creates",
+    approachTitle1: "Our Approach",
 
-    approachTitle2: "Impact",
+    approachTitle2: "",
 
     approachCards: [
       "Building ventures",
@@ -359,80 +354,109 @@ export const en = {
       "Connecting stakeholders",
       "Facilitating partnerships",
     ],
+
+    approachText:
+      "Supporting Business Growth and Strategic Investment\n\nEMAAL supports the growth and acceleration of SMEs by enabling access to markets, partnerships, and real business opportunities through its platforms.\n\nAt the same time, EMAAL invests in emerging sectors such as gaming and digital entertainment, including ventures like F1Gaming Empire, contributing to Iraq's evolving digital economy.",
+
     venturesLabel: "EMAAL GROUP",
 
-    venturesTitle1: "Integrated Ventures",
+    venturesTitle1: "EMAAL Group",
 
-    venturesTitle2: "Strategic Platforms &",
+    venturesTitle2: "",
 
-    venturesText:
-      "A connected ecosystem supporting business growth, media visibility, infrastructure, and digital innovation.",
+    venturesText: "",
 
     ventureCards: [
       {
-        title: "IBS",
+        title: "Iraq Business Summit (IBS)",
         description:
-          "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "View Services",
+          "A business platform connecting government, investors, and market leaders to enable partnerships, investment, and deal making.",
+        button: "Learn More",
       },
       {
         title: "Iraq 24 HD",
         description:
-          "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "View Services",
+          "A modern economic media platform focused on economic programming, market visibility, and business insight.",
+        button: "Learn More",
       },
       {
         title: "EMAAL Tech",
         description:
-          "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "View Services",
+          "Supporting execution through infrastructure, tracking systems, and digital solutions.",
+        button: "Learn More",
       },
       {
         title: "F1Gaming Empire",
         description:
-          "Strategic platform supporting growth, partnerships, and market visibility.",
-        button: "View Services",
+          "An investment in gaming and digital entertainment, reflecting EMAAL's support for emerging industries and the digital economy.",
+        button: "Learn More",
       },
     ],
+
     whatWeDoLabel: "WHAT WE DO",
 
-    whatWeDoTitle1: "Building Business",
+    whatWeDoTitle1: "What We Do",
 
-    whatWeDoTitle2: "Platforms & Ventures",
+    whatWeDoTitle2: "",
 
-    whatWeDoText:
-      "EMAAL supports growth, market connectivity, and strategic execution across multiple sectors.",
+    whatWeDoText: "",
 
     whatWeDoCards: [
-      "Venture Building & Investment",
-      "Platforms & Ecosystems",
-      "Government Relations & Market Access",
-      "Infrastructure & Innovation",
-      "Media & Market Visibility",
-      "Strategic Partnerships",
+      {
+        title: "Venture Building & Investment",
+        description:
+          "We build, support, and invest in businesses across high potential and emerging sectors.",
+      },
+      {
+        title: "Platforms & Ecosystems",
+        description:
+          "We create platforms such as the Iraq Business Summit (IBS) that enable engagement, partnerships, and opportunity.",
+      },
+      {
+        title: "Government Relations & Market Access",
+        description:
+          "We facilitate connections between the private sector, government institutions, and key market stakeholders.",
+      },
+      {
+        title: "Infrastructure & Innovation",
+        description:
+          "We support projects across digital infrastructure, logistics, and technology driven solutions.",
+      },
+      {
+        title: "Media & Market Visibility",
+        description:
+          "We support positioning and visibility through strategic content, economic media, and market focused programming.",
+      },
     ],
 
-    whatWeDoDescription:
-      "Supporting businesses and institutions through practical execution, connectivity, and growth-focused initiatives.",
-    internationalLabel: "INTERNATIONAL ENGAGEMENT",
+    internationalLabel: "INTERNATIONAL ENGAGEMENT & CONFERENCES",
 
-    internationalTitle1: "Global Conferences",
+    internationalTitle1: "International Engagement",
 
-    internationalTitle2: "& Strategic Participation",
+    internationalTitle2: "& Conferences",
 
     internationalText:
-      "EMAAL facilitates participation in leading international conferences and business platforms within Iraq and globally, supporting companies, investors, startups, nonprofit organizations, and public institutions in positioning, coordination, and strategic engagement.",
+      "EMAAL facilitates participation in leading international conferences and business platforms both within Iraq and globally.\n\nEMAAL supports companies, investors, startups, nonprofit organizations, and public institutions in positioning, coordination, and strategic engagement, enabling participation in well-recognized international conferences and business platforms, while connecting them with relevant stakeholders, markets, and opportunities. We support companies investors, organizations in positioning, coordination, and engagement ensuring they connect with the right stakeholders and opportunities.",
 
     impactLabel: "IMPACT",
 
-    impactTitle1: "Creating Long-Term",
+    impactTitle1: "Impact",
 
-    impactTitle2: "Value",
+    impactTitle2: "",
 
     impactText:
-      "EMAAL’s work is centered on creating measurable impact through platforms, partnerships, and long-term value creation across Iraq and the region.",
+      "EMAAL's work is centered on creating measurable impact through platforms, partnerships, and long term value creation.",
 
-    impactButton: "Build with EMAAL",
+    buildLabel: "BUILD WITH EMAAL",
+
+    buildTitle1: "Build with EMAAL",
+
+    buildTitle2: "",
+
+    buildText:
+      "Whether you are a company, investor, startup, nonprofit organization, or public institution, EMAAL provides the platform to connect, engage, and grow in Iraq and beyond.",
+
+    impactButton: "Contact Us",
   },
   whatWeDo: {
   badge: "EMAAL | What We Do",
@@ -456,7 +480,7 @@ export const en = {
       {
         title: "Platforms & Ecosystems",
         description:
-          "We create platforms that bring together decision-makers, investors, and private sector leaders enabling engagement, partnerships, and real opportunities.",
+          "We create platforms that bring together decision makers, investors, and private sector leaders enabling engagement, partnerships, and real opportunities.",
       },
 
       {
@@ -488,7 +512,7 @@ export const en = {
       {
         title: "Iraq Business Summit (IBS)",
         description:
-          "Enabling access, partnerships, and high-level business engagement.",
+          "Enabling access, partnerships, and high level business engagement.",
       },
 
       {
@@ -525,7 +549,7 @@ export const en = {
       title: "A Platform For Business",
 
       description:
-        "A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
+        "A high level platform bringing together government decision makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
 
       ctaPrimary: "Become a Partner",
 
@@ -540,11 +564,11 @@ export const en = {
       title: "Why IBS",
 
       description:
-        "IBS is designed as a deal-driven platform where companies engage directly with decision-makers, explore opportunities, and position themselves within Iraq’s key sectors.",
+        "IBS is designed as a deal driven platform where companies engage directly with decision makers, explore opportunities, and position themselves within Iraq’s key sectors.",
 
       items: [
         "Direct access to ministers and regulators",
-        "High-level business and investment discussions",
+        "High level business and investment discussions",
         "Exposure to key sectors shaping Iraq’s economy",
         "Structured engagement beyond traditional events",
       ],
@@ -554,11 +578,11 @@ export const en = {
       title: "Who Participated?",
 
       description:
-        "IBS brings together a curated group of decision-makers, industry leaders, and institutions shaping Iraq’s economic landscape.",
+        "IBS brings together a curated group of decision makers, industry leaders, and institutions shaping Iraq’s economic landscape.",
 
       groups: [
         {
-          title: "Government & Decision-Makers",
+          title: "Government & Decision Makers",
 
           items: [
             "Ministers and senior officials from key ministries",
@@ -628,15 +652,15 @@ export const en = {
           name: "Strategic Partner",
 
           description:
-            "Full sector leadership and high-level influence.",
+            "Full sector leadership and high level influence.",
 
           features: [
             "Private ministerial dialogue with relevant government entities",
             "Keynote speech in main summit session",
             "Executive presentation of company vision and projects",
-            "Lead participation in high-level panel discussions",
+            "Lead participation in high level panel discussions",
             "Participation and chairing of executive roundtables",
-            "Direct access to decision-makers and curated meetings",
+            "Direct access to decision makers and curated meetings",
             "Ability to invite targeted government entities",
             "Access to full attendee network",
             "Participation in exclusive closed sessions",
@@ -648,7 +672,7 @@ export const en = {
           name: "Platinum Partner",
 
           description:
-            "High-level engagement and strong positioning.",
+            "High level engagement and strong positioning.",
 
           features: [
             "Speaking role in main sector panel",
@@ -700,10 +724,10 @@ export const en = {
 
       items: [
         "Direct engagement with government and regulators",
-        "Access to high-level business and investment discussions",
+        "Access to high level business and investment discussions",
         "Curated meetings with relevant stakeholders",
         "Strong institutional positioning and visibility",
-        "Participation in sector-defining conversations",
+        "Participation in sector defining conversations",
       ],
     },
 
@@ -711,12 +735,12 @@ export const en = {
       title: "HOUSE Platform For Strategic Partner",
 
       description:
-        "The HOUSE Platform is a private, fully branded stage under the Strategic Partner’s name — designed as a mini-summit within IBS.",
+        "The HOUSE Platform is a private, fully branded stage under the Strategic Partner’s name, designed as a mini summit within IBS.",
 
       items: [
         "Lead investment and economic discussions aligned with company priorities",
         "Present projects, launch initiatives, and sign agreements",
-        "Engage directly with government stakeholders and key decision-makers",
+        "Engage directly with government stakeholders and key decision makers",
         "Invite partners and targeted participants to a focused executive session",
         "Build partnerships and accelerate investment opportunities",
       ],
@@ -734,7 +758,7 @@ export const en = {
       items: [
         "Executive roundtables focused on real opportunities",
         "Structured B2B meetings",
-        "Sector-driven discussions",
+        "Sector driven discussions",
         "Project launches and partnership announcements",
       ],
     },
@@ -743,7 +767,7 @@ export const en = {
       title: "Join IBS",
 
       description:
-        "Be part of a platform that connects business with decision-making.",
+        "Be part of a platform that connects business with decision making.",
 
       primary: "Become a Partner",
 
@@ -792,7 +816,7 @@ export const en = {
     cta: {
       title: "Start A Conversation With Us",
       description:
-        "Whether you are looking for investment opportunities, partnerships, or strategic collaboration — we’re ready to connect.",
+        "Whether you are looking for investment opportunities, partnerships, or strategic collaboration. We’re ready to connect.",
       button: "Contact Our Team",
     },
   },
@@ -804,7 +828,7 @@ export const en = {
     paragraphs: [
       "At EMAAL Business Space, we are deeply committed to safeguarding the privacy and confidentiality of all personal information collected through our business consultancy services and website. This Privacy Policy outlines how we collect, use, store, and protect your data in accordance with applicable data protection laws.",
       "We collect personal information such as your name, contact details, business information, and communication records solely for the purpose of providing professional consultancy services, enhancing user experience, and maintaining effective communication. Additionally, our website uses cookies and similar tracking technologies to improve functionality, analyze site usage, and tailor content to your preferences. You may manage or disable cookies through your browser settings; however, please note that certain features of the website may be limited as a result.",
-      "We may engage trusted third-party service providers to assist in delivering our services, such as IT hosting, analytics, and marketing support. These third parties are contractually obligated to maintain the confidentiality and security of your information and are prohibited from using your data for any other purpose.",
+      "We may engage trusted third party service providers to assist in delivering our services, such as IT hosting, analytics, and marketing support. These third parties are contractually obligated to maintain the confidentiality and security of your information and are prohibited from using your data for any other purpose.",
       "We do not sell, rent, or trade your personal information to external parties without your explicit consent, except where required by law or to protect our legal rights.",
       "We implement appropriate technical and organizational measures to protect your data from unauthorized access, disclosure, alteration, or destruction.",
       "By using our services and accessing our website, you acknowledge and consent to the practices described in this Privacy Policy.",
@@ -826,7 +850,7 @@ export const en = {
     },
     editionNotFound: {
       title: "Edition not found",
-      description: "This IBS edition doesn't exist yet — explore other editions instead.",
+      description: "This IBS edition doesn't exist yet. Explore other editions instead.",
       cta: "All editions",
     },
   },

@@ -7,7 +7,7 @@ import { WhyIbs } from "@/components/ibs/WhyIbs";
 import { WhoParticipated } from "@/components/ibs/WhoParticipated";
 import { KeySectors } from "@/components/ibs/KeySectors";
 import { NotableLeaders } from "@/components/ibs/NotableLeaders";
-import { IbsGeneralSponsors } from "@/components/ibs/IbsGeneralSponsors";
+import { TieredSponsors } from "@/components/ibs/TieredSponsors";
 import { SponsorshipTiers } from "@/components/ibs/SponsorshipTiers";
 import { HousePlatform } from "@/components/ibs/HousePlatform";
 import { BeyondASummit } from "@/components/ibs/BeyondASummit";
@@ -44,7 +44,7 @@ export default async function IbsOverviewPage({
 				<WhoParticipated />
 				<KeySectors />
 				<NotableLeaders />
-				<IbsGeneralSponsors />
+				<TieredSponsors />
 				<EditionsRail editions={editions} />
 				<SponsorshipTiers />
 				<HousePlatform />

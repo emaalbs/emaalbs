@@ -21,11 +21,21 @@ export type FeaturedLeader = {
 	role: Localized;
 	photo?: string;
 };
+export type TieredSponsorLogo = {
+	src: string;
+	alt: Localized;
+	href?: string;
+};
+export type SponsorTierData = {
+	id: string;
+	name: Localized;
+	logos: TieredSponsorLogo[];
+};
 
 export const ibsOverview = {
 	hero: {
 		overline: { en: "Iraq Business Summit", ar: "قمة الأعمال العراقية" } as Localized,
-		title: { en: "A Platform For Business.", ar: "منصة للأعمال." } as Localized,
+		title: { en: "Iraq Business Summit (IBS)", ar: "قمة الأعمال العراقية" } as Localized,
 		description: {
 			en: "A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
 			ar: "منصة رفيعة المستوى تجمع صنّاع القرار الحكوميين والمستثمرين وقادة القطاع الخاص لتمكين الشراكات والاستثمار وتحقيق نتائج أعمال حقيقية في العراق.",
@@ -84,13 +94,13 @@ export const ibsOverview = {
 		] as Pillar[],
 	},
 	who: {
-		overline: { en: "Who Participates", ar: "من يشارك" } as Localized,
+		overline: { en: "Who Participated", ar: "من شارك" } as Localized,
 		title: {
-			en: "A curated room of decision-makers.",
-			ar: "قاعة منتقاة من صنّاع القرار.",
+			en: "Who Participated?",
+			ar: "من شارك؟",
 		} as Localized,
 		description: {
-			en: "IBS brings together a curated group of decision-makers, industry leaders, and institutions shaping Iraq's economic landscape.",
+			en: "IBS brings together a curated group of decision-makers, industry leaders, and institutions shaping Iraq’s economic landscape.",
 			ar: "تجمع القمة نخبة منتقاة من صنّاع القرار وقادة القطاعات والمؤسسات التي تشكّل المشهد الاقتصادي في العراق.",
 		} as Localized,
 		groups: [
@@ -177,12 +187,12 @@ export const ibsOverview = {
 			{
 				name: { en: "Hayam Al-Yasri", ar: "هيام الياسري" },
 				role: { en: "Minister of Communication", ar: "وزيرة الاتصالات" },
-				photo: "https://randomuser.me/api/portraits/women/44.jpg",
+				photo: "/images/People/Hayam Al-Yasri.jpg",
 			},
 			{
 				name: { en: "Khalid Batal", ar: "خالد بتال" },
 				role: { en: "Minister of Industry", ar: "وزير الصناعة" },
-				photo: "https://randomuser.me/api/portraits/men/41.jpg",
+				photo: "/images/People/Khalid Batal.jpg",
 			},
 			{
 				name: {
@@ -193,7 +203,7 @@ export const ibsOverview = {
 					en: "Director General, General Company for Iraqi Ports",
 					ar: "المدير العام، الشركة العامة لموانئ العراق",
 				},
-				photo: "https://randomuser.me/api/portraits/men/52.jpg",
+				photo: "/images/People/Dr. Farhan Al-Fartusi.jpg",
 			},
 			{
 				name: { en: "Fadi Al-Faqiyah", ar: "فادي الفقيه" },
@@ -201,7 +211,7 @@ export const ibsOverview = {
 					en: "CEO, Bank of International Development",
 					ar: "الرئيس التنفيذي، بنك التنمية الدولي",
 				},
-				photo: "https://randomuser.me/api/portraits/men/76.jpg",
+				photo: "/images/People/Fadi Al-Faqiyah.jpg",
 			},
 			{
 				name: { en: "Saman Bojan", ar: "سامان بوجان" },
@@ -209,7 +219,7 @@ export const ibsOverview = {
 					en: "Central Region General Manager, Asiacell",
 					ar: "المدير العام للمنطقة الوسطى، آسياسيل",
 				},
-				photo: "https://randomuser.me/api/portraits/men/85.jpg",
+				photo: "/images/People/images.jpg",
 			},
 		] as FeaturedLeader[],
 	},
@@ -427,32 +437,106 @@ export const ibsOverview = {
 			ar: "اطلب المشاركة",
 		} as Localized,
 	},
-	generalSponsors: {
-		overline: { en: "Our Partners", ar: "شركاؤنا" } as Localized,
+	tieredSponsors: {
+		overline: { en: "Sponsors", ar: "الرعاة" } as Localized,
 		title: {
-			en: "Trusted by leading organizations.",
-			ar: "ثقة مؤسسات رائدة.",
+			en: "Our sponsors and partners.",
+			ar: "رعاتنا وشركاؤنا.",
 		} as Localized,
 		description: {
-			en: "Organizations that have partnered with IBS across editions.",
-			ar: "مؤسسات شاركت مع قمة الأعمال العراقية عبر النسخ.",
+			en: "Organizations supporting IBS at every level.",
+			ar: "مؤسسات تدعم قمة الأعمال العراقية على كل المستويات.",
 		} as Localized,
-		logos: [
-			{ src: "/logos/ibs-general/idb.png", alt: { en: "International Development Bank", ar: "بنك التنمية الدولي" } },
-			{ src: "/logos/ibs-general/bgt.png", alt: { en: "BGT", ar: "BGT" } },
-			{ src: "/logos/ibs-general/icc.png", alt: { en: "ICC", ar: "ICC" } },
-			{ src: "/logos/ibs-general/nokia.png", alt: { en: "Nokia", ar: "نوكيا" } },
-			{ src: "/logos/ibs-general/visa.png", alt: { en: "Visa", ar: "فيزا" } },
-			{ src: "/logos/ibs-general/euler.png", alt: { en: "Euler", ar: "أويلر" } },
-			{ src: "/logos/ibs-general/gfp.png", alt: { en: "GFP", ar: "GFP" } },
-			{ src: "/logos/ibs-general/genesys.png", alt: { en: "Genesys", ar: "جينيسيس" } },
-			{ src: "/logos/ibs-general/oliver-wyman.png", alt: { en: "Oliver Wyman", ar: "أوليفر وايمان" } },
-			{ src: "/logos/ibs-general/supercell.png", alt: { en: "SuperCell", ar: "سوبرسل" } },
-			{ src: "/logos/ibs-general/earthlink.png", alt: { en: "Earthlink", ar: "إيرثلنك" } },
-			{ src: "/logos/ibs-general/basrah-gas.webp", alt: { en: "Basrah Gas", ar: "غاز البصرة" } },
-			{ src: "/logos/ibs-general/ifpmc.png", alt: { en: "IFPMC", ar: "IFPMC" } },
-			{ src: "/logos/ibs-general/technital.png", alt: { en: "Technital", ar: "تكنيتال" } },
-		] as { src: string; alt: Localized }[],
+		tiers: [
+			{
+				id: "strategic",
+				name: { en: "Strategic Partner", ar: "الراعي الاستراتيجي" },
+				logos: [
+					{ src: "/logos/2.png", alt: { en: "Asia Cell", ar: "آسيا سيل" } },
+					{ src: "/logos/4.png", alt: { en: "First Iraqi bank", ar: "مصرف العراق الأول الإسلامي" } },
+					{ src: "/logos/Al Basrah Mas.png", alt: { en: "Al Basrah Mas Company for general contracting LTD", ar: "شركة البصرة ماس للإنشاءات العامة المحدودة" } },
+					{ src: "/logos/Daewoo Engineering & Construction.png", alt: { en: "Daewoo Engineering & Construction", ar: "شركة دايوو الهندسية والبناء" } },
+					{ src: "/logos/IDB-Logo-Primary-Dual-RGB-e1675853108729.png", alt: { en: "International devlopment bank", ar: "مصرف التنمية الدولي" } },
+					{ src: "/logos/Jwar Al Khaleej.png", alt: { en: "Jwar Al Khaleej", ar: "جوهر الخليج" } },
+					{ src: "/logos/Logo Technital - CMYK (10-11-21-19).png", alt: { en: "TECHNITAL", ar: "تكنولوجيا" } },
+					{ src: "/logos/Picture182.png", alt: { en: "First Iraqi Islamic Bank", ar: "مصرف العراق الأول الإسلامي" } },
+					{ src: "/logos/Ports logo.png", alt: { en: "General Company For Ports Of Iraq", ar: "الشركة العامة لموانيء العراق" } },
+					{ src: "/logos/SuperCell.png", alt: { en: "SuperCell", ar: "سوبر سيل" } },
+					{ src: "/logos/Tiryaki Agro.png", alt: { en: "Tiryaki", ar: "تيريكي" } },
+
+
+				] as TieredSponsorLogo[],
+			},
+			{
+				id: "platinum",
+				name: { en: "Platinum Partner", ar: "الراعي البلاتيني" },
+				logos: [
+					{ src: "/logos/Basrah-Gas.webp", alt: { en: "Basrah Gas Company", ar: "شركة غاز البصرة" } },
+					{ src: "/logos/Earthlink_Telecommunications_Logo.png", alt: { en: "Earthlink Telecommunications", ar: "ايرث لينك تيليكوم" } },
+					{ src: "/logos/Euler.png", alt: { en: "Euler Hermes", ar: "ايلر هيرمس" } },
+					{ src: "/logos/genesys.png", alt: { en: "Genesys", ar: "جينيزيس" } },
+					{ src: "/logos/imathia.png", alt: { en: "Imathia construction", ar: "إماتيا للإنشاءات" } },
+					{ src: "/logos/jib.png", alt: { en: "JIB", ar: "جي آي بي" } },
+					{ src: "/logos/nbtel-logo.png", alt: { en: "NBTEL", ar: "نبتيل" } },
+					{ src: "/logos/Nokia.png", alt: { en: "Nokia", ar: "نوكيا" } },
+					{ src: "/logos/Picture7.png", alt: { en: "Toyota", ar: "تويوتا" } },
+					{ src: "/logos/Picture17.png", alt: { en: "fastlink", ar: "فاست لينك" } },
+					{ src: "/logos/Picture18 (1).png", alt: { en: "Trade Bank Of Iraq", ar: "بنك التجارة العراقي" } },
+					{ src: "/logos/Picture20.png", alt: { en: "Agile", ar: "أجيل" } },
+					{ src: "/logos/Picture23.png", alt: { en: "ZhenHua Oil", ar: "زهنهوا النفط" } },
+					{ src: "/logos/Picture24.png", alt: { en: "First Finance", ar: "فرست فايننس" } },
+					{ src: "/logos/Picture25.png", alt: { en: "Fortinet", ar: "فورتينت" } },
+					{ src: "/logos/Picture26.png", alt: { en: "DARI", ar: "داري" } },
+					{ src: "/logos/Picture27.png", alt: { en: "ANKIDO For Information Technology", ar: "أنكيدو لتقنية المعلومات" } },
+					{ src: "/logos/Picture30.png", alt: { en: "BTP Infrastrutture", ar: "بي تي بي للبنية التحتية" } },
+					{ src: "/logos/Picture31.png", alt: { en: "Arab payment service", ar: "العرب للدفع الإلكتروني" } },
+					{ src: "/logos/Picture32.png", alt: { en: "BAGHDAD CHAMBER OF COMMERCE", ar: "غرفة بغداد التجارية" } },
+					{ src: "/logos/Picture33.png", alt: { en: "Basrah Gas Company", ar: "شركة غاز البصرة" } },
+					{ src: "/logos/Picture36.png", alt: { en: "Shell", ar: "شيل" } },
+					{ src: "/logos/Picture38.png", alt: { en: "NIC (National investment Commission)", ar: "هيئة الاستثمار الوطني" } },
+					{ src: "/logos/Picture41.png", alt: { en: "Health Insurance Commission", ar: "هيئة التأمين الصحي" } },
+					{ src: "/logos/Picture43.png", alt: { en: "Mitsubishi", ar: "ميتسوبيشي" } },
+					{ src: "/logos/Picture44.png", alt: { en: "Aramex", ar: "ارامكس" } },
+					{ src: "/logos/Picture46.png", alt: { en: "Iraq Private Banks league", ar: "رابطة البنوك الخاصة العراقية" } },
+					{ src: "/logos/Picture47.png", alt: { en: "Baker Hughes", ar: "بيكر هيوز" } },
+					{ src: "/logos/Picture47.png", alt: { en: "Baker Hughes", ar: "بيكر هيوز" } },
+					{ src: "/logos/Picture47.png", alt: { en: "Baker Hughes", ar: "بيكر هيوز" } },
+					{ src: "/logos/Visa_Inc._logo.png", alt: { en: "Visa", ar: "فيزا" } },
+
+				] as TieredSponsorLogo[],
+			},
+			{
+				id: "gold",
+				name: { en: "Gold Partner", ar: "الراعي الذهبي" },
+				logos: [
+					{ src: "/logos/BoB Logo-2.png", alt: { en: "Bank of Baghdad", ar: "بنك بغداد" } },
+					{ src: "/logos/IFPMC.png", alt: { en: "Iraq Forum of policy making consultation", ar: "منتدى العراق للتشاور بشأن صنع السياسات" } },
+					{ src: "/logos/Ts.png", alt: { en: "TSINGSHAN", ar: "تسينغ شان" } },
+					{ src: "/logos/مفرغ x4.png", alt: { en: "Iraq 24", ar: "العراق 24" } },
+					{ src: "/logos/BGT.png", alt: { en: "BASRA GATE TERMINAL", ar: "بوابة البصرة" } },
+					{ src: "/logos/4k logo.png", alt: { en: "Techo Center Engineering", ar: "مركز التكنولوجيا الهندسي" } },
+
+				] as TieredSponsorLogo[],
+			},
+			{
+				id: "government",
+				name: { en: "Government Partner", ar: "الراعي الحكومي" },
+				logos: [
+					{ src: "/logos/BOCLOGO1.png", alt: { en: "Basra Oil Company", ar: "شركة البصرة للنفط" } },
+					{ src: "/logos/Dev Road Logo.png", alt: { en: "Devlopment Road", ar: "طريق التنمية" } },
+					{ src: "/logos/GFP.png", alt: { en: "Great Fao Port", ar: "ميناء الفاو الكبير" } },
+					{ src: "/logos/ICC.png", alt: { en: "Industrial Cities Corporation", ar: "هيئة المدن الصناعية" } },
+					{ src: "/logos/Picture37.png", alt: { en: "Iraqi Securities commission", ar: "هيئة الأوراق المالية العراقية" } },
+					{ src: "/logos/Picture39.png", alt: { en: "Midland Oil Company", ar: "شركة نفط الوسط " } },
+					{ src: "/logos/Picture40.png", alt: { en: "", ar: "" } },
+					{ src: "/logos/Picture39.png", alt: { en: "Midland Oil Company", ar: "شركة نفط الوسط " } },
+					{ src: "/logos/شعار_وزارة_النقل_(1).png", alt: { en: "Misistry of Transportation", ar: "وزارة النقل" } },
+					{ src: "/logos/صندوق العراق للتنمية.png", alt: { en: "Iraq Development Fund", ar: "صندوق العراق للتنمية" } },
+
+
+				] as TieredSponsorLogo[],
+			},
+		] as SponsorTierData[],
 	},
 	editions: {
 		overline: { en: "Editions", ar: "النسخ" } as Localized,

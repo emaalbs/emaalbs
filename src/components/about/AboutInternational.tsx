@@ -27,7 +27,7 @@ export function AboutInternational() {
 						<br />
 						{t.aboutp.internationalTitle2}
 					</h2>
-					<p className="mt-6 text-[15px] leading-[1.9] text-[var(--color-silver)]">
+					<p className="mt-6 whitespace-pre-line text-[15px] leading-[1.9] text-[var(--color-silver)]">
 						{t.aboutp.internationalText}
 					</p>
 				</div>

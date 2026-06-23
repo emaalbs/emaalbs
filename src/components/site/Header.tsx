@@ -97,13 +97,14 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 	const onLight = forceLight || scrolled;
 
 	return (
-		<header
-			className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-				onLight
-					? "bg-white/90 backdrop-blur-md border-b border-[var(--color-line)] shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
-					: "bg-transparent border-b border-transparent"
-			}`}
-		>
+		<>
+			<header
+				className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+					onLight
+						? "bg-white/90 backdrop-blur-md border-b border-[var(--color-line)] shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+						: "bg-transparent border-b border-transparent"
+				}`}
+			>
 			<Container>
 				<div
 					className={`flex items-center justify-between transition-all duration-300 ${
@@ -348,13 +349,10 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 					</div>
 				</div>
 			</Container>
+		</header>
 
-			{/* Mobile menu */}
-			<div
-				className={`fixed inset-0 z-50 bg-[var(--color-navy-dark)] transition-opacity duration-300 lg:hidden ${
-					open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-				}`}
-			>
+		{open && (
+			<div className="fixed inset-0 z-50 bg-[var(--color-navy-dark)] lg:hidden">
 				<Container>
 					<div className="flex h-[88px] items-center justify-between">
 						<Logo tone="dark" />
@@ -460,16 +458,16 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 					</div>
 				</Container>
 			</div>
+		)}
 
-			{/* Locale transition overlay */}
-			{isPending && (
-				<div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--color-navy-dark)]/95 backdrop-blur-sm transition-opacity duration-300">
-					<div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--color-gold)]/20 border-t-[var(--color-gold)]" />
-					<p className="mt-4 text-sm font-medium text-white/80">
-						{locale === "en" ? "Switching language..." : "جاري تغيير اللغة..."}
-					</p>
-				</div>
-			)}
-		</header>
+		{isPending && (
+			<div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--color-navy-dark)]/95 backdrop-blur-sm transition-opacity duration-300">
+				<div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--color-gold)]/20 border-t-[var(--color-gold)]" />
+				<p className="mt-4 text-sm font-medium text-white/80">
+					{locale === "en" ? "Switching language..." : "جاري تغيير اللغة..."}
+				</p>
+			</div>
+		)}
+	</>
 	);
 }

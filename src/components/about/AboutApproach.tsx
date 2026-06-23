@@ -48,6 +48,24 @@ export function AboutApproach() {
 						</div>
 					))}
 				</div>
+
+				{t.aboutp.approachText && (
+					<div className="mx-auto mt-16 max-w-3xl text-center">
+						<div className="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+						<div className="mt-10 space-y-4">
+							{t.aboutp.approachText.split("\n\n").map((paragraph, idx) => (
+								<p
+									key={idx}
+									className={`text-[15px] leading-[1.85] text-[var(--color-silver)] ${
+										idx === 0 ? "font-display text-xl font-bold text-white" : ""
+									}`}
+								>
+									{paragraph}
+								</p>
+							))}
+						</div>
+					</div>
+				)}
 			</Container>
 		</section>
 	);

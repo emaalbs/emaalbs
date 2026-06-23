@@ -42,11 +42,11 @@ export function IbsSectionHeading({
 					{overline}
 				</div>
 			) : null}
-			<h2
+			{/* <h2
 				className={`mt-4 font-display font-bold tracking-display text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.15] ${titleColor}`}
 			>
 				{title}
-			</h2>
+			</h2> */}
 			{description ? (
 				<p
 					className={`mt-5 max-w-2xl text-[15.5px] leading-[1.7] ${descColor}`}
