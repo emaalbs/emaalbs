@@ -34,7 +34,7 @@ export function HomeAbout() {
 				<div className="relative mt-14 overflow-hidden rounded-2xl">
 					<div className="relative aspect-[16/10] w-full sm:aspect-[18/9] lg:aspect-[21/9]">
 						<Image
-							src="/images/ibs.png"
+							src="/images/ibs-platform.webp"
 							alt="Iraq · UAE skyline"
 							fill
 							sizes="(max-width: 1280px) 100vw, 1280px"

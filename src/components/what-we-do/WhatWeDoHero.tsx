@@ -85,7 +85,7 @@ export function WhatWeDoHero() {
 				>
 					<div className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
 						<Image
-							src="/images/WwdHero.png"
+							src="/images/wwd-hero.webp"
 							alt="Hero"
 							width={800}
 							height={900}

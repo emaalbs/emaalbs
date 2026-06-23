@@ -8,21 +8,21 @@ import { fadeUp } from "./motion";
 
 const platforms = [
 	{
-		image: "/images/ibs.png",
+		image: "/images/ibs-platform.webp",
 		index: 0,
 		Icon: Building2,
 		accent: "var(--color-gold)",
 		tag: "PLATFORM",
 	},
 	{
-		image: "/images/ibs-feature.jpg",
+		image: "/images/keynote-speech.webp",
 		index: 1,
 		Icon: Megaphone,
 		accent: "var(--color-teal)",
 		tag: "MEDIA",
 	},
 	{
-		image: "/images/group-tech.jpg",
+		image: "/images/venture-tech.webp",
 		index: 2,
 		Icon: Cpu,
 		accent: "var(--color-navy)",

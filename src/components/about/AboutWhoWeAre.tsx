@@ -7,9 +7,9 @@ import { SectionHeading } from "@/components/ui/Overline";
 import { useI18n } from "@/i18n/provider";
 
 const images = [
-	"/images/about-meeting.JPG",
-	"/images/about-2.jpg",
-	"/images/about-3.jpg",
+	"/images/about-meeting.webp",
+	"/images/about-collaboration.webp",
+	"/images/about-team.webp",
 ];
 
 export function AboutWhoWeAre() {

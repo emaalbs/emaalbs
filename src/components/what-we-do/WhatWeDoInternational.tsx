@@ -19,7 +19,7 @@ export function WhatWeDoInternational() {
 			<div className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2 lg:px-8">
 				<div>
 					<Image
-						src="/images/about-secondary.jpg"
+						src="/images/about-secondary.webp"
 						alt=""
 						width={700}
 						height={700}

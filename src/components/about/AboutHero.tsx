@@ -14,7 +14,7 @@ export function AboutHero() {
 		<section className="relative isolate flex min-h-[70svh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-28">
 			<div className="absolute inset-0 -z-10">
 				<Image
-					src="/images/Screenshot 2026-05-06 223809.png"
+					src="/images/about-hero.webp"
 					alt=""
 					fill
 					priority

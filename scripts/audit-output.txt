@@ -1,0 +1,147 @@
+﻿Mode: AUDIT
+
+Step 1: Scanning source files for references...
+  Found 105 unique referenced paths
+
+Step 2: Listing all assets...
+  Found 120 asset files
+
+Step 3: Identifying unused assets...
+  17 unused files:
+    - /images/about-boardroom.jpg (157.4KB)
+    - /images/cta-bg.jpg (217.8KB)
+    - /images/intro2.JPG (14624.0KB)
+    - /images/whyIBS.png (4339.3KB)
+    - /images/╪╣╪▒╪¿┘è.mp4 (7473.6KB)
+    - /logos/ibs-general/basrah-gas.webp (8.8KB)
+    - /logos/ibs-general/earthlink.png (3.3KB)
+    - /logos/ibs-general/euler.png (2.6KB)
+    - /logos/ibs-general/genesys.png (5.2KB)
+    - /logos/ibs-general/gfp.png (6.7KB)
+    - /logos/ibs-general/ifpmc.png (27.0KB)
+    - /logos/ibs-general/oliver-wyman.png (3.1KB)
+    - /logos/ibs-general/supercell.png (5.0KB)
+    - /logos/ibs-general/technital.png (3.4KB)
+    - /logos/magnific__extend-and-recompose-this-image-to-fit-a-45-vertic__18338.png (5190.8KB)
+    - /videos/ibs-ar.mp4 (3897.5KB)
+    - /videos/ibs-en.mp4 (4158.4KB)
+
+Step 4: Building rename mappings...
+  113 rename mappings defined
+
+  /images/hero-summit.jpg  ΓåÆ  /images/hero-summit.webp
+  /images/highlight-1.jpg  ΓåÆ  /images/summit-stage.webp
+  /images/highlight-2.jpg  ΓåÆ  /images/panel-discussion.webp
+  /images/highlight-3.jpg  ΓåÆ  /images/networking-session.webp
+  /images/ibs-feature.jpg  ΓåÆ  /images/keynote-speech.webp
+  /images/about-meeting.JPG  ΓåÆ  /images/about-meeting.webp
+  /images/leaders.JPG  ΓåÆ  /images/leadership-delegation.webp
+  /images/group-tech.jpg  ΓåÆ  /images/venture-tech.webp
+  /images/group-ibs.jpg  ΓåÆ  /images/venture-ibs.webp
+  /images/group-iraq24.jpg  ΓåÆ  /images/venture-iraq24.webp
+  /images/group-gaming.jpg  ΓåÆ  /images/venture-gaming.webp
+  /images/about-2.jpg  ΓåÆ  /images/about-collaboration.webp
+  /images/about-3.jpg  ΓåÆ  /images/about-team.webp
+  /images/about-secondary.jpg  ΓåÆ  /images/about-secondary.webp
+  /images/cta.JPG  ΓåÆ  /images/cta-bg.webp
+  /images/ibs.png  ΓåÆ  /images/ibs-platform.webp
+  /images/WwdHero.png  ΓåÆ  /images/wwd-hero.webp
+  /images/intro1.png  ΓåÆ  /images/wwd-intro-1.webp
+  /images/House.JPG  ΓåÆ  /images/house-platform.webp
+  /images/Screenshot 2026-05-06 223809.png  ΓåÆ  /images/about-hero.webp
+  /images/People/Hayam Al-Yasri.jpg  ΓåÆ  /images/people/hayam-al-yasri.webp
+  /images/People/Khalid Batal.jpg  ΓåÆ  /images/people/khalid-batal.webp
+  /images/People/Dr. Farhan Al-Fartusi.jpg  ΓåÆ  /images/people/dr-farhan-al-fartusi.webp
+  /images/People/Fadi Al-Faqiyah.jpg  ΓåÆ  /images/people/fadi-al-faqiyah.webp
+  /images/People/images.jpg  ΓåÆ  /images/people/saman-bojan.webp
+  /images/╪º┘å┘â┘ä┘è╪▓┘è.mp4  ΓåÆ  /videos/ibs-2025-recap-en.mp4
+  /logos/2.png  ΓåÆ  /logos/asiacell.webp
+  /logos/4.png  ΓåÆ  /logos/first-iraqi-bank.webp
+  /logos/Al Basrah Mas.png  ΓåÆ  /logos/al-basrah-mas.webp
+  /logos/Daewoo Engineering & Construction.png  ΓåÆ  /logos/daewoo-engineering.webp
+  /logos/IDB-Logo-Primary-Dual-RGB-e1675853108729.png  ΓåÆ  /logos/international-development-bank.webp
+  /logos/Jwar Al Khaleej.png  ΓåÆ  /logos/jwar-al-khaleej.webp
+  /logos/Logo Technital - CMYK (10-11-21-19).png  ΓåÆ  /logos/technital-cmyk.webp
+  /logos/Picture182.png  ΓåÆ  /logos/first-iraqi-islamic-bank.webp
+  /logos/Ports logo.png  ΓåÆ  /logos/general-company-ports-iraq.webp
+  /logos/SuperCell.png  ΓåÆ  /logos/supercell.webp
+  /logos/Tiryaki Agro.png  ΓåÆ  /logos/tiryaki-agro.webp
+  /logos/Basrah-Gas.webp  ΓåÆ  /logos/basrah-gas.webp
+  /logos/Earthlink_Telecommunications_Logo.png  ΓåÆ  /logos/earthlink.webp
+  /logos/Euler.png  ΓåÆ  /logos/euler-hermes.webp
+  /logos/genesys.png  ΓåÆ  /logos/genesys.webp
+  /logos/imathia.png  ΓåÆ  /logos/imathia-construction.webp
+  /logos/jib.png  ΓåÆ  /logos/jib.webp
+  /logos/nbtel-logo.png  ΓåÆ  /logos/nbtel.webp
+  /logos/Nokia.png  ΓåÆ  /logos/nokia.webp
+  /logos/Picture7.png  ΓåÆ  /logos/toyota.webp
+  /logos/Picture17.png  ΓåÆ  /logos/fastlink.webp
+  /logos/Picture18 (1).png  ΓåÆ  /logos/trade-bank-iraq.webp
+  /logos/Picture20.png  ΓåÆ  /logos/agile.webp
+  /logos/Picture23.png  ΓåÆ  /logos/zhenhua-oil.webp
+  /logos/Picture24.png  ΓåÆ  /logos/first-finance.webp
+  /logos/Picture25.png  ΓåÆ  /logos/fortinet.webp
+  /logos/Picture26.png  ΓåÆ  /logos/dari.webp
+  /logos/Picture27.png  ΓåÆ  /logos/ankido-it.webp
+  /logos/Picture30.png  ΓåÆ  /logos/btp-infrastrutture.webp
+  /logos/Picture31.png  ΓåÆ  /logos/arab-payment-service.webp
+  /logos/Picture32.png  ΓåÆ  /logos/baghdad-chamber-commerce.webp
+  /logos/Picture33.png  ΓåÆ  /logos/basrah-gas-company-2.webp
+  /logos/Picture36.png  ΓåÆ  /logos/shell.webp
+  /logos/Picture38.png  ΓåÆ  /logos/national-investment-commission.webp
+  /logos/Picture41.png  ΓåÆ  /logos/health-insurance-commission.webp
+  /logos/Picture43.png  ΓåÆ  /logos/mitsubishi.webp
+  /logos/Picture44.png  ΓåÆ  /logos/aramex.webp
+  /logos/Picture46.png  ΓåÆ  /logos/iraq-private-banks-league.webp
+  /logos/Picture47.png  ΓåÆ  /logos/baker-hughes.webp
+  /logos/Visa_Inc._logo.png  ΓåÆ  /logos/visa.webp
+  /logos/BoB Logo-2.png  ΓåÆ  /logos/bank-of-baghdad.webp
+  /logos/IFPMC.png  ΓåÆ  /logos/iraq-policy-making-forum.webp
+  /logos/Ts.png  ΓåÆ  /logos/tsingshan.webp
+  /logos/┘à┘ü╪▒╪║ x4.png  ΓåÆ  /logos/iraq-24.webp
+  /logos/BGT.png  ΓåÆ  /logos/basra-gate-terminal.webp
+  /logos/4k logo.png  ΓåÆ  /logos/techo-center-engineering.webp
+  /logos/BOCLOGO1.png  ΓåÆ  /logos/basra-oil-company.webp
+  /logos/Dev Road Logo.png  ΓåÆ  /logos/development-road.webp
+  /logos/GFP.png  ΓåÆ  /logos/great-fao-port.webp
+  /logos/ICC.png  ΓåÆ  /logos/industrial-cities-corporation.webp
+  /logos/Picture37.png  ΓåÆ  /logos/iraqi-securities-commission.webp
+  /logos/Picture39.png  ΓåÆ  /logos/midland-oil-company.webp
+  /logos/Picture40.png  ΓåÆ  /logos/picture40.webp
+  /logos/╪┤╪╣╪º╪▒_┘ê╪▓╪º╪▒╪⌐_╪º┘ä┘å┘é┘ä_(1).png  ΓåÆ  /logos/ministry-of-transport.webp
+  /logos/╪╡┘å╪»┘ê┘é ╪º┘ä╪╣╪▒╪º┘é ┘ä┘ä╪¬┘å┘à┘è╪⌐.png  ΓåÆ  /logos/iraq-development-fund.webp
+  /logos/Al-aliaa LOGO_Main.png  ΓåÆ  /logos/al-aliaa.webp
+  /logos/Alshaba.png  ΓåÆ  /logos/alshaba.webp
+  /logos/Technital.png  ΓåÆ  /logos/technital.webp
+  /logos/Rida-Logo-1-600x847-1.png  ΓåÆ  /logos/rida.webp
+  /logos/6.png  ΓåÆ  /logos/6.webp
+  /logos/9438╪º┘ä╪º┘à╪º┘å╪⌐ ╪º┘ä╪╣╪º┘à╪⌐.png  ΓåÆ  /logos/9438-general-secretariat.webp
+  /logos/logo-2.png  ΓåÆ  /logos/logo-2.webp
+  /logos/Picture9.png  ΓåÆ  /logos/picture9.webp
+  /logos/Picture12.png  ΓåÆ  /logos/picture12.webp
+  /logos/Picture19.png  ΓåÆ  /logos/picture19.webp
+  /logos/Picture21.png  ΓåÆ  /logos/picture21.webp
+  /logos/Picture22.png  ΓåÆ  /logos/picture22.webp
+  /logos/Picture29.png  ΓåÆ  /logos/picture29.webp
+  /logos/ibs-general/idb.png  ΓåÆ  /logos/international-development-bank.webp
+  /logos/ibs-general/bgt.png  ΓåÆ  /logos/basra-gate-terminal.webp
+  /logos/ibs-general/icc.png  ΓåÆ  /logos/industrial-cities-corporation.webp
+  /logos/ibs-general/nokia.png  ΓåÆ  /logos/nokia.webp
+  /logos/ibs-general/visa.png  ΓåÆ  /logos/visa.webp
+  /logos/ibs-general/basrah-gas.webp  ΓåÆ  /logos/basrah-gas.webp
+  /logos/ibs-general/earthlink.png  ΓåÆ  /logos/earthlink.webp
+  /logos/ibs-general/euler.png  ΓåÆ  /logos/euler-hermes.webp
+  /logos/ibs-general/genesys.png  ΓåÆ  /logos/genesys.webp
+  /logos/ibs-general/gfp.png  ΓåÆ  /logos/great-fao-port.webp
+  /logos/ibs-general/ifpmc.png  ΓåÆ  /logos/iraq-policy-making-forum.webp
+  /logos/ibs-general/oliver-wyman.png  ΓåÆ  /logos/oliver-wyman.webp
+  /logos/ibs-general/supercell.png  ΓåÆ  /logos/supercell.webp
+  /logos/ibs-general/technital.png  ΓåÆ  /logos/technital.webp
+
+  Referenced assets with NO mapping (need attention):
+    ΓÜá /videos/${isAr ? 
+    ΓÜá /logos/Logo_of_State_Organization_for_Marketing_of_Oil.png
+    ΓÜá /logos/OliverWyman_rgb_c.png
+    ΓÜá /logos/┘â┘ä ╪º┘ä┘à┘å╪º┘ü╪░.png
+    ΓÜá /logos/┘ê╪▓╪º╪▒╪⌐_╪º┘ä┘å┘ü╪╖_╪º┘ä╪╣╪▒╪º┘é┘è╪⌐.svg.png
+    ΓÜá /images/intro2.jpg

@@ -46,7 +46,7 @@ export const blogs: Blog[] = [
 				},
 				{
 					type: "image",
-					src: "/images/highlight-1.jpg",
+					src: "/images/summit-stage.webp",
 					alt: "Iraq infrastructure development",
 				},
 				{
@@ -72,7 +72,7 @@ export const blogs: Blog[] = [
 				},
 				{
 					type: "image",
-					src: "/images/group-tech.jpg",
+					src: "/images/venture-tech.webp",
 					alt: "Investment and development in Iraq",
 				},
 				{
@@ -89,9 +89,9 @@ export const blogs: Blog[] = [
 					text: "Energy remains the backbone of the Iraqi economy, but diversification is underway. Agriculture, tourism, healthcare, and education are emerging as attractive sectors. Each offers unique entry points for investors with the right local knowledge and partners.",
 				},
 				{ type: "gallery", images: [
-					"/images/highlight-1.jpg",
-					"/images/group-ibs.jpg",
-					"/images/group-iraq24.jpg",
+					"/images/summit-stage.webp",
+					"/images/venture-ibs.webp",
+					"/images/venture-iraq24.webp",
 				] },
 				{ type: "heading", text: "Conclusion" },
 				{
@@ -115,7 +115,7 @@ export const blogs: Blog[] = [
 				},
 				{
 					type: "image",
-					src: "/images/highlight-1.jpg",
+					src: "/images/summit-stage.webp",
 					alt: "تطوير البنية التحتية في العراق",
 				},
 				{ type: "heading", text: "فرص النمو والتوسع" },
@@ -140,7 +140,7 @@ export const blogs: Blog[] = [
 				},
 				{
 					type: "image",
-					src: "/images/group-tech.jpg",
+					src: "/images/venture-tech.webp",
 					alt: "الاستثمار والتطوير في العراق",
 				},
 				{
@@ -157,9 +157,9 @@ export const blogs: Blog[] = [
 					text: "يظل الطاقة العمود الفقري للاقتصاد العراقي، لكن التنويع جارٍ. الزراعة والسياحة والرعاية الصحية والتعليم هي قطاعات ناشئة جذابة. كل منها يقدم نقاط دخول فريدة للمستثمرين الذين يمتلكون المعرفة المحلية والشركاء المناسبين.",
 				},
 				{ type: "gallery", images: [
-					"/images/highlight-1.jpg",
-					"/images/group-ibs.jpg",
-					"/images/group-iraq24.jpg",
+					"/images/summit-stage.webp",
+					"/images/venture-ibs.webp",
+					"/images/venture-iraq24.webp",
 				] },
 				{ type: "heading", text: "الخلاصة" },
 				{
@@ -168,7 +168,7 @@ export const blogs: Blog[] = [
 				},
 			],
 		},
-		image: "/images/hero-summit.jpg",
+		image: "/images/hero-summit.webp",
 		date: "10 Jan 2026",
 		featured: true,
 	},
@@ -187,7 +187,7 @@ export const blogs: Blog[] = [
 			en: [{ type: "paragraph", text: "Coming soon." }],
 			ar: [{ type: "paragraph", text: "قريبًا." }],
 		},
-		image: "/images/group-tech.jpg",
+		image: "/images/venture-tech.webp",
 		date: "15 Feb 2026",
 		featured: false,
 	},
@@ -206,7 +206,7 @@ export const blogs: Blog[] = [
 			en: [{ type: "paragraph", text: "Coming soon." }],
 			ar: [{ type: "paragraph", text: "قريبًا." }],
 		},
-		image: "/images/group-ibs.jpg",
+		image: "/images/venture-ibs.webp",
 		date: "22 Mar 2026",
 		featured: false,
 	},
@@ -225,7 +225,7 @@ export const blogs: Blog[] = [
 			en: [{ type: "paragraph", text: "Coming soon." }],
 			ar: [{ type: "paragraph", text: "قريبًا." }],
 		},
-		image: "/images/group-iraq24.jpg",
+		image: "/images/venture-iraq24.webp",
 		date: "5 Apr 2026",
 		featured: false,
 	},

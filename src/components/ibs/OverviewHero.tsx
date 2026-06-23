@@ -20,7 +20,7 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 			{/* Background image */}
 			<div className="absolute inset-0 -z-20">
 				<Image
-					src="/images/hero-summit.jpg"
+					src="/images/hero-summit.webp"
 					alt=""
 					fill
 					priority
@@ -104,7 +104,7 @@ export function OverviewHero({ editions }: { editions: IbsEdition[] }) {
 							{/* Main image */}
 							<div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.55)]">
 								<Image
-									src="/images/leaders.JPG"
+									src="/images/leadership-delegation.webp"
 									alt="IBS leadership and decision makers"
 									fill
 									sizes="(min-width: 1024px) 35vw, 80vw"

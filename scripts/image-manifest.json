@@ -1,0 +1,196 @@
+{
+  "mode": "audit",
+  "unused": [
+    {
+      "path": "/images/about-boardroom.jpg",
+      "sizeKB": "157.4"
+    },
+    {
+      "path": "/images/cta-bg.jpg",
+      "sizeKB": "217.8"
+    },
+    {
+      "path": "/images/intro2.JPG",
+      "sizeKB": "14624.0"
+    },
+    {
+      "path": "/images/whyIBS.png",
+      "sizeKB": "4339.3"
+    },
+    {
+      "path": "/images/عربي.mp4",
+      "sizeKB": "7473.6"
+    },
+    {
+      "path": "/logos/ibs-general/basrah-gas.webp",
+      "sizeKB": "8.8"
+    },
+    {
+      "path": "/logos/ibs-general/earthlink.png",
+      "sizeKB": "3.3"
+    },
+    {
+      "path": "/logos/ibs-general/euler.png",
+      "sizeKB": "2.6"
+    },
+    {
+      "path": "/logos/ibs-general/genesys.png",
+      "sizeKB": "5.2"
+    },
+    {
+      "path": "/logos/ibs-general/gfp.png",
+      "sizeKB": "6.7"
+    },
+    {
+      "path": "/logos/ibs-general/ifpmc.png",
+      "sizeKB": "27.0"
+    },
+    {
+      "path": "/logos/ibs-general/oliver-wyman.png",
+      "sizeKB": "3.1"
+    },
+    {
+      "path": "/logos/ibs-general/supercell.png",
+      "sizeKB": "5.0"
+    },
+    {
+      "path": "/logos/ibs-general/technital.png",
+      "sizeKB": "3.4"
+    },
+    {
+      "path": "/logos/magnific__extend-and-recompose-this-image-to-fit-a-45-vertic__18338.png",
+      "sizeKB": "5190.8"
+    },
+    {
+      "path": "/videos/ibs-ar.mp4",
+      "sizeKB": "3897.5"
+    },
+    {
+      "path": "/videos/ibs-en.mp4",
+      "sizeKB": "4158.4"
+    }
+  ],
+  "mappings": {
+    "/images/hero-summit.jpg": "/images/hero-summit.webp",
+    "/images/highlight-1.jpg": "/images/summit-stage.webp",
+    "/images/highlight-2.jpg": "/images/panel-discussion.webp",
+    "/images/highlight-3.jpg": "/images/networking-session.webp",
+    "/images/ibs-feature.jpg": "/images/keynote-speech.webp",
+    "/images/about-meeting.JPG": "/images/about-meeting.webp",
+    "/images/leaders.JPG": "/images/leadership-delegation.webp",
+    "/images/group-tech.jpg": "/images/venture-tech.webp",
+    "/images/group-ibs.jpg": "/images/venture-ibs.webp",
+    "/images/group-iraq24.jpg": "/images/venture-iraq24.webp",
+    "/images/group-gaming.jpg": "/images/venture-gaming.webp",
+    "/images/about-2.jpg": "/images/about-collaboration.webp",
+    "/images/about-3.jpg": "/images/about-team.webp",
+    "/images/about-secondary.jpg": "/images/about-secondary.webp",
+    "/images/cta.JPG": "/images/cta-bg.webp",
+    "/images/ibs.png": "/images/ibs-platform.webp",
+    "/images/WwdHero.png": "/images/wwd-hero.webp",
+    "/images/intro1.png": "/images/wwd-intro-1.webp",
+    "/images/intro2.JPG": "/images/wwd-intro-2.webp",
+    "/images/intro2.jpg": "/images/wwd-intro-2.webp",
+    "/images/House.JPG": "/images/house-platform.webp",
+    "/images/Screenshot 2026-05-06 223809.png": "/images/about-hero.webp",
+    "/images/People/Hayam Al-Yasri.jpg": "/images/people/hayam-al-yasri.webp",
+    "/images/People/Khalid Batal.jpg": "/images/people/khalid-batal.webp",
+    "/images/People/Dr. Farhan Al-Fartusi.jpg": "/images/people/dr-farhan-al-fartusi.webp",
+    "/images/People/Fadi Al-Faqiyah.jpg": "/images/people/fadi-al-faqiyah.webp",
+    "/images/People/images.jpg": "/images/people/saman-bojan.webp",
+    "/images/انكليزي.mp4": "/videos/ibs-2025-recap-en.mp4",
+    "/logos/2.png": "/logos/asiacell.webp",
+    "/logos/4.png": "/logos/first-iraqi-bank.webp",
+    "/logos/Al Basrah Mas.png": "/logos/al-basrah-mas.webp",
+    "/logos/Daewoo Engineering & Construction.png": "/logos/daewoo-engineering.webp",
+    "/logos/IDB-Logo-Primary-Dual-RGB-e1675853108729.png": "/logos/international-development-bank.webp",
+    "/logos/Jwar Al Khaleej.png": "/logos/jwar-al-khaleej.webp",
+    "/logos/Logo Technital - CMYK (10-11-21-19).png": "/logos/technital-cmyk.webp",
+    "/logos/Picture182.png": "/logos/first-iraqi-islamic-bank.webp",
+    "/logos/Ports logo.png": "/logos/general-company-ports-iraq.webp",
+    "/logos/SuperCell.png": "/logos/supercell.webp",
+    "/logos/Tiryaki Agro.png": "/logos/tiryaki-agro.webp",
+    "/logos/Basrah-Gas.webp": "/logos/basrah-gas.webp",
+    "/logos/Earthlink_Telecommunications_Logo.png": "/logos/earthlink.webp",
+    "/logos/Euler.png": "/logos/euler-hermes.webp",
+    "/logos/genesys.png": "/logos/genesys.webp",
+    "/logos/imathia.png": "/logos/imathia-construction.webp",
+    "/logos/jib.png": "/logos/jib.webp",
+    "/logos/nbtel-logo.png": "/logos/nbtel.webp",
+    "/logos/Nokia.png": "/logos/nokia.webp",
+    "/logos/Picture7.png": "/logos/toyota.webp",
+    "/logos/Picture17.png": "/logos/fastlink.webp",
+    "/logos/Picture18 (1).png": "/logos/trade-bank-iraq.webp",
+    "/logos/Picture20.png": "/logos/agile.webp",
+    "/logos/Picture23.png": "/logos/zhenhua-oil.webp",
+    "/logos/Picture24.png": "/logos/first-finance.webp",
+    "/logos/Picture25.png": "/logos/fortinet.webp",
+    "/logos/Picture26.png": "/logos/dari.webp",
+    "/logos/Picture27.png": "/logos/ankido-it.webp",
+    "/logos/Picture30.png": "/logos/btp-infrastrutture.webp",
+    "/logos/Picture31.png": "/logos/arab-payment-service.webp",
+    "/logos/Picture32.png": "/logos/baghdad-chamber-commerce.webp",
+    "/logos/Picture33.png": "/logos/basrah-gas-company-2.webp",
+    "/logos/Picture36.png": "/logos/shell.webp",
+    "/logos/Picture38.png": "/logos/national-investment-commission.webp",
+    "/logos/Picture41.png": "/logos/health-insurance-commission.webp",
+    "/logos/Picture43.png": "/logos/mitsubishi.webp",
+    "/logos/Picture44.png": "/logos/aramex.webp",
+    "/logos/Picture46.png": "/logos/iraq-private-banks-league.webp",
+    "/logos/Picture47.png": "/logos/baker-hughes.webp",
+    "/logos/Visa_Inc._logo.png": "/logos/visa.webp",
+    "/logos/BoB Logo-2.png": "/logos/bank-of-baghdad.webp",
+    "/logos/IFPMC.png": "/logos/iraq-policy-making-forum.webp",
+    "/logos/Ts.png": "/logos/tsingshan.webp",
+    "/logos/مفرغ x4.png": "/logos/iraq-24.webp",
+    "/logos/BGT.png": "/logos/basra-gate-terminal.webp",
+    "/logos/4k logo.png": "/logos/techo-center-engineering.webp",
+    "/logos/BOCLOGO1.png": "/logos/basra-oil-company.webp",
+    "/logos/Dev Road Logo.png": "/logos/development-road.webp",
+    "/logos/GFP.png": "/logos/great-fao-port.webp",
+    "/logos/ICC.png": "/logos/industrial-cities-corporation.webp",
+    "/logos/Picture37.png": "/logos/iraqi-securities-commission.webp",
+    "/logos/Picture39.png": "/logos/midland-oil-company.webp",
+    "/logos/Picture40.png": "/logos/picture40.webp",
+    "/logos/شعار_وزارة_النقل_(1).png": "/logos/ministry-of-transport.webp",
+    "/logos/صندوق العراق للتنمية.png": "/logos/iraq-development-fund.webp",
+    "/logos/Al-aliaa LOGO_Main.png": "/logos/al-aliaa.webp",
+    "/logos/Alshaba.png": "/logos/alshaba.webp",
+    "/logos/Technital.png": "/logos/technital.webp",
+    "/logos/Rida-Logo-1-600x847-1.png": "/logos/rida.webp",
+    "/logos/6.png": "/logos/6.webp",
+    "/logos/9438الامانة العامة.png": "/logos/9438-general-secretariat.webp",
+    "/logos/logo-2.png": "/logos/logo-2.webp",
+    "/logos/Picture9.png": "/logos/picture9.webp",
+    "/logos/Picture12.png": "/logos/picture12.webp",
+    "/logos/Picture19.png": "/logos/picture19.webp",
+    "/logos/Picture21.png": "/logos/picture21.webp",
+    "/logos/Picture22.png": "/logos/picture22.webp",
+    "/logos/Picture29.png": "/logos/picture29.webp",
+    "/logos/Picture34.png": "/logos/picture34.webp",
+    "/logos/Picture35.png": "/logos/picture35.webp",
+    "/logos/Picture42.png": "/logos/picture42.webp",
+    "/logos/Picture45.png": "/logos/picture45.webp",
+    "/logos/Logo_of_State_Organization_for_Marketing_of_Oil.png": "/logos/somo.webp",
+    "/logos/OliverWyman_rgb_c.png": "/logos/oliver-wyman.webp",
+    "/logos/كل المنافذ.png": "/logos/kul-al-manafeth.webp",
+    "/logos/وزارة_النفط_العراقية.svg.png": "/logos/ministry-of-oil.webp",
+    "/logos/ibs-general/idb.png": "/logos/international-development-bank.webp",
+    "/logos/ibs-general/bgt.png": "/logos/basra-gate-terminal.webp",
+    "/logos/ibs-general/icc.png": "/logos/industrial-cities-corporation.webp",
+    "/logos/ibs-general/nokia.png": "/logos/nokia.webp",
+    "/logos/ibs-general/visa.png": "/logos/visa.webp",
+    "/logos/ibs-general/basrah-gas.webp": "/logos/basrah-gas.webp",
+    "/logos/ibs-general/earthlink.png": "/logos/earthlink.webp",
+    "/logos/ibs-general/euler.png": "/logos/euler-hermes.webp",
+    "/logos/ibs-general/genesys.png": "/logos/genesys.webp",
+    "/logos/ibs-general/gfp.png": "/logos/great-fao-port.webp",
+    "/logos/ibs-general/ifpmc.png": "/logos/iraq-policy-making-forum.webp",
+    "/logos/ibs-general/oliver-wyman.png": "/logos/oliver-wyman.webp",
+    "/logos/ibs-general/supercell.png": "/logos/supercell.webp",
+    "/logos/ibs-general/technital.png": "/logos/technital.webp"
+  },
+  "unmapped": [
+    "/videos/${isAr ? "
+  ]
+}

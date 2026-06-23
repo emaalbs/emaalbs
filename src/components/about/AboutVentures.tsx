@@ -8,10 +8,10 @@ import { SectionHeading } from "@/components/ui/Overline";
 import { useI18n } from "@/i18n/provider";
 
 const ventures = [
-	{ image: "/images/group-ibs.jpg", dataKey: 0, tag: "01" },
-	{ image: "/images/group-iraq24.jpg", dataKey: 1, tag: "02" },
-	{ image: "/images/group-tech.jpg", dataKey: 2, tag: "03" },
-	{ image: "/images/group-gaming.jpg", dataKey: 3, tag: "04" },
+	{ image: "/images/venture-ibs.webp", dataKey: 0, tag: "01" },
+	{ image: "/images/venture-iraq24.webp", dataKey: 1, tag: "02" },
+	{ image: "/images/venture-tech.webp", dataKey: 2, tag: "03" },
+	{ image: "/images/venture-gaming.webp", dataKey: 3, tag: "04" },
 ];
 
 export function AboutVentures() {

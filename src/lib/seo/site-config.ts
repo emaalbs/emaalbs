@@ -14,7 +14,7 @@ export const siteConfig = {
 			"إعمال بيزنس سبيس هي منصة بناء الأعمال ومجموعة استثمارية تعمل عبر العراق والمنطقة. مقر قمة الأعمال العراقية (IBS).",
 	},
 	url: process.env.NEXT_PUBLIC_SITE_URL || "https://emaalbs.com",
-	logo: "/Logo.png",
+	logo: "/Logo.webp",
 	favicon: "/favicon.svg",
 	social: {
 		youtube: "https://www.youtube.com/@IraqBusinessSummit",

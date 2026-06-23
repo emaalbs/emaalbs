@@ -15,7 +15,7 @@ export function WhatWeDoIntro() {
 				<div className="relative">
 					<div className="grid grid-cols-2 gap-5">
 						<Image
-							src="/images/intro1.png"
+							src="/images/wwd-intro-1.webp"
 							alt=""
 							width={500}
 							height={700}
@@ -23,7 +23,7 @@ export function WhatWeDoIntro() {
 						/>
 						<div className="space-y-5 pt-12">
 							<Image
-								src="/images/intro2.jpg"
+								src="/images/wwd-intro-2.webp"
 								alt=""
 								width={500}
 								height={300}

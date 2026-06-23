@@ -13,7 +13,7 @@ export function HomeHero() {
 			{/* Background image */}
 			<div className="absolute inset-0 -z-10">
 				<Image
-					src="/images/hero-summit.jpg"
+					src="/images/hero-summit.webp"
 					alt=""
 					fill
 					priority

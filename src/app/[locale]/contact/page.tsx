@@ -101,7 +101,7 @@ export default function ContactPage() {
       <section className="relative isolate flex min-h-[60vh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-28">
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/images/cta.JPG"
+            src="/images/cta-bg.webp"
             alt=""
             fill
             priority

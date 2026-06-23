@@ -14,7 +14,7 @@ export function IbsCtaBand() {
 		<section className="relative isolate overflow-hidden bg-[var(--color-navy-dark)] py-28 text-white">
 			<div className="absolute inset-0 -z-20">
 				<Image
-					src="/images/cta.JPG"
+					src="/images/cta-bg.webp"
 					alt=""
 					fill
 					sizes="100vw"

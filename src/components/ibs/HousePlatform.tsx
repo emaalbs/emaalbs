@@ -20,7 +20,7 @@ export function HousePlatform() {
 					<div className="lg:col-span-6">
 						<div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
 							<Image
-								src="/images/House.JPG"
+								src="/images/house-platform.webp"
 								alt="HOUSE Platform, branded stage at IBS"
 								width={1200}
 								height={900}

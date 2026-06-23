@@ -15,7 +15,7 @@ export function Logo({ tone = "light", className = "", height = 40 }: Props) {
 			style={{ width, height }}
 		>
 			<Image
-				src="/Logo.png"
+				src="/Logo.webp"
 				alt="EMAAL Business Space"
 				fill
 				priority

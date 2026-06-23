@@ -10,9 +10,9 @@ import { ibsOverview } from "@/data/ibs";
 
 const ICONS: LucideIcon[] = [Building2, Briefcase, Globe2];
 const IMAGES = [
-	"/images/about-meeting.JPG",
-	"/images/highlight-2.jpg",
-	"/images/group-tech.jpg",
+	"/images/about-meeting.webp",
+	"/images/panel-discussion.webp",
+	"/images/venture-tech.webp",
 ];
 
 export function WhoParticipated() {
