@@ -21,7 +21,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ## Preview
 
-Preview the application locally on the Cloudflare runtime:
+Preview the application locally on the Cloudflare runtime::
 
 ```bash
 npm run preview
