@@ -564,6 +564,7 @@ export const ibsOverview = {
 		} as Localized,
 		sponsors: { en: "Sponsors & partners", ar: "الرعاة والشركاء" } as Localized,
 		gallery: { en: "From the floor", ar: "من القمة" } as Localized,
+		videos: { en: "Event videos", ar: "فيديوهات الفعالية" } as Localized,
 		joinNext: { en: "Join the next edition", ar: "انضم إلى النسخة القادمة" } as Localized,
 		register: { en: "Register interest", ar: "سجّل اهتمامك" } as Localized,
 		watchRecap: { en: "Watch recap", ar: "شاهد الملخص" } as Localized,

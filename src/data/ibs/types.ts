@@ -80,6 +80,13 @@ export type AgendaDay = {
 	items: AgendaItem[];
 };
 
+export type VideoItem = {
+	id: string;
+	youtubeUrl: string;
+	title: Localized;
+	description: Localized;
+};
+
 export type IbsEdition = {
 	slug: string; // "2025", "ports-2025", "2026"
 	year: number;
@@ -100,6 +107,7 @@ export type IbsEdition = {
 	sponsors: Sponsor[];
 	gallery: GalleryItem[];
 	agenda?: AgendaDay[];
+	videos?: VideoItem[];
 	registrationUrl?: string;
 	nextEditionSlug?: string;
 };

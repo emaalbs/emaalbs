@@ -13,6 +13,7 @@ import { EditionSectorShares } from "@/components/ibs/EditionSectorShares";
 import { EditionAgenda } from "@/components/ibs/EditionAgenda";
 import { EditionSponsors } from "@/components/ibs/EditionSponsors";
 import { EditionGallery } from "@/components/ibs/EditionGallery";
+import { EditionVideos } from "@/components/ibs/EditionVideos";
 import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
@@ -89,6 +90,9 @@ export default async function IbsEditionPage({
 				<EditionSectorShares edition={edition} />
 				<section id="sponsors">
 					<EditionSponsors edition={edition} />
+				</section>
+				<section id="videos">
+					<EditionVideos edition={edition} />
 				</section>
 				<section id="gallery">
 					<EditionGallery edition={edition} />

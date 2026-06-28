@@ -10,6 +10,7 @@ import type {
 	AgendaDay,
 	AgendaItem,
 	AgendaSpeaker,
+	VideoItem,
 } from "@/data/ibs/types";
 import { getEnv } from "@/lib/cloudflare";
 
@@ -48,6 +49,7 @@ export async function listEditions(): Promise<IbsEdition[]> {
 		initiatives: [],
 		sponsors: [],
 		gallery: [],
+		videos: [],
 	}));
 }
 
@@ -56,7 +58,7 @@ export async function getEditionBySlug(slug: string): Promise<IbsEdition | null>
 	const edition = await db.prepare("SELECT * FROM ibs_editions WHERE slug = ? AND published = 1").bind(slug).first();
 	if (!edition) return null;
 
-	const [stats, themes, speakers, sponsors, sectorShares, initiatives, gallery, agendaDays] = await Promise.all([
+	const [stats, themes, speakers, sponsors, sectorShares, initiatives, gallery, agendaDays, videos] = await Promise.all([
 		db.prepare("SELECT * FROM ibs_stats WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
 		db.prepare("SELECT * FROM ibs_themes WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
 		db.prepare("SELECT * FROM ibs_speakers WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
@@ -65,6 +67,7 @@ export async function getEditionBySlug(slug: string): Promise<IbsEdition | null>
 		db.prepare("SELECT * FROM ibs_initiatives WHERE edition_slug = ?").bind(slug).all(),
 		db.prepare("SELECT * FROM ibs_gallery WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
 		db.prepare("SELECT * FROM ibs_agenda_days WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
+		db.prepare("SELECT * FROM ibs_videos WHERE edition_slug = ? ORDER BY sort_order ASC").bind(slug).all(),
 	]);
 
 	const agenda: AgendaDay[] = [];
@@ -138,6 +141,12 @@ export async function getEditionBySlug(slug: string): Promise<IbsEdition | null>
 			height: (r.height as number) || undefined,
 		})) as GalleryItem[],
 		agenda: agenda.length > 0 ? agenda : undefined,
+		videos: (videos.results || []).map((r) => ({
+			id: r.id as string,
+			youtubeUrl: r.youtube_url as string,
+			title: localize(r.title_en as string | null, r.title_ar as string | null),
+			description: localize(r.description_en as string | null, r.description_ar as string | null),
+		})) as VideoItem[],
 	};
 }
 
@@ -216,6 +225,11 @@ export async function createEdition(data: IbsEdition): Promise<void> {
 			}
 		}
 	}
+	// videos
+	for (const v of data.videos || []) {
+		await db.prepare("INSERT INTO ibs_videos (id, edition_slug, youtube_url, title_en, title_ar, description_en, description_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(v.id, data.slug, v.youtubeUrl, v.title.en, v.title.ar, v.description.en, v.description.ar, 0).run();
+	}
 }
 
 export async function updateEdition(slug: string, data: Partial<IbsEdition>): Promise<void> {
@@ -258,6 +272,7 @@ export async function replaceEditionNested(slug: string, data: IbsEdition): Prom
 		db.prepare("DELETE FROM ibs_sector_shares WHERE edition_slug = ?").bind(slug).run(),
 		db.prepare("DELETE FROM ibs_initiatives WHERE edition_slug = ?").bind(slug).run(),
 		db.prepare("DELETE FROM ibs_gallery WHERE edition_slug = ?").bind(slug).run(),
+		db.prepare("DELETE FROM ibs_videos WHERE edition_slug = ?").bind(slug).run(),
 		db.prepare("DELETE FROM ibs_agenda_speakers WHERE item_id IN (SELECT id FROM ibs_agenda_items WHERE day_id IN (SELECT id FROM ibs_agenda_days WHERE edition_slug = ?))").bind(slug).run(),
 		db.prepare("DELETE FROM ibs_agenda_items WHERE day_id IN (SELECT id FROM ibs_agenda_days WHERE edition_slug = ?)").bind(slug).run(),
 		db.prepare("DELETE FROM ibs_agenda_days WHERE edition_slug = ?").bind(slug).run(),
@@ -306,6 +321,10 @@ export async function replaceEditionNested(slug: string, data: IbsEdition): Prom
 				}
 			}
 		}
+	}
+	for (const v of data.videos || []) {
+		await db.prepare("INSERT INTO ibs_videos (id, edition_slug, youtube_url, title_en, title_ar, description_en, description_ar, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+			.bind(v.id, slug, v.youtubeUrl, v.title.en, v.title.ar, v.description.en, v.description.ar, 0).run();
 	}
 }
 

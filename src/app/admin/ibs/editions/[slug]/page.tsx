@@ -1,4 +1,4 @@
-﻿﻿"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import {
 	HeartHandshake,
 	Images,
 	Calendar,
+	Play,
 } from "lucide-react";
 import type {
 	IbsEdition,
@@ -28,6 +29,7 @@ import type {
 	AgendaItem,
 	AgendaSpeaker,
 	SectorShare,
+	VideoItem,
 } from "@/data/ibs/types";
 import { SectionCard } from "@/components/admin/ibs/SectionCard";
 import { BasicInfoSection } from "@/components/admin/ibs/sections/BasicInfoSection";
@@ -39,8 +41,9 @@ import { SponsorsSection } from "@/components/admin/ibs/sections/SponsorsSection
 import { GallerySection } from "@/components/admin/ibs/sections/GallerySection";
 import { AgendaSection } from "@/components/admin/ibs/sections/AgendaSection";
 import { SectorSharesSection } from "@/components/admin/ibs/sections/SectorSharesSection";
+import { VideosSection } from "@/components/admin/ibs/sections/VideosSection";
 
-type SectionId = "basic" | "stats" | "themes" | "speakers" | "initiatives" | "sponsors" | "gallery" | "agenda" | "sectorShares";
+type SectionId = "basic" | "stats" | "themes" | "speakers" | "initiatives" | "sponsors" | "gallery" | "agenda" | "sectorShares" | "videos";
 
 const SECTIONS = [
 	{ id: "basic" as SectionId, label: "Basic Info", icon: Globe },
@@ -52,6 +55,7 @@ const SECTIONS = [
 	{ id: "gallery" as SectionId, label: "Gallery", icon: Images },
 	{ id: "agenda" as SectionId, label: "Agenda", icon: Calendar },
 	{ id: "sectorShares" as SectionId, label: "Sector Shares", icon: BarChart3 },
+	{ id: "videos" as SectionId, label: "Videos", icon: Play },
 ];
 
 function emptyEdition(): IbsEdition {
@@ -74,6 +78,7 @@ function emptyEdition(): IbsEdition {
 		sponsors: [],
 		gallery: [],
 		agenda: [],
+		videos: [],
 	};
 }
 
@@ -88,7 +93,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [expandedSections, setExpandedSections] = useState<Record<SectionId, boolean>>({
 		basic: true, stats: false, themes: false, speakers: false,
-		initiatives: false, sponsors: false, gallery: false, agenda: false, sectorShares: false,
+		initiatives: false, sponsors: false, gallery: false, agenda: false, sectorShares: false, videos: false,
 	});
 	const [allEditions, setAllEditions] = useState<IbsEdition[]>([]);
 
@@ -110,7 +115,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 					})
 					.then((data) => {
 						const e = data as IbsEdition;
-						const loaded = { ...emptyEdition(), ...e, agenda: e.agenda ?? [] };
+						const loaded = { ...emptyEdition(), ...e, agenda: e.agenda ?? [], videos: e.videos ?? [] };
 						setEdition(loaded);
 						setOriginalEdition(loaded);
 						setExpandedSections((prev) => ({
@@ -123,6 +128,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 							gallery: loaded.gallery.length > 0,
 							agenda: (loaded.agenda ?? []).length > 0,
 							sectorShares: loaded.sectorShares.length > 0,
+							videos: loaded.videos.length > 0,
 						}));
 					})
 					.catch(() => {});
@@ -148,6 +154,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 			gallery: edition.gallery.length > 0,
 			agenda: (edition.agenda ?? []).length > 0,
 			sectorShares: edition.sectorShares.length > 0,
+			videos: (edition.videos ?? []).length > 0,
 		};
 	}, [edition]);
 
@@ -306,6 +313,11 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 	const addSectorShare = () => setEdition((p) => ({ ...p, sectorShares: [...p.sectorShares, { sector: { en: "", ar: "" }, percent: 0 }] }));
 	const updateSectorShare = (i: number, s: SectorShare) => setEdition((p) => { const a = [...p.sectorShares]; a[i] = s; return { ...p, sectorShares: a }; });
 	const removeSectorShare = (i: number) => setEdition((p) => ({ ...p, sectorShares: p.sectorShares.filter((_, j) => j !== i) }));
+
+	// --- Videos ---
+	const addVideo = () => setEdition((p) => ({ ...p, videos: [...(p.videos ?? []), { id: crypto.randomUUID(), youtubeUrl: "", title: { en: "", ar: "" }, description: { en: "", ar: "" } }] }));
+	const updateVideo = (i: number, v: VideoItem) => setEdition((p) => { const a = [...(p.videos ?? [])]; a[i] = v; return { ...p, videos: a }; });
+	const removeVideo = (i: number) => setEdition((p) => ({ ...p, videos: (p.videos ?? []).filter((_, j) => j !== i) }));
 
 	return (
 		<div className="min-h-screen bg-gray-50">
@@ -529,6 +541,18 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 						onToggle={() => toggleSection("sectorShares")}
 					>
 						<SectorSharesSection sectorShares={edition.sectorShares} onAdd={addSectorShare} onUpdate={updateSectorShare} onRemove={removeSectorShare} />
+					</SectionCard>
+
+					{/* ── Videos ── */}
+					<SectionCard
+						id="videos"
+						label="Videos"
+						count={(edition.videos ?? []).length}
+						isComplete={completion.videos}
+						isExpanded={expandedSections.videos}
+						onToggle={() => toggleSection("videos")}
+					>
+						<VideosSection videos={edition.videos ?? []} onAdd={addVideo} onUpdate={updateVideo} onRemove={removeVideo} />
 					</SectionCard>
 				</div>
 			</div>
