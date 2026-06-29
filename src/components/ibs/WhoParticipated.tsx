@@ -27,11 +27,7 @@ export function WhoParticipated() {
 				<div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14 lg:items-start">
 					{/* Left: heading + selectable list */}
 					<div className="lg:col-span-5 lg:sticky lg:top-28">
-						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-teal)]">
-							<span className="inline-block h-px w-8 bg-[var(--color-teal)]" />
-							{who.overline[locale]}
-						</div>
-						<h2 className="mt-4 font-display font-bold tracking-display text-[var(--color-ink)] text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.1]">
+						<h2 className="font-display font-bold tracking-display text-[var(--color-ink)] text-[clamp(1.75rem,3vw,2.75rem)] leading-[1.1]">
 							{who.title[locale]}
 						</h2>
 						<p className="mt-5 max-w-md text-[15px] leading-[1.7] text-[var(--color-slate)]">
@@ -65,9 +61,6 @@ export function WhoParticipated() {
 											<Icon className="h-5 w-5" strokeWidth={2.25} />
 										</span>
 										<span className="flex-1">
-											<span className="font-numeric block text-[10.5px] font-bold tracking-[0.22em] text-[var(--color-gold-deep)]">
-												0{i + 1}
-											</span>
 											<span className="mt-0.5 block font-display text-[15.5px] font-semibold text-[var(--color-ink)]">
 												{g.title[locale]}
 											</span>
@@ -92,38 +85,25 @@ export function WhoParticipated() {
 							<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-navy)]">
 								<Image
 									src={IMAGES[active]}
-									alt={group.title[locale]}
+									alt=""
 									fill
 									sizes="(min-width: 1024px) 58vw, 100vw"
 									className="object-cover transition-all duration-700"
 									key={active}
 								/>
 								<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,30,47,0.85)] via-[rgba(1,30,47,0.25)] to-transparent" />
-								<div className="absolute inset-x-0 bottom-0 p-6">
-									<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-										{locale === "ar" ? `الفئة ${active + 1}` : `Group ${active + 1} / ${who.groups.length}`}
-									</div>
-									<h3 className="mt-2 font-display text-2xl font-bold leading-tight text-white sm:text-3xl">
-										{group.title[locale]}
-									</h3>
-								</div>
+									<div className="absolute inset-x-0 bottom-0 p-6" aria-hidden="true" />
 							</div>
 
 							{/* List */}
 							<div className="p-7 sm:p-9">
-								<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-slate)]">
-									{locale === "ar" ? "ضمّت القاعة" : "Who was in the room"}
-								</div>
-								<ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+								<ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 									{group.items.map((item, j) => (
 										<li
 											key={j}
-											className="flex items-start gap-3 rounded-lg border border-[var(--color-line)] bg-white p-4 text-[14px] leading-[1.55] text-[var(--color-ink)]"
+											className="rounded-lg border border-[var(--color-line)] bg-white p-4 text-[14px] leading-[1.55] text-[var(--color-ink)]"
 										>
-											<span className="font-numeric mt-0.5 text-[11px] font-bold text-[var(--color-gold-deep)]">
-												0{j + 1}
-											</span>
-											<span>{item[locale]}</span>
+											{item[locale]}
 										</li>
 									))}
 								</ul>

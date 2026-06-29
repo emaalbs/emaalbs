@@ -4,10 +4,8 @@ import { useState } from "react";
 import { Award, Check, Crown, Gem, Star } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
-import { IbsSectionHeading } from "./IbsSectionHeading";
 
 const TIER_ICONS: Record<string, LucideIcon> = {
 	strategic: Crown,
@@ -30,12 +28,14 @@ export function SponsorshipTiers() {
 				<div className="absolute -right-40 bottom-0 h-[500px] w-[500px] rounded-full bg-[var(--color-teal)]/20 blur-3xl" />
 			</div>
 			<Container>
-				<IbsSectionHeading
-					tone="dark"
-					overline={sponsorship.overline[locale]}
-					title={sponsorship.title[locale]}
-					description={sponsorship.description[locale]}
-				/>
+				<div className="mx-auto max-w-3xl text-center">
+					<h2 className="font-display font-bold tracking-display text-white text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.15]">
+						{sponsorship.title[locale]}
+					</h2>
+					<p className="mt-5 text-[15px] leading-[1.7] text-[var(--color-silver)]">
+						{sponsorship.description[locale]}
+					</p>
+				</div>
 				<div className="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
 					{/* Tabs */}
 					<div className="lg:col-span-4">
@@ -76,9 +76,7 @@ export function SponsorshipTiers() {
 											</div>
 										</div>
 										{p.featured ? (
-											<span className="hidden shrink-0 rounded-full bg-[var(--color-gold)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-navy)] sm:inline">
-												{locale === "ar" ? "مميّز" : "Top"}
-											</span>
+											<span className="hidden shrink-0 rounded-full bg-[var(--color-gold)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--color-navy)] sm:inline" />
 										) : null}
 									</button>
 								);
@@ -95,14 +93,9 @@ export function SponsorshipTiers() {
 									<div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] text-[var(--color-navy)] shadow-[0_10px_30px_rgba(238,193,59,0.35)]">
 										<ActiveIcon className="h-6 w-6" strokeWidth={2.25} />
 									</div>
-									<div>
-										<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-											{locale === "ar" ? "حزمة" : "Package"}
-										</div>
-										<h3 className="mt-1 font-display text-2xl font-bold text-white sm:text-3xl">
-											{pkg.name[locale]}
-										</h3>
-									</div>
+									<h3 className="font-display text-2xl font-bold text-white sm:text-3xl">
+										{pkg.name[locale]}
+									</h3>
 								</div>
 							</div>
 							<p className="relative mt-4 text-[14.5px] text-[var(--color-silver)]">
@@ -121,16 +114,6 @@ export function SponsorshipTiers() {
 									</li>
 								))}
 							</ul>
-							<div className="relative mt-8">
-								<Button
-									href={`/${locale}/contact?subject=sponsor`}
-									variant="gold"
-									size="md"
-									withArrow
-								>
-									{locale === "ar" ? "كن راعياً" : "Become a Sponsor"}
-								</Button>
-							</div>
 						</div>
 					</div>
 				</div>

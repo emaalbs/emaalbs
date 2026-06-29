@@ -13,7 +13,6 @@ import type { LucideIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
-import { IbsSectionHeading } from "./IbsSectionHeading";
 
 const ICONS: LucideIcon[] = [
 	Flame, // Energy & Oil
@@ -28,15 +27,10 @@ export function KeySectors() {
 	const { locale } = useI18n();
 	const sectors = ibsOverview.sectors;
 	return (
-		<section className="relative bg-[var(--color-warm)] py-24 lg:py-28">
+		<section className="relative bg-white py-24 lg:py-28">
 			<Container>
 				<div className="mx-auto max-w-3xl text-center">
-					<div className="inline-flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-teal)]">
-						<span className="inline-block h-px w-8 bg-[var(--color-teal)]" />
-						{sectors.overline[locale]}
-						<span className="inline-block h-px w-8 bg-[var(--color-teal)]" />
-					</div>
-					<h2 className="mt-4 font-display font-bold tracking-display text-[var(--color-ink)] text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.15]">
+					<h2 className="font-display font-bold tracking-display text-[var(--color-ink)] text-[clamp(1.65rem,3vw,2.6rem)] leading-[1.15]">
 						{sectors.title[locale]}
 					</h2>
 				</div>
@@ -54,10 +48,7 @@ export function KeySectors() {
 									<span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-[var(--color-gold)]/0 transition-all duration-300 group-hover:ring-[var(--color-gold)]/40" />
 								</div>
 								<div className="flex-1">
-									<div className="font-numeric text-[10.5px] font-bold tracking-[0.22em] text-[var(--color-gold-deep)]">
-										0{i + 1}
-									</div>
-									<div className="mt-1 font-display text-[16px] font-semibold leading-tight text-[var(--color-ink)]">
+									<div className="font-display text-[16px] font-semibold leading-tight text-[var(--color-ink)]">
 										{s[locale]}
 									</div>
 								</div>

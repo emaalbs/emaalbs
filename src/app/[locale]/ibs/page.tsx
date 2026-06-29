@@ -2,16 +2,13 @@ import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { OverviewHero } from "@/components/ibs/OverviewHero";
-import { OverviewStatsTeaser } from "@/components/ibs/OverviewStatsTeaser";
 import { WhyIbs } from "@/components/ibs/WhyIbs";
 import { WhoParticipated } from "@/components/ibs/WhoParticipated";
 import { KeySectors } from "@/components/ibs/KeySectors";
-import { NotableLeaders } from "@/components/ibs/NotableLeaders";
-import { TieredSponsors } from "@/components/ibs/TieredSponsors";
 import { SponsorshipTiers } from "@/components/ibs/SponsorshipTiers";
+import { WhatEnables } from "@/components/ibs/WhatEnables";
 import { HousePlatform } from "@/components/ibs/HousePlatform";
 import { BeyondASummit } from "@/components/ibs/BeyondASummit";
-import { EditionsRail } from "@/components/ibs/EditionsRail";
 import { IbsCtaBand } from "@/components/ibs/IbsCtaBand";
 import { getEditions } from "@/data/ibs";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -39,14 +36,11 @@ export default async function IbsOverviewPage({
 			<Header />
 			<main>
 				<OverviewHero editions={editions} />
-				<OverviewStatsTeaser editions={editions} />
 				<WhyIbs />
 				<WhoParticipated />
 				<KeySectors />
-				<NotableLeaders />
-				<TieredSponsors />
-				<EditionsRail editions={editions} />
 				<SponsorshipTiers />
+				<WhatEnables />
 				<HousePlatform />
 				<BeyondASummit />
 				<IbsCtaBand />

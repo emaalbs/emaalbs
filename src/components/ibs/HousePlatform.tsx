@@ -21,30 +21,16 @@ export function HousePlatform() {
 						<div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
 							<Image
 								src="/images/house-platform.webp"
-								alt="HOUSE Platform, branded stage at IBS"
+								alt=""
 								width={1200}
 								height={900}
 								className="aspect-[4/3] w-full object-cover"
 							/>
-							<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,30,47,0.85)] via-[rgba(1,30,47,0.25)] to-transparent" />
-							<div className="absolute inset-x-0 bottom-0 p-5">
-								<div className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-									HOUSE
-								</div>
-								<div className="mt-1 font-display text-base font-semibold text-white">
-									{locale === "ar"
-										? "منصة قمة مصغّرة باسم الشريك."
-										: "A mini summit branded under the partner's name."}
-								</div>
-							</div>
+							<div className="absolute inset-0 bg-gradient-to-t from-[rgba(1,30,47,0.5)] via-transparent to-transparent" />
 						</div>
 					</div>
 					<div className="lg:col-span-6">
-						<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
-							<span className="inline-block h-px w-8 bg-[var(--color-gold)]" />
-							{house.overline[locale]}
-						</div>
-						<h2 className="mt-4 font-display font-bold tracking-display text-white text-[clamp(1.7rem,3vw,2.6rem)] leading-[1.15]">
+						<h2 className="font-display font-bold tracking-display text-white text-[clamp(1.7rem,3vw,2.6rem)] leading-[1.15]">
 							{house.title[locale]}
 						</h2>
 						<p className="mt-5 max-w-xl text-[15.5px] leading-[1.7] text-[var(--color-silver)]">
