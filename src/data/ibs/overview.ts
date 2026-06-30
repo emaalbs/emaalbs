@@ -15,6 +15,11 @@ export type SponsorshipPackage = {
 	features: Localized[];
 	featured?: boolean;
 };
+export type FeaturedLeader = {
+	name: Localized;
+	role: Localized;
+	photo?: string;
+};
 
 export const ibsOverview = {
 	hero: {
@@ -85,12 +90,37 @@ export const ibsOverview = {
 			{ en: "Telecom & Digital", ar: "الاتصالات والرقمنة" },
 			{ en: "Logistics & Transport", ar: "اللوجستيات والنقل" },
 			{ en: "Investment & Development", ar: "الاستثمار والتنمية" },
-			{ en: "The Minister of Communication, Hayam Al-Yasri", ar: "وزيرة الاتصالات هيام الياسري" },
-			{ en: "The Minister of Industry , Khalid Batal", ar: "وزير الصناعة خالد بتال" },
-			{ en: "Director General of the General Company for Iraqi Ports Dr. Farhan Al-Fartusi", ar: "المدير العام للشركة العامة للموانئ العراقية د. فرحان الفرطوسي" },
-			{ en: "CEO of Bank of International Development Fadi Al-Faqiyah", ar: "الرئيس التنفيذي لبنك التنمية الدولي فادي الفقيه" },
-			{ en: "Central Region General Manager Asiacell Company Saman Bojan", ar: "المدير العام للمنطقة الوسطى في شركة آسياسيل سامان بوجان" },
 		] as Localized[],
+	},
+	leaders: {
+		title: { en: "Notable Voices", ar: "أصوات بارزة" } as Localized,
+		items: [
+			{
+				name: { en: "Hayam Al-Yasri", ar: "هيام الياسري" } as Localized,
+				role: { en: "The Minister of Communication", ar: "وزيرة الاتصالات" } as Localized,
+				photo: "/images/people/hayam-al-yasri.webp",
+			},
+			{
+				name: { en: "Khalid Batal", ar: "خالد بتال" } as Localized,
+				role: { en: "The Minister of Industry", ar: "وزير الصناعة" } as Localized,
+				photo: "/images/people/khalid-batal.webp",
+			},
+			{
+				name: { en: "Dr. Farhan Al-Fartusi", ar: "د. فرحان الفرطوسي" } as Localized,
+				role: { en: "Director General of the General Company for Iraqi Ports", ar: "المدير العام، الشركة العامة لموانئ العراق" } as Localized,
+				photo: "/images/people/dr-farhan-al-fartusi.webp",
+			},
+			{
+				name: { en: "Fadi Al-Faqiyah", ar: "فادي الفقيه" } as Localized,
+				role: { en: "CEO of Bank of International Development", ar: "الرئيس التنفيذي، بنك التنمية الدولي" } as Localized,
+				photo: "/images/people/fadi-al-faqiyah.webp",
+			},
+			{
+				name: { en: "Saman Bojan", ar: "سامان بوجان" } as Localized,
+				role: { en: "Central Region General Manager, Asiacell", ar: "المدير العام للمنطقة الوسطى، آسياسيل" } as Localized,
+				photo: "/images/people/saman-bojan.webp",
+			},
+		] as FeaturedLeader[],
 	},
 	sponsorship: {
 		title: { en: "Sponsorship Opportunities", ar: "فرص الرعاية" } as Localized,

@@ -5,6 +5,7 @@ import { OverviewHero } from "@/components/ibs/OverviewHero";
 import { WhyIbs } from "@/components/ibs/WhyIbs";
 import { WhoParticipated } from "@/components/ibs/WhoParticipated";
 import { KeySectors } from "@/components/ibs/KeySectors";
+import { NotableLeaders } from "@/components/ibs/NotableLeaders";
 import { SponsorshipTiers } from "@/components/ibs/SponsorshipTiers";
 import { WhatEnables } from "@/components/ibs/WhatEnables";
 import { HousePlatform } from "@/components/ibs/HousePlatform";
@@ -39,6 +40,7 @@ export default async function IbsOverviewPage({
 				<WhyIbs />
 				<WhoParticipated />
 				<KeySectors />
+				<NotableLeaders />
 				<SponsorshipTiers />
 				<WhatEnables />
 				<HousePlatform />
