@@ -1,47 +1,33 @@
-/**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- */
-/**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "emmal",
-	"main": ".open-next/worker.js",
-	"compatibility_date": "2026-04-29",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"global_fetch_strictly_public"
-	],
-	"assets": {
-		"binding": "ASSETS",
-		"directory": ".open-next/assets"
-	},
-	"images": {
-		// Enable image optimization
-		// see https://opennext.js.org/cloudflare/howtos/image
-		"binding": "IMAGES"
-	},
-	"services": [
-		{
-			// Self-reference service binding, the service name must match the worker name
-			// see https://opennext.js.org/cloudflare/caching
-			"binding": "WORKER_SELF_REFERENCE",
-			"service": "emmal"
-		}
-	],
-	"observability": {
-		"enabled": true
-	},
-	"upload_source_maps": true,
-	"vars": {
-		"ADMIN_SECRET": "587439086574890679781-09847uidgherukohgfdkjb3hiuyh37989-3232"
-	},
-	
-
-"d1_databases":  [
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "emmal",
+    "main": ".open-next/worker.js",
+    "compatibility_date": "2026-04-29",
+    "compatibility_flags": [
+        "nodejs_compat",
+        "global_fetch_strictly_public"
+    ],
+    "assets": {
+        "binding": "ASSETS",
+        "directory": ".open-next/assets"
+    },
+    "images": {
+        "binding": "IMAGES"
+    },
+    "services": [
+        {
+            "binding": "WORKER_SELF_REFERENCE",
+            "service": "emmal"
+        }
+    ],
+    "observability": {
+        "enabled": true
+    },
+    "upload_source_maps": true,
+    "vars": {
+        "ADMIN_SECRET": "587439086574890679781-09847uidgherukohgfdkjb3hiuyh37989-3232"
+    },
+    "d1_databases": [
         {
             "database_name": "emmal-db",
             "binding": "DB",
@@ -49,10 +35,10 @@
             "migrations_dir": "db/migrations"
         }
     ],
-	"r2_buckets": [
-		{
-			"bucket_name": "emmal",
-			"binding": "MEDIA"
-		}
-	],
+    "r2_buckets": [
+        {
+            "bucket_name": "emmal",
+            "binding": "MEDIA"
+        }
+    ]
 }
