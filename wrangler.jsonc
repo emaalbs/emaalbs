@@ -41,14 +41,14 @@
 	},
 	
 
-	"d1_databases": [
-		{
-			"database_name": "emmal",
-			"binding": "DB",
-			"database_id": "99872a8c-c0a0-49a3-8c2e-d72fb5ed0eb1",
-			"migrations_dir": "db/migrations"
-		}
-	],
+"d1_databases":  [
+        {
+            "database_name": "emmal-db",
+            "binding": "DB",
+            "database_id": "929bf164-580d-4367-adc7-09f053512141",
+            "migrations_dir": "db/migrations"
+        }
+    ],
 	"r2_buckets": [
 		{
 			"bucket_name": "emmal",
