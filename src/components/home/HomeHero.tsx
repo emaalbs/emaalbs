@@ -1,25 +1,43 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
+import { HERO_SLIDES } from "@/data/hero-slides";
+
+const SLIDE_INTERVAL_MS = 3000;
 
 export function HomeHero() {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
+	const [activeSlide, setActiveSlide] = useState(0);
+
+	useEffect(() => {
+		if (HERO_SLIDES.length < 2) return;
+		const timer = setInterval(
+			() => setActiveSlide((i) => (i + 1) % HERO_SLIDES.length),
+			SLIDE_INTERVAL_MS,
+		);
+		return () => clearInterval(timer);
+	}, []);
+
 	return (
 		<section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-24">
-			{/* Background image */}
+			{/* Background image slideshow */}
 			<div className="absolute inset-0 -z-10">
-				<Image
-					src="/images/hero-summit.webp"
-					alt=""
-					fill
-					priority
-					sizes="100vw"
-					className="object-cover object-center blur-[3px]"
-				/>
+				{HERO_SLIDES.map((src, i) => (
+					<Image
+						key={src}
+						src={src}
+						alt=""
+						fill
+						priority={i === 0}
+						sizes="100vw"
+						className={`object-cover object-center blur-[3px] transition-opacity duration-[1500ms] ease-in-out ${i === activeSlide ? "opacity-100" : "opacity-0"}`}
+					/>
+				))}
 				<div className="absolute inset-0 bg-gradient-to-b from-[rgba(1,30,47,0.82)] via-[rgba(1,51,77,0.7)] to-[rgba(1,30,47,0.95)]" />
 				<div className="absolute inset-0 bg-gradient-to-r from-[rgba(1,30,47,0.75)] via-transparent to-transparent" />
 				{/* Teal ambient glow — bottom-left */}

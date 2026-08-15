@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/generate-hero-slides.mjs",
     "dev": "node --max-old-space-size=8192 node_modules/next/dist/bin/next dev",
+    "prebuild": "node scripts/generate-hero-slides.mjs",
     "build": "next build",
-    "cf:build": "opennextjs-cloudflare build",
+    "cf:build": "node scripts/generate-hero-slides.mjs && opennextjs-cloudflare build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
