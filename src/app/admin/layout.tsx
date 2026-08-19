@@ -3,10 +3,11 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen } from "lucide-react";
+import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, Images } from "lucide-react";
 
 const baseNav = [
 	{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+	{ label: "Homepage Hero", href: "/admin/home-hero", icon: Images },
 	{ label: "Blogs", href: "/admin/blogs", icon: FileText },
 	{ label: "Magazines", href: "/admin/magazines", icon: BookOpen },
 	{ label: "IBS Editions", href: "/admin/ibs/editions", icon: CalendarDays },

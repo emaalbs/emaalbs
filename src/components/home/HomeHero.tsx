@@ -5,33 +5,42 @@ import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
-import { HERO_SLIDES } from "@/data/hero-slides";
+import type { HomeHeroSettings } from "@/data/home-hero";
 
-const SLIDE_INTERVAL_MS = 3000;
+function localizedHref(href: string, locale: string): string {
+	if (!href.startsWith("/") || href.startsWith("//")) return href;
+	const parts = href.split("/");
+	if (parts[1] === "en" || parts[1] === "ar") parts[1] = locale;
+	else parts.splice(1, 0, locale);
+	return parts.join("/");
+}
 
-export function HomeHero() {
-	const { t, locale } = useI18n();
+export function HomeHero({ settings }: { settings: HomeHeroSettings }) {
+	const { locale } = useI18n();
 	const isAr = locale === "ar";
 	const [activeSlide, setActiveSlide] = useState(0);
+	const contentLocale = isAr ? "ar" : "en";
+	const slide = settings.slides[activeSlide] ?? settings.slides[0];
 
 	useEffect(() => {
-		if (HERO_SLIDES.length < 2) return;
+		if (settings.slides.length < 2) return;
 		const timer = setInterval(
-			() => setActiveSlide((i) => (i + 1) % HERO_SLIDES.length),
-			SLIDE_INTERVAL_MS,
+			() => setActiveSlide((i) => (i + 1) % settings.slides.length),
+			settings.slideIntervalMs,
 		);
 		return () => clearInterval(timer);
-	}, []);
+	}, [settings.slideIntervalMs, settings.slides.length]);
 
 	return (
 		<section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-24">
 			{/* Background image slideshow */}
 			<div className="absolute inset-0 -z-10">
-				{HERO_SLIDES.map((src, i) => (
+				{settings.slides.map((slide, i) => (
 					<Image
-						key={src}
-						src={src}
-						alt=""
+						key={slide.id}
+						src={slide.imageUrl}
+						alt={i === activeSlide ? slide.alt[contentLocale] : ""}
+						aria-hidden={i !== activeSlide}
 						fill
 						priority={i === 0}
 						sizes="100vw"
@@ -47,30 +56,30 @@ export function HomeHero() {
 			</div>
 
 			<Container>
-				<div className="max-w-3xl py-16">
+				<div key={slide.id} className="max-w-3xl py-16 animate-[reveal-up_0.6s_ease-out_both]">
 					<div className="reveal flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold)]">
 						<span className="inline-block h-px w-8 bg-[var(--color-teal)]" />
-						{t.hero.overline}
+						{slide.overline[contentLocale]}
 					</div>
 
 					<h1 className={`reveal mt-6 font-display font-bold tracking-display text-white text-[clamp(1.9rem,4.2vw,3.2rem)] ${isAr ? "leading-[1.35]" : "leading-[1.1]"}`}>
-						{t.hero.title[0]}<br />
-						<span className="text-[var(--color-gold)] leading-[1.5]">{t.hero.title[1]}</span>
+						{slide.titleLine1[contentLocale]}<br />
+						<span className="text-[var(--color-gold)] leading-[1.5]">{slide.titleLine2[contentLocale]}</span>
 					</h1>
 
 					<p className={`reveal mt-6 max-w-xl border-${isAr ? "r" : "l"}-2 border-[var(--color-teal)]/50 ${isAr ? "pr-4" : "pl-4"} text-[15px] sm:text-[16px] leading-[1.65] text-[var(--color-silver)]`}>
-						{t.hero.description}
+						{slide.description[contentLocale]}
 					</p>
 
 					{/* Teal accent line */}
 					<div className={`reveal mt-8 h-[2px] w-32 bg-gradient-to-${isAr ? "l" : "r"} from-[var(--color-teal)] via-[var(--color-teal)]/50 to-transparent`} />
 
 					<div className="reveal mt-6 flex flex-col gap-3 sm:flex-row">
-						<Button href={`/${locale}/ibs`} variant="gold" size="md" withArrow>
-							{t.hero.ctaPrimary}
+						<Button href={localizedHref(slide.primaryCtaHref, locale)} variant="gold" size="md" withArrow>
+							{slide.primaryCtaLabel[contentLocale]}
 						</Button>
-						<Button href={`/${locale}/contact`} variant="outline-teal" size="md" withArrow>
-							{t.hero.ctaSecondary}
+						<Button href={localizedHref(slide.secondaryCtaHref, locale)} variant="outline-teal" size="md" withArrow>
+							{slide.secondaryCtaLabel[contentLocale]}
 						</Button>
 					</div>
 				</div>

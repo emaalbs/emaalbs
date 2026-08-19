@@ -3,11 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/generate-hero-slides.mjs",
     "dev": "node --max-old-space-size=8192 node_modules/next/dist/bin/next dev",
-    "prebuild": "node scripts/generate-hero-slides.mjs",
     "build": "next build",
-    "cf:build": "node scripts/generate-hero-slides.mjs && opennextjs-cloudflare build",
+    "cf:build": "opennextjs-cloudflare build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
@@ -18,8 +16,8 @@
     "optimize-logos": "node scripts/optimize-images.mjs --dir=public/logos --maxWidth=400",
     "normalize-logos": "node scripts/normalize-logos.mjs",
     "optimize-videos": "node scripts/optimize-videos.mjs",
-    "migrate:local": "wrangler d1 migrations apply emmal --local",
-    "migrate:prod": "npx wrangler d1 migrations apply emmal --remote"
+    "migrate:local": "wrangler d1 migrations apply DB --local",
+    "migrate:prod": "npx wrangler d1 migrations apply DB --remote"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1067.0",
