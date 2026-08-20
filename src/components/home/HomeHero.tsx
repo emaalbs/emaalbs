@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
@@ -24,12 +25,20 @@ export function HomeHero({ settings }: { settings: HomeHeroSettings }) {
 
 	useEffect(() => {
 		if (settings.slides.length < 2) return;
-		const timer = setInterval(
+		const timer = window.setTimeout(
 			() => setActiveSlide((i) => (i + 1) % settings.slides.length),
 			settings.slideIntervalMs,
 		);
-		return () => clearInterval(timer);
-	}, [settings.slideIntervalMs, settings.slides.length]);
+		return () => window.clearTimeout(timer);
+	}, [activeSlide, settings.slideIntervalMs, settings.slides.length]);
+
+	function showPreviousSlide() {
+		setActiveSlide((current) => (current - 1 + settings.slides.length) % settings.slides.length);
+	}
+
+	function showNextSlide() {
+		setActiveSlide((current) => (current + 1) % settings.slides.length);
+	}
 
 	return (
 		<section className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-navy-dark)] pt-24">
@@ -44,7 +53,7 @@ export function HomeHero({ settings }: { settings: HomeHeroSettings }) {
 						fill
 						priority={i === 0}
 						sizes="100vw"
-						className={`object-cover object-center blur-[3px] transition-opacity duration-[1500ms] ease-in-out ${i === activeSlide ? "opacity-100" : "opacity-0"}`}
+						className={`object-cover object-center blur-[1px] transition-opacity duration-[1500ms] ease-in-out ${i === activeSlide ? "opacity-100" : "opacity-0"}`}
 					/>
 				))}
 				<div className="absolute inset-0 bg-gradient-to-b from-[rgba(1,30,47,0.82)] via-[rgba(1,51,77,0.7)] to-[rgba(1,30,47,0.95)]" />
@@ -84,6 +93,30 @@ export function HomeHero({ settings }: { settings: HomeHeroSettings }) {
 					</div>
 				</div>
 			</Container>
+
+			{settings.slides.length > 1 && (
+				<div className={`absolute bottom-8 z-20 flex items-center gap-2 ${isAr ? "left-6 sm:left-10" : "right-6 sm:right-10"}`}>
+					<button
+						type="button"
+						onClick={showPreviousSlide}
+						aria-label={isAr ? "الشريحة السابقة" : "Previous slide"}
+						className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-[var(--color-navy-dark)]/45 text-white backdrop-blur-sm transition hover:border-[var(--color-gold)] hover:bg-[var(--color-navy-dark)]/75 hover:text-[var(--color-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]"
+					>
+						<ChevronLeft className={`h-5 w-5 ${isAr ? "rotate-180" : ""}`} />
+					</button>
+					<span className="min-w-14 text-center text-xs font-semibold tabular-nums text-white/80" aria-live="polite">
+						{activeSlide + 1} / {settings.slides.length}
+					</span>
+					<button
+						type="button"
+						onClick={showNextSlide}
+						aria-label={isAr ? "الشريحة التالية" : "Next slide"}
+						className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-[var(--color-navy-dark)]/45 text-white backdrop-blur-sm transition hover:border-[var(--color-gold)] hover:bg-[var(--color-navy-dark)]/75 hover:text-[var(--color-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-gold)]"
+					>
+						<ChevronRight className={`h-5 w-5 ${isAr ? "rotate-180" : ""}`} />
+					</button>
+				</div>
+			)}
 		</section>
 	);
 }

@@ -131,7 +131,7 @@ export default function HomeHeroEditorPage() {
 				<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div>
 						<h2 className="text-lg font-semibold text-gray-900">Slides</h2>
-						<p className="mt-1 text-sm text-gray-500">Select a slide to edit it. Images are converted to compressed WebP before upload.</p>
+						<p className="mt-1 text-sm text-gray-500">Select a slide to edit it. Use the up/down arrows to set its position; the displayed order is saved exactly as shown.</p>
 					</div>
 					<label className="flex shrink-0 items-center gap-2 text-sm font-medium text-gray-700">
 						Change every
@@ -147,8 +147,8 @@ export default function HomeHeroEditorPage() {
 							<div className="mb-3 flex items-center justify-between">
 								<button onClick={() => setActiveSlideId(slide.id)} className="text-sm font-semibold text-[#01334D]">Slide {index + 1} · Edit content</button>
 								<div className="flex gap-1">
-									<button onClick={() => moveSlide(index, -1)} disabled={index === 0} title="Move earlier" className="rounded-md p-2 text-gray-500 hover:bg-white disabled:opacity-25"><ArrowUp className="h-4 w-4" /></button>
-									<button onClick={() => moveSlide(index, 1)} disabled={index === settings.slides.length - 1} title="Move later" className="rounded-md p-2 text-gray-500 hover:bg-white disabled:opacity-25"><ArrowDown className="h-4 w-4" /></button>
+									<button onClick={() => moveSlide(index, -1)} disabled={index === 0} title="Move slide up" aria-label={`Move slide ${index + 1} up`} className="rounded-md p-2 text-gray-500 hover:bg-white disabled:opacity-25"><ArrowUp className="h-4 w-4" /></button>
+									<button onClick={() => moveSlide(index, 1)} disabled={index === settings.slides.length - 1} title="Move slide down" aria-label={`Move slide ${index + 1} down`} className="rounded-md p-2 text-gray-500 hover:bg-white disabled:opacity-25"><ArrowDown className="h-4 w-4" /></button>
 									<button onClick={() => removeSlide(index)} disabled={settings.slides.length === 1} title="Remove slide" className="rounded-md p-2 text-red-500 hover:bg-red-50 disabled:opacity-25"><Trash2 className="h-4 w-4" /></button>
 								</div>
 							</div>
