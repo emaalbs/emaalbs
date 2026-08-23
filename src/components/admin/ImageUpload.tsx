@@ -18,14 +18,10 @@ interface Props {
 
 export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "" }: Props) {
 	const [uploading, setUploading] = useState(false);
-	const [uploadError, setUploadError] = useState("");
-	const [optimizationNote, setOptimizationNote] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	async function handleFile(file: File) {
 		setUploading(true);
-		setUploadError("");
-		setOptimizationNote("");
 		try {
 			const optimized = await optimizeImage(file, preset);
 			const baseName = file.name.replace(/\.[^.]+$/, "");
@@ -38,13 +34,9 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, f
 				body: formData,
 			});
 			const data = (await res.json()) as { key: string; url: string } | { error: string };
-			if (!res.ok || !("url" in data)) throw new Error("error" in data ? data.error : "Upload failed");
-			onChange(data.url);
-			const originalKb = Math.max(1, Math.round(file.size / 1024));
-			const optimizedKb = Math.max(1, Math.round(optimized.blob.size / 1024));
-			setOptimizationNote(`Optimized ${originalKb.toLocaleString()} KB → ${optimizedKb.toLocaleString()} KB`);
-		} catch (caught) {
-			setUploadError(caught instanceof Error ? caught.message : "Image optimization or upload failed");
+			if ("url" in data) {
+				onChange(data.url);
+			}
 		} finally {
 			setUploading(false);
 		}
@@ -61,7 +53,6 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, f
 					{error && <p className="text-xs text-red-500">{error}</p>}
 				</div>
 			)}
-			{uploadError && <p className="mb-2 text-xs text-red-500">{uploadError}</p>}
 			{value ? (
 				<div className="relative overflow-hidden rounded-lg border border-gray-200">
 					<img src={value} alt="" className={`${heightClass} w-full object-${fit}`} />
@@ -113,7 +104,6 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, f
 				}}
 				className="hidden"
 			/>
-			{optimizationNote && <p className="mt-1 text-xs text-emerald-600">{optimizationNote}</p>}
 		</div>
 	);
 }

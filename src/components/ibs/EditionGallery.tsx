@@ -26,7 +26,9 @@ export function EditionGallery({ edition }: { edition: IbsEdition }) {
 					{edition.gallery.map((g, i) => (
 						<div
 							key={g.id}
-							className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[var(--color-line)] bg-white"
+							className={`group relative overflow-hidden rounded-xl border border-[var(--color-line)] bg-white ${
+								i % 5 === 0 ? "row-span-2 aspect-[3/4]" : "aspect-[4/3]"
+							}`}
 						>
 							<Image
 								src={g.src}

@@ -12,13 +12,18 @@ import { HomeHighlights } from "@/components/home/HomeHighlights";
 import { HomeStatsBar } from "@/components/home/HomeStatsBar";
 import { HomeCtaBand } from "@/components/home/HomeCtaBand";
 import { listBlogs } from "@/lib/db/blogs";
-import { getHomeHero } from "@/lib/db/home-hero";
+import { listHeroSlides } from "@/lib/db/hero-slides";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/structured-data";
 
 type Props = {
 	params: Promise<{ locale: string }>;
 };
+
+// Homepage banners are managed from the admin panel, so the latest published
+// state must be read from D1 instead of being frozen into the production build.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const { locale } = await params;
@@ -27,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Home({ params }: Props) {
 	const { locale } = await params;
-	const [blogs, heroSettings] = await Promise.all([listBlogs(), getHomeHero()]);
+	const [blogs, heroSlides] = await Promise.all([listBlogs(), listHeroSlides()]);
 	return (
 		<>
 			<script
@@ -41,7 +46,7 @@ export default async function Home({ params }: Props) {
 			/>
 			<Header />
 			<main>
-				<HomeHero settings={heroSettings} />
+				<HomeHero slides={heroSlides} />
 				<HomeTrustStrip />
 				<HomeIbsBand />
 				<HomeAbout />

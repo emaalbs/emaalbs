@@ -3,6 +3,8 @@
  * Uses Web Crypto API only (no external deps).
  */
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 const ITERATIONS = 100_000;
 const SALT_LEN = 16;
 
@@ -96,11 +98,21 @@ export function parseSessionCookie(header?: string | null): string | null {
 
 // ---- Middleware / Route helpers ----
 
+export async function getAdminSecret(): Promise<string | undefined> {
+	if (process.env.ADMIN_SECRET) return process.env.ADMIN_SECRET;
+	try {
+		const { env } = await getCloudflareContext({ async: true });
+		return (env as unknown as { ADMIN_SECRET?: string }).ADMIN_SECRET;
+	} catch {
+		return undefined;
+	}
+}
+
 export async function requireAuth(request: Request): Promise<SessionPayload> {
 	const cookie = request.headers.get("cookie");
 	const token = parseSessionCookie(cookie);
 	if (!token) throw new Error("Unauthorized");
-	const secret = process.env.ADMIN_SECRET;
+	const secret = await getAdminSecret();
 	if (!secret) throw new Error("Missing ADMIN_SECRET");
 	const session = await verifySession(token, secret);
 	if (!session) throw new Error("Invalid session");

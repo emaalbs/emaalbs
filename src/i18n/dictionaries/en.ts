@@ -69,12 +69,33 @@ export const en = {
     email: "info@emaalbs.com",
   },
   hero: {
-    overline: "EMAAL Business Space",
-    title: ["Building Businesses. Scaling Growth.", "Connecting Opportunity."],
-    description:
-      "EMAAL Business Space is a business platform builder and investment driven group operating across Iraq and the region. We build and scale ventures, invest in growth, and help established companies expand through strategic positioning, market access, and high level business platforms",
+    slides: [
+      {
+        overline: "EMAAL Business Space",
+        title: ["Building Businesses. Scaling Growth.", "Connecting Opportunity."],
+        description:
+          "EMAAL Business Space is a business platform builder and investment driven group operating across Iraq and the region. We build and scale ventures, invest in growth, and help established companies expand through strategic positioning, market access, and high level business platforms.",
+      },
+      {
+        overline: "Investment & Market Access",
+        title: ["Turning Ambition Into", "Sustainable Growth."],
+        description:
+          "We connect companies and investors with the institutions, partnerships, and market insight needed to enter, expand, and lead across Iraq and the region.",
+      },
+      {
+        overline: "Iraq Business Summit",
+        title: ["Where Decision Makers Meet", "Real Opportunity."],
+        description:
+          "Through IBS, we bring government leaders, investors, and the private sector together to move conversations toward partnerships, projects, and measurable outcomes.",
+      },
+    ],
     ctaPrimary: "Explore Iraq Business Summit",
     ctaSecondary: "Contact Us",
+    carouselLabel: "Homepage highlights",
+    slideLabel: "Slide",
+    previousSlide: "Show previous slide",
+    nextSlide: "Show next slide",
+    goToSlide: "Go to slide",
   },
   trustStrip: {
     label: "Trusted by leaders across sectors",

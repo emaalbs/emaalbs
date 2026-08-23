@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { parseSessionCookie, verifySession } from "@/lib/auth";
+import { getAdminSecret, parseSessionCookie, verifySession } from "@/lib/auth";
 
 export const config = {
 	matcher: ["/admin/:path*", "/api/:path*"],
@@ -10,8 +10,8 @@ export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const method = request.method;
 
-	// Allow public reads for storefront content APIs and media serving
-	if (pathname.startsWith("/api/blogs") || pathname.startsWith("/api/home-hero") || pathname.startsWith("/api/ibs") || pathname.startsWith("/api/media") || pathname.startsWith("/api/magazines")) {
+	// Allow public reads on IBS/blog APIs and media serving
+	if (pathname.startsWith("/api/blogs") || pathname.startsWith("/api/ibs") || pathname.startsWith("/api/media") || pathname.startsWith("/api/magazines")) {
 		if (method === "GET") {
 			return NextResponse.next();
 		}
@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 	// Check admin session
 	const cookie = request.headers.get("cookie");
 	const token = parseSessionCookie(cookie);
-	const secret = process.env.ADMIN_SECRET;
+	const secret = await getAdminSecret();
 
 	if (!token || !secret) {
 		if (pathname.startsWith("/api/")) {

@@ -5,7 +5,7 @@
  * Tries WebP first for best compression; falls back to JPEG if the browser doesn't support WebP output.
  */
 
-export type ImagePreset = "blog-cover" | "home-hero" | "ibs-hero" | "portrait" | "gallery" | "logo";
+export type ImagePreset = "blog-cover" | "ibs-hero" | "portrait" | "gallery" | "logo";
 
 interface PresetConfig {
 	maxWidth: number;
@@ -15,7 +15,6 @@ interface PresetConfig {
 
 const PRESETS: Record<ImagePreset, PresetConfig> = {
 	"blog-cover": { maxWidth: 1200, maxHeight: 630,  quality: 0.82 },
-	"home-hero":  { maxWidth: 1920, maxHeight: 1080, quality: 0.82 },
 	"ibs-hero":   { maxWidth: 1920, maxHeight: 1080, quality: 0.85 },
 	portrait:     { maxWidth: 600,  maxHeight: 600,  quality: 0.82 },
 	gallery:      { maxWidth: 1200, maxHeight: null,  quality: 0.80 },
