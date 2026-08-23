@@ -18,11 +18,10 @@ export const siteConfig = {
 	favicon: "/favicon.svg",
 	social: {
 		youtube: "https://www.youtube.com/@IraqBusinessSummit",
-		x: "http://x.com/IB_Summit",
-		linkedin: "https://www.linkedin.com/company/iraq-business-summit/",
-		instagram: "https://www.instagram.com/iraq_business_summit/",
-		facebook:
-			"https://www.facebook.com/profile.php?id=61573903317269",
+		x: "https://x.com/emaal_bs",
+		linkedin: "https://www.linkedin.com/company/emaal/",
+		instagram: "https://www.instagram.com/emaal_business_space/",
+		facebook: "https://www.facebook.com/EMAAL.Business.Space/",
 	},
 } as const;
 
