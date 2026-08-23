@@ -9,6 +9,14 @@ export type HeroSlide = {
 	titleLine1: LocalizedText;
 	titleLine2: LocalizedText;
 	description: LocalizedText;
+	primaryCta: {
+		label: LocalizedText;
+		href: LocalizedText;
+	};
+	secondaryCta: {
+		label: LocalizedText;
+		href: LocalizedText;
+	};
 	imageUrl: string;
 	imagePosition: string;
 	sortOrder: number;
@@ -16,3 +24,7 @@ export type HeroSlide = {
 };
 
 export type HeroSlideInput = Omit<HeroSlide, "id">;
+
+export type HeroCarouselSettings = {
+	autoplayDelayMs: number;
+};

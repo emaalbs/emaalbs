@@ -1,6 +1,7 @@
 "use client";
 
 import { Globe } from "lucide-react";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 
 interface Props {
 	enValue: string;
@@ -47,6 +48,12 @@ export function BilingualField({
 				{required && <span className="text-red-500">*</span>}
 				{hint && <span className="text-xs text-gray-400">{hint}</span>}
 			</div>
+			<AutoTranslateSync
+				enValue={enValue}
+				arValue={arValue}
+				onEnChange={onEnChange}
+				onArChange={onArChange}
+			/>
 
 			<div className="grid gap-3 md:grid-cols-2">
 				{/* EN */}

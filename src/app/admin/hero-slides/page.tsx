@@ -2,24 +2,33 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Eye, EyeOff, ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
-import type { HeroSlide } from "@/data/hero-slides";
+import { Check, Eye, EyeOff, ImageIcon, Pencil, Plus, Save, Settings2, Trash2 } from "lucide-react";
+import type { HeroCarouselSettings, HeroSlide } from "@/data/hero-slides";
 
 export default function AdminHeroSlidesPage() {
 	const [slides, setSlides] = useState<HeroSlide[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
+	const [settings, setSettings] = useState<HeroCarouselSettings>({ autoplayDelayMs: 6500 });
+	const [savingSettings, setSavingSettings] = useState(false);
+	const [settingsSaved, setSettingsSaved] = useState(false);
 
 	const loadSlides = useCallback(async () => {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch("/api/hero-slides?admin=1", { credentials: "same-origin" });
-			const data = (await response.json()) as HeroSlide[] | { error?: string };
-			if (!response.ok || !Array.isArray(data)) {
+			const [slidesResponse, settingsResponse] = await Promise.all([
+				fetch("/api/hero-slides?admin=1", { credentials: "same-origin" }),
+				fetch("/api/hero-settings", { credentials: "same-origin" }),
+			]);
+			const data = (await slidesResponse.json()) as HeroSlide[] | { error?: string };
+			if (!slidesResponse.ok || !Array.isArray(data)) {
 				throw new Error(!Array.isArray(data) && data.error ? data.error : "Unable to load homepage banners");
 			}
 			setSlides(data);
+			if (settingsResponse.ok) {
+				setSettings((await settingsResponse.json()) as HeroCarouselSettings);
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Unable to load homepage banners");
 		} finally {
@@ -42,6 +51,30 @@ export default function AdminHeroSlidesPage() {
 		loadSlides();
 	}
 
+	async function saveSettings() {
+		setSavingSettings(true);
+		setSettingsSaved(false);
+		setError("");
+		try {
+			const response = await fetch("/api/hero-settings", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(settings),
+			});
+			const data = (await response.json()) as HeroCarouselSettings | { error?: string };
+			if (!response.ok || !("autoplayDelayMs" in data)) {
+				throw new Error("error" in data && data.error ? data.error : "Unable to save carousel timing");
+			}
+			setSettings(data);
+			setSettingsSaved(true);
+			window.setTimeout(() => setSettingsSaved(false), 2500);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Unable to save carousel timing");
+		} finally {
+			setSavingSettings(false);
+		}
+	}
+
 	return (
 		<div>
 			<div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -60,6 +93,48 @@ export default function AdminHeroSlidesPage() {
 					Add Banner
 				</Link>
 			</div>
+
+			<section className="mb-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between">
+				<div className="flex gap-3">
+					<div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#007F84]/10 text-[#007F84]">
+						<Settings2 className="h-5 w-5" />
+					</div>
+					<div>
+						<h2 className="text-sm font-semibold text-gray-900">Automatic slide timing</h2>
+						<p className="mt-1 max-w-xl text-xs leading-5 text-gray-500">
+							Choose how long each banner stays visible before the carousel advances. Visitors can still use the arrows and dots.
+						</p>
+					</div>
+				</div>
+				<div className="flex items-end gap-2">
+					<div>
+						<label htmlFor="autoplay-seconds" className="mb-1 block text-xs font-semibold text-gray-600">Seconds</label>
+						<input
+							id="autoplay-seconds"
+							type="number"
+							min={2}
+							max={60}
+							step={0.5}
+							value={settings.autoplayDelayMs / 1000}
+							onChange={(event) => {
+								const seconds = Math.min(60, Math.max(2, Number(event.target.value) || 2));
+								setSettings({ autoplayDelayMs: Math.round(seconds * 1000) });
+								setSettingsSaved(false);
+							}}
+							className="h-11 w-24 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-900 outline-none transition focus:border-[#007F84] focus:ring-1 focus:ring-[#007F84]/20"
+						/>
+					</div>
+					<button
+						type="button"
+						onClick={saveSettings}
+						disabled={savingSettings}
+						className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#01334D] px-4 text-sm font-semibold text-white transition hover:bg-[#011E2F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007F84] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+					>
+						{settingsSaved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+						{savingSettings ? "Saving..." : settingsSaved ? "Saved" : "Save timing"}
+					</button>
+				</div>
+			</section>
 
 			{error && (
 				<div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

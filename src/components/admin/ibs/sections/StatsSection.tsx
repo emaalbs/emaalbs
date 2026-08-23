@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import type { Stat } from "@/data/ibs/types";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -17,7 +18,8 @@ export function StatsSection({ stats, onAdd, onUpdate, onRemove }: Props) {
 	return (
 		<div className="space-y-3">
 			{stats.map((s, i) => (
-				<div key={i} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+				<div key={i} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+					<div className="flex items-start gap-3">
 					<div className="flex-1 grid gap-3 md:grid-cols-3">
 						<input
 							type="text"
@@ -45,6 +47,14 @@ export function StatsSection({ stats, onAdd, onUpdate, onRemove }: Props) {
 					<button onClick={() => onRemove(i)} className="mt-1 text-red-400 hover:text-red-600 transition">
 						<Trash2 className="h-4 w-4" />
 					</button>
+					</div>
+					<AutoTranslateSync
+						className="mt-2"
+						enValue={s.label.en}
+						arValue={s.label.ar}
+						onEnChange={(value) => onUpdate(i, { ...s, label: { ...s.label, en: value } })}
+						onArChange={(value) => onUpdate(i, { ...s, label: { ...s.label, ar: value } })}
+					/>
 				</div>
 			))}
 			<button

@@ -3,6 +3,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import type { GalleryItem } from "@/data/ibs/types";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -48,6 +49,12 @@ export function GallerySection({ gallery, onAdd, onUpdate, onRemove }: Props) {
 								placeholder="Alt AR"
 								dir="rtl"
 								className="w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-[var(--color-teal)]"
+							/>
+							<AutoTranslateSync
+								enValue={g.alt.en}
+								arValue={g.alt.ar}
+								onEnChange={(value) => onUpdate(i, { ...g, alt: { ...g.alt, en: value } })}
+								onArChange={(value) => onUpdate(i, { ...g, alt: { ...g.alt, ar: value } })}
 							/>
 						</div>
 					</div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Magazine } from "@/data/magazines";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PdfUpload } from "@/components/admin/PdfUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 
 function toSlug(text: string): string {
 	return text
@@ -190,6 +191,13 @@ export default function MagazineEditorPage({
 							{errors.date && <p className="mt-1 text-xs text-red-500">{errors.date}</p>}
 						</div>
 					</div>
+					<AutoTranslateSync
+						className="mt-4"
+						enValue={mag.title.en}
+						arValue={mag.title.ar}
+						onEnChange={(value) => setMag((prev) => ({ ...prev, title: { ...prev.title, en: value }, slug: toSlug(value) }))}
+						onArChange={(value) => setMag((prev) => ({ ...prev, title: { ...prev.title, ar: value } }))}
+					/>
 
 					<div className="mt-4">
 						<label className="mb-1 block text-sm text-gray-500">
@@ -208,6 +216,13 @@ export default function MagazineEditorPage({
 							placeholder={activeLocale === "en" ? "Short description in English" : "وصف مختصر بالعربية"}
 						/>
 					</div>
+					<AutoTranslateSync
+						className="mt-2"
+						enValue={mag.description.en}
+						arValue={mag.description.ar}
+						onEnChange={(value) => setMag((prev) => ({ ...prev, description: { ...prev.description, en: value } }))}
+						onArChange={(value) => setMag((prev) => ({ ...prev, description: { ...prev.description, ar: value } }))}
+					/>
 
 					<div>
 						<label className="mb-1 block text-sm text-gray-400">Slug</label>

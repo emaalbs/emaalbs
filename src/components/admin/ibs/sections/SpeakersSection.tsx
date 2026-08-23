@@ -3,6 +3,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import type { Speaker } from "@/data/ibs/types";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -44,6 +45,12 @@ export function SpeakersSection({ speakers, onAdd, onUpdate, onRemove }: Props) 
 									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] leading-tight outline-none focus:border-[var(--color-teal)]"
 								/>
 							</div>
+							<AutoTranslateSync
+								enValue={s.name.en}
+								arValue={s.name.ar}
+								onEnChange={(value) => onUpdate(i, { ...s, name: { ...s.name, en: value } })}
+								onArChange={(value) => onUpdate(i, { ...s, name: { ...s.name, ar: value } })}
+							/>
 							<div className="grid gap-1.5 md:grid-cols-4">
 								<input
 									type="text"
@@ -76,6 +83,18 @@ export function SpeakersSection({ speakers, onAdd, onUpdate, onRemove }: Props) 
 									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] leading-tight outline-none focus:border-[var(--color-teal)]"
 								/>
 							</div>
+							<AutoTranslateSync
+								enValue={s.title.en}
+								arValue={s.title.ar}
+								onEnChange={(value) => onUpdate(i, { ...s, title: { ...s.title, en: value } })}
+								onArChange={(value) => onUpdate(i, { ...s, title: { ...s.title, ar: value } })}
+							/>
+							<AutoTranslateSync
+								enValue={s.org?.en || ""}
+								arValue={s.org?.ar || ""}
+								onEnChange={(value) => onUpdate(i, { ...s, org: { en: value, ar: s.org?.ar || "" } })}
+								onArChange={(value) => onUpdate(i, { ...s, org: { en: s.org?.en || "", ar: value } })}
+							/>
 						</div>
 						<div className="w-20 shrink-0">
 							<ImageUpload

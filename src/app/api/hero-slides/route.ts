@@ -2,12 +2,17 @@ import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import type { HeroSlideInput } from "@/data/hero-slides";
 import { createHeroSlide, listHeroSlides } from "@/lib/db/hero-slides";
+import { isSafeHref } from "@/lib/safe-href";
 
 function validationError(data: HeroSlideInput): string | null {
 	if (!data?.overline?.en?.trim() || !data?.overline?.ar?.trim()) return "Overline is required in both languages";
 	if (!data?.titleLine1?.en?.trim() || !data?.titleLine1?.ar?.trim()) return "First title line is required in both languages";
 	if (!data?.titleLine2?.en?.trim() || !data?.titleLine2?.ar?.trim()) return "Second title line is required in both languages";
 	if (!data?.description?.en?.trim() || !data?.description?.ar?.trim()) return "Description is required in both languages";
+	if (!data?.primaryCta?.label?.en?.trim() || !data?.primaryCta?.label?.ar?.trim()) return "Primary button label is required in both languages";
+	if (!isSafeHref(data?.primaryCta?.href?.en || "") || !isSafeHref(data?.primaryCta?.href?.ar || "")) return "Primary button link is invalid";
+	if (!data?.secondaryCta?.label?.en?.trim() || !data?.secondaryCta?.label?.ar?.trim()) return "Secondary button label is required in both languages";
+	if (!isSafeHref(data?.secondaryCta?.href?.en || "") || !isSafeHref(data?.secondaryCta?.href?.ar || "")) return "Secondary button link is invalid";
 	if (!data?.imageUrl?.trim()) return "Slide image is required";
 	return null;
 }

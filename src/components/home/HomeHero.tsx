@@ -7,8 +7,9 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 import type { HeroSlide } from "@/data/hero-slides";
+import { isExternalHref } from "@/lib/safe-href";
 
-const AUTOPLAY_DELAY = 6500;
+const DEFAULT_AUTOPLAY_DELAY = 6500;
 
 const HERO_IMAGES = [
 	{ src: "/images/hero-summit.webp", position: "center" },
@@ -16,7 +17,13 @@ const HERO_IMAGES = [
 	{ src: "/images/panel-discussion.webp", position: "center 45%" },
 ] as const;
 
-export function HomeHero({ slides: databaseSlides = [] }: { slides?: HeroSlide[] }) {
+export function HomeHero({
+	slides: databaseSlides = [],
+	autoplayDelayMs = DEFAULT_AUTOPLAY_DELAY,
+}: {
+	slides?: HeroSlide[];
+	autoplayDelayMs?: number;
+}) {
 	const { t, locale } = useI18n();
 	const isAr = locale === "ar";
 	const slides = databaseSlides.length > 0
@@ -25,12 +32,22 @@ export function HomeHero({ slides: databaseSlides = [] }: { slides?: HeroSlide[]
 			overline: slide.overline[locale],
 			title: [slide.titleLine1[locale], slide.titleLine2[locale]],
 			description: slide.description[locale],
+			primaryCta: {
+				label: slide.primaryCta.label[locale],
+				href: slide.primaryCta.href[locale],
+			},
+			secondaryCta: {
+				label: slide.secondaryCta.label[locale],
+				href: slide.secondaryCta.href[locale],
+			},
 			imageUrl: slide.imageUrl,
 			imagePosition: slide.imagePosition,
 		}))
 		: t.hero.slides.map((slide, index) => ({
 			key: `fallback-${index}`,
 			...slide,
+			primaryCta: { label: t.hero.ctaPrimary, href: `/${locale}/ibs` },
+			secondaryCta: { label: t.hero.ctaSecondary, href: `/${locale}/contact` },
 			imageUrl: HERO_IMAGES[index]?.src ?? HERO_IMAGES[0].src,
 			imagePosition: HERO_IMAGES[index]?.position ?? HERO_IMAGES[0].position,
 		}));
@@ -43,10 +60,10 @@ export function HomeHero({ slides: databaseSlides = [] }: { slides?: HeroSlide[]
 
 		const timer = window.setTimeout(() => {
 			setActiveSlide((current) => (current + 1) % slides.length);
-		}, AUTOPLAY_DELAY);
+		}, Math.min(60000, Math.max(2000, autoplayDelayMs)));
 
 		return () => window.clearTimeout(timer);
-	}, [activeSlide, isPaused, slides.length]);
+	}, [activeSlide, autoplayDelayMs, isPaused, slides.length]);
 
 	const goToSlide = (index: number) => {
 		setActiveSlide((index + slides.length) % slides.length);
@@ -148,11 +165,23 @@ export function HomeHero({ slides: databaseSlides = [] }: { slides?: HeroSlide[]
 						className="reveal mt-6 flex flex-col gap-3 sm:flex-row"
 						style={{ animationDelay: "300ms" }}
 					>
-						<Button href={`/${locale}/ibs`} variant="gold" size="md" withArrow>
-							{t.hero.ctaPrimary}
+						<Button
+							href={activeContent.primaryCta.href}
+							variant="gold"
+							size="md"
+							withArrow
+							external={isExternalHref(activeContent.primaryCta.href)}
+						>
+							{activeContent.primaryCta.label}
 						</Button>
-						<Button href={`/${locale}/contact`} variant="outline-teal" size="md" withArrow>
-							{t.hero.ctaSecondary}
+						<Button
+							href={activeContent.secondaryCta.href}
+							variant="outline-teal"
+							size="md"
+							withArrow
+							external={isExternalHref(activeContent.secondaryCta.href)}
+						>
+							{activeContent.secondaryCta.label}
 						</Button>
 					</div>
 

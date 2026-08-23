@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import type { Blog, BlogBlock } from "@/data/blogs";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 
 function toSlug(text: string): string {
 	return text
@@ -43,6 +44,74 @@ function makeEmptyCopy(block: BlogBlock): BlogBlock {
 		case "gallery":
 			return { type: "gallery", images: [...block.images] };
 	}
+}
+
+function BlogBlockTranslation({
+	enBlock,
+	arBlock,
+	onEnChange,
+	onArChange,
+}: {
+	enBlock?: BlogBlock;
+	arBlock?: BlogBlock;
+	onEnChange: (block: BlogBlock) => void;
+	onArChange: (block: BlogBlock) => void;
+}) {
+	if (!enBlock || !arBlock || enBlock.type !== arBlock.type) return null;
+
+	if (
+		(enBlock.type === "heading" || enBlock.type === "paragraph" || enBlock.type === "quote") &&
+		(arBlock.type === "heading" || arBlock.type === "paragraph" || arBlock.type === "quote")
+	) {
+		return (
+			<AutoTranslateSync
+				className="mt-3 border-t border-gray-100 pt-3"
+				enValue={enBlock.text}
+				arValue={arBlock.text}
+				onEnChange={(text) => onEnChange({ ...enBlock, text })}
+				onArChange={(text) => onArChange({ ...arBlock, text })}
+			/>
+		);
+	}
+
+	if (enBlock.type === "image" && arBlock.type === "image") {
+		return (
+			<AutoTranslateSync
+				className="mt-3 border-t border-gray-100 pt-3"
+				enValue={enBlock.alt}
+				arValue={arBlock.alt}
+				onEnChange={(alt) => onEnChange({ ...enBlock, alt })}
+				onArChange={(alt) => onArChange({ ...arBlock, alt })}
+			/>
+		);
+	}
+
+	if (enBlock.type === "highlights" && arBlock.type === "highlights") {
+		const count = Math.max(enBlock.items.length, arBlock.items.length);
+		return (
+			<div className="mt-3 space-y-2 border-t border-gray-100 pt-3">
+				{Array.from({ length: count }).map((_, index) => (
+					<AutoTranslateSync
+						key={index}
+						enValue={enBlock.items[index] || ""}
+						arValue={arBlock.items[index] || ""}
+						onEnChange={(text) => {
+							const items = [...enBlock.items];
+							items[index] = text;
+							onEnChange({ ...enBlock, items });
+						}}
+						onArChange={(text) => {
+							const items = [...arBlock.items];
+							items[index] = text;
+							onArChange({ ...arBlock, items });
+						}}
+					/>
+				))}
+			</div>
+		);
+	}
+
+	return null;
 }
 
 export default function BlogEditorPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -104,12 +173,16 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 		}));
 	}
 
-	function updateBlock(index: number, block: BlogBlock) {
+	function updateBlockForLocale(locale: "en" | "ar", index: number, block: BlogBlock) {
 		setBlog((prev) => {
-			const updated = [...prev.content[activeLocale]];
+			const updated = [...prev.content[locale]];
 			updated[index] = block;
-			return { ...prev, content: { ...prev.content, [activeLocale]: updated } };
+			return { ...prev, content: { ...prev.content, [locale]: updated } };
 		});
+	}
+
+	function updateBlock(index: number, block: BlogBlock) {
+		updateBlockForLocale(activeLocale, index, block);
 	}
 
 	function removeBlock(index: number) {
@@ -221,6 +294,20 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 							);
 						})}
 					</div>
+					<AutoTranslateSync
+						className="mt-4"
+						enValue={blog.title.en}
+						arValue={blog.title.ar}
+						onEnChange={(value) => setBlog((prev) => ({ ...prev, title: { ...prev.title, en: value }, ...(slugAuto ? { slug: toSlug(value) } : {}) }))}
+						onArChange={(value) => setBlog((prev) => ({ ...prev, title: { ...prev.title, ar: value } }))}
+					/>
+					<AutoTranslateSync
+						className="mt-2"
+						enValue={blog.description.en}
+						arValue={blog.description.ar}
+						onEnChange={(value) => setBlog((prev) => ({ ...prev, description: { ...prev.description, en: value } }))}
+						onArChange={(value) => setBlog((prev) => ({ ...prev, description: { ...prev.description, ar: value } }))}
+					/>
 
 					<div className="grid gap-4 md:grid-cols-2">
 						<div>
@@ -502,6 +589,12 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 										</button>
 									</div>
 								)}
+								<BlogBlockTranslation
+									enBlock={blog.content.en[i]}
+									arBlock={blog.content.ar[i]}
+									onEnChange={(nextBlock) => updateBlockForLocale("en", i, nextBlock)}
+									onArChange={(nextBlock) => updateBlockForLocale("ar", i, nextBlock)}
+								/>
 							</div>
 						))}
 					</div>

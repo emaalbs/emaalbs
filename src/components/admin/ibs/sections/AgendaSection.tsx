@@ -4,6 +4,7 @@ import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import type { AgendaDay, AgendaItem, AgendaSpeaker } from "@/data/ibs/types";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -86,6 +87,12 @@ function ItemCard({
 							className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs outline-none focus:border-[var(--color-teal)]"
 						/>
 					</div>
+					<AutoTranslateSync
+						enValue={item.title.en}
+						arValue={item.title.ar}
+						onEnChange={(value) => onUpdate(di, ii, { ...item, title: { ...item.title, en: value } })}
+						onArChange={(value) => onUpdate(di, ii, { ...item, title: { ...item.title, ar: value } })}
+					/>
 					<div className="grid gap-2 md:grid-cols-2">
 						<textarea
 							value={item.description?.en || ""}
@@ -103,6 +110,12 @@ function ItemCard({
 							className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs outline-none focus:border-[var(--color-teal)] resize-y"
 						/>
 					</div>
+					<AutoTranslateSync
+						enValue={item.description?.en || ""}
+						arValue={item.description?.ar || ""}
+						onEnChange={(value) => onUpdate(di, ii, { ...item, description: { en: value, ar: item.description?.ar || "" } })}
+						onArChange={(value) => onUpdate(di, ii, { ...item, description: { en: item.description?.en || "", ar: value } })}
+					/>
 					<div className="grid gap-2 md:grid-cols-2">
 						<input
 							type="text"
@@ -120,6 +133,12 @@ function ItemCard({
 							className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs outline-none focus:border-[var(--color-teal)]"
 						/>
 					</div>
+					<AutoTranslateSync
+						enValue={item.note?.en || ""}
+						arValue={item.note?.ar || ""}
+						onEnChange={(value) => onUpdate(di, ii, { ...item, note: { en: value, ar: item.note?.ar || "" } })}
+						onArChange={(value) => onUpdate(di, ii, { ...item, note: { en: item.note?.en || "", ar: value } })}
+					/>
 
 					{/* Speakers */}
 					<div className="space-y-1 pt-1">
@@ -174,6 +193,20 @@ function ItemCard({
 										dir="rtl"
 										className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
 									/>
+									<AutoTranslateSync
+										className="md:col-span-2"
+										enValue={sp.name.en}
+										arValue={sp.name.ar}
+										onEnChange={(value) => onUpdateSpeaker(di, ii, si, { ...sp, name: { ...sp.name, en: value } })}
+										onArChange={(value) => onUpdateSpeaker(di, ii, si, { ...sp, name: { ...sp.name, ar: value } })}
+									/>
+									<AutoTranslateSync
+										className="md:col-span-2"
+										enValue={sp.org?.en || ""}
+										arValue={sp.org?.ar || ""}
+										onEnChange={(value) => onUpdateSpeaker(di, ii, si, { ...sp, org: { en: value, ar: sp.org?.ar || "" } })}
+										onArChange={(value) => onUpdateSpeaker(di, ii, si, { ...sp, org: { en: sp.org?.en || "", ar: value } })}
+									/>
 								</div>
 								<button
 									onClick={() => onRemoveSpeaker(di, ii, si)}
@@ -210,10 +243,11 @@ export function AgendaSection({
 			{days.map((day, di) => (
 				<div key={di} className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
 					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-2">
+						<div className="flex flex-1 items-start gap-2">
 							<span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-navy)] text-[10px] font-bold text-white">
 								{di + 1}
 							</span>
+							<div className="flex-1 space-y-1.5">
 							<div className="grid gap-1 md:grid-cols-2">
 								<input
 									type="text"
@@ -230,6 +264,13 @@ export function AgendaSection({
 									dir="rtl"
 									className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs outline-none focus:border-[var(--color-teal)]"
 								/>
+							</div>
+							<AutoTranslateSync
+								enValue={day.dateLabel.en}
+								arValue={day.dateLabel.ar}
+								onEnChange={(value) => onUpdateDay(di, { ...day, dateLabel: { ...day.dateLabel, en: value } })}
+								onArChange={(value) => onUpdateDay(di, { ...day, dateLabel: { ...day.dateLabel, ar: value } })}
+							/>
 							</div>
 						</div>
 						<button onClick={() => onRemoveDay(di)} className="text-red-400 hover:text-red-600 transition">

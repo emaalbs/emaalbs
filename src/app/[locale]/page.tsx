@@ -12,7 +12,7 @@ import { HomeHighlights } from "@/components/home/HomeHighlights";
 import { HomeStatsBar } from "@/components/home/HomeStatsBar";
 import { HomeCtaBand } from "@/components/home/HomeCtaBand";
 import { listBlogs } from "@/lib/db/blogs";
-import { listHeroSlides } from "@/lib/db/hero-slides";
+import { getHeroCarouselSettings, listHeroSlides } from "@/lib/db/hero-slides";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/structured-data";
 
@@ -32,7 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Home({ params }: Props) {
 	const { locale } = await params;
-	const [blogs, heroSlides] = await Promise.all([listBlogs(), listHeroSlides()]);
+	const [blogs, heroSlides, heroSettings] = await Promise.all([
+		listBlogs(),
+		listHeroSlides(),
+		getHeroCarouselSettings(),
+	]);
 	return (
 		<>
 			<script
@@ -46,7 +50,7 @@ export default async function Home({ params }: Props) {
 			/>
 			<Header />
 			<main>
-				<HomeHero slides={heroSlides} />
+				<HomeHero slides={heroSlides} autoplayDelayMs={heroSettings.autoplayDelayMs} />
 				<HomeTrustStrip />
 				<HomeIbsBand />
 				<HomeAbout />

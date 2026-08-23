@@ -5,6 +5,7 @@ export async function getEnv() {
 	return env as unknown as {
 		DB: D1Database;
 		MEDIA: R2Bucket;
+		AI: Ai;
 		ADMIN_SECRET: string;
 	};
 }

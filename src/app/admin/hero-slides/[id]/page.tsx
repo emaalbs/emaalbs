@@ -12,13 +12,32 @@ const emptySlide: HeroSlideInput = {
 	titleLine1: { en: "", ar: "" },
 	titleLine2: { en: "", ar: "" },
 	description: { en: "", ar: "" },
+	primaryCta: {
+		label: { en: "Explore Iraq Business Summit", ar: "استكشف قمة العراق للأعمال" },
+		href: { en: "/en/ibs", ar: "/ar/ibs" },
+	},
+	secondaryCta: {
+		label: { en: "Contact Us", ar: "تواصل معنا" },
+		href: { en: "/en/contact", ar: "/ar/contact" },
+	},
 	imageUrl: "",
 	imagePosition: "center",
 	sortOrder: 0,
 	published: true,
 };
 
-type FieldErrors = Partial<Record<"overlineEn" | "overlineAr" | "title1En" | "title1Ar" | "title2En" | "title2Ar" | "descriptionEn" | "descriptionAr" | "imageUrl", string>>;
+type FieldErrors = Partial<Record<
+	| "overlineEn" | "overlineAr"
+	| "title1En" | "title1Ar"
+	| "title2En" | "title2Ar"
+	| "descriptionEn" | "descriptionAr"
+	| "primaryLabelEn" | "primaryLabelAr"
+	| "primaryHrefEn" | "primaryHrefAr"
+	| "secondaryLabelEn" | "secondaryLabelAr"
+	| "secondaryHrefEn" | "secondaryHrefAr"
+	| "imageUrl",
+	string
+>>;
 
 export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: string }> }) {
 	const router = useRouter();
@@ -66,6 +85,31 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 		}));
 	}
 
+	function updateCta(
+		cta: "primaryCta" | "secondaryCta",
+		field: "label" | "href",
+		locale: "en" | "ar",
+		value: string
+	) {
+		setSlide((current) => ({
+			...current,
+			[cta]: {
+				...current[cta],
+				[field]: { ...current[cta][field], [locale]: value },
+			},
+		}));
+	}
+
+	function isValidHref(value: string): boolean {
+		const href = value.trim();
+		if (href.startsWith("/") || href.startsWith("#")) return true;
+		try {
+			return ["http:", "https:", "mailto:", "tel:"].includes(new URL(href).protocol);
+		} catch {
+			return false;
+		}
+	}
+
 	function validate(): boolean {
 		const next: FieldErrors = {};
 		if (!slide.overline.en.trim()) next.overlineEn = "English overline is required";
@@ -76,6 +120,14 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 		if (!slide.titleLine2.ar.trim()) next.title2Ar = "Arabic second line is required";
 		if (!slide.description.en.trim()) next.descriptionEn = "English description is required";
 		if (!slide.description.ar.trim()) next.descriptionAr = "Arabic description is required";
+		if (!slide.primaryCta.label.en.trim()) next.primaryLabelEn = "English primary button label is required";
+		if (!slide.primaryCta.label.ar.trim()) next.primaryLabelAr = "Arabic primary button label is required";
+		if (!isValidHref(slide.primaryCta.href.en)) next.primaryHrefEn = "Enter a valid English link";
+		if (!isValidHref(slide.primaryCta.href.ar)) next.primaryHrefAr = "Enter a valid Arabic link";
+		if (!slide.secondaryCta.label.en.trim()) next.secondaryLabelEn = "English secondary button label is required";
+		if (!slide.secondaryCta.label.ar.trim()) next.secondaryLabelAr = "Arabic secondary button label is required";
+		if (!isValidHref(slide.secondaryCta.href.en)) next.secondaryHrefEn = "Enter a valid English link";
+		if (!isValidHref(slide.secondaryCta.href.ar)) next.secondaryHrefAr = "Enter a valid Arabic link";
 		if (!slide.imageUrl) next.imageUrl = "Banner image is required";
 		setErrors(next);
 		return Object.keys(next).length === 0;
@@ -110,6 +162,14 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 		titleLine1: slide.titleLine1[previewLocale],
 		titleLine2: slide.titleLine2[previewLocale],
 		description: slide.description[previewLocale],
+		primaryCta: {
+			label: slide.primaryCta.label[previewLocale],
+			href: slide.primaryCta.href[previewLocale],
+		},
+		secondaryCta: {
+			label: slide.secondaryCta.label[previewLocale],
+			href: slide.secondaryCta.href[previewLocale],
+		},
 	};
 
 	return (
@@ -200,6 +260,53 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 								enError={errors.descriptionEn}
 								arError={errors.descriptionAr}
 							/>
+						</div>
+					</section>
+
+					<section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+						<div className="mb-5">
+							<h2 className="text-base font-semibold text-gray-900">Banner buttons</h2>
+							<p className="mt-1 text-sm leading-6 text-gray-500">
+								Change each button label and destination. Use an internal path such as <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">/en/contact</code> or a complete external URL.
+							</p>
+						</div>
+
+						<div className="space-y-6">
+							<div className="space-y-4 rounded-xl border border-[#F4C430]/35 bg-[#F4C430]/5 p-4">
+								<h3 className="text-sm font-semibold text-[#01334D]">Primary gold button</h3>
+								<BilingualField
+									label="Button label"
+									required
+									enValue={slide.primaryCta.label.en}
+									arValue={slide.primaryCta.label.ar}
+									onEnChange={(value) => updateCta("primaryCta", "label", "en", value)}
+									onArChange={(value) => updateCta("primaryCta", "label", "ar", value)}
+									enError={errors.primaryLabelEn}
+									arError={errors.primaryLabelAr}
+								/>
+								<div className="grid gap-3 md:grid-cols-2">
+									<UrlField label="English URL" value={slide.primaryCta.href.en} onChange={(value) => updateCta("primaryCta", "href", "en", value)} error={errors.primaryHrefEn} />
+									<UrlField label="Arabic URL" value={slide.primaryCta.href.ar} onChange={(value) => updateCta("primaryCta", "href", "ar", value)} error={errors.primaryHrefAr} />
+								</div>
+							</div>
+
+							<div className="space-y-4 rounded-xl border border-[#007F84]/25 bg-[#007F84]/5 p-4">
+								<h3 className="text-sm font-semibold text-[#01334D]">Secondary outline button</h3>
+								<BilingualField
+									label="Button label"
+									required
+									enValue={slide.secondaryCta.label.en}
+									arValue={slide.secondaryCta.label.ar}
+									onEnChange={(value) => updateCta("secondaryCta", "label", "en", value)}
+									onArChange={(value) => updateCta("secondaryCta", "label", "ar", value)}
+									enError={errors.secondaryLabelEn}
+									arError={errors.secondaryLabelAr}
+								/>
+								<div className="grid gap-3 md:grid-cols-2">
+									<UrlField label="English URL" value={slide.secondaryCta.href.en} onChange={(value) => updateCta("secondaryCta", "href", "en", value)} error={errors.secondaryHrefEn} />
+									<UrlField label="Arabic URL" value={slide.secondaryCta.href.ar} onChange={(value) => updateCta("secondaryCta", "href", "ar", value)} error={errors.secondaryHrefAr} />
+								</div>
+							</div>
 						</div>
 					</section>
 
@@ -301,15 +408,47 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 								<p className={`mt-5 border-s-2 border-[#007F84]/70 ps-3 text-sm text-white/80 ${isArPreview ? "leading-8" : "leading-6"}`}>
 									{previewContent.description || "Banner description will appear here."}
 								</p>
-								<div className="mt-7 inline-flex h-10 w-fit items-center gap-2 rounded-lg bg-[#F4C430] px-4 text-xs font-bold text-[#01334D]">
-									<Check className="h-3.5 w-3.5" />
-									{isArPreview ? "استكشف قمة العراق للأعمال" : "Explore Iraq Business Summit"}
+								<div className="mt-7 flex flex-wrap gap-2">
+									<div className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[#F4C430] px-4 text-xs font-bold text-[#01334D]">
+										<Check className="h-3.5 w-3.5" />
+										{previewContent.primaryCta.label || "Primary button"}
+									</div>
+									<div className="inline-flex min-h-10 items-center rounded-lg border border-[#007F84] px-4 text-xs font-bold text-white">
+										{previewContent.secondaryCta.label || "Secondary button"}
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</aside>
 			</div>
+		</div>
+	);
+}
+
+function UrlField({
+	label,
+	value,
+	onChange,
+	error,
+}: {
+	label: string;
+	value: string;
+	onChange: (value: string) => void;
+	error?: string;
+}) {
+	return (
+		<div>
+			<label className="mb-1.5 block text-xs font-semibold text-gray-600">{label}</label>
+			<input
+				type="text"
+				dir="ltr"
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				placeholder="/en/page or https://example.com"
+				className={`h-11 w-full rounded-lg border bg-white px-3 font-mono text-xs text-gray-900 outline-none transition focus:border-[#007F84] focus:ring-1 focus:ring-[#007F84]/20 ${error ? "border-red-300" : "border-gray-200"}`}
+			/>
+			{error && <p className="mt-1 text-xs text-red-500">{error}</p>}
 		</div>
 	);
 }

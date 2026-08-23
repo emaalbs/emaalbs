@@ -3,6 +3,7 @@
 import { Plus, Trash2, X } from "lucide-react";
 import type { Initiative } from "@/data/ibs/types";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -44,6 +45,12 @@ export function InitiativesSection({ initiatives, onAdd, onUpdate, onRemove }: P
 									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
 								/>
 							</div>
+							<AutoTranslateSync
+								enValue={init.title.en}
+								arValue={init.title.ar}
+								onEnChange={(value) => onUpdate(i, { ...init, title: { ...init.title, en: value } })}
+								onArChange={(value) => onUpdate(i, { ...init, title: { ...init.title, ar: value } })}
+							/>
 							<div className="grid gap-1.5 md:grid-cols-2">
 								<input
 									type="text"
@@ -61,6 +68,12 @@ export function InitiativesSection({ initiatives, onAdd, onUpdate, onRemove }: P
 									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
 								/>
 							</div>
+							<AutoTranslateSync
+								enValue={init.description.en}
+								arValue={init.description.ar}
+								onEnChange={(value) => onUpdate(i, { ...init, description: { ...init.description, en: value } })}
+								onArChange={(value) => onUpdate(i, { ...init, description: { ...init.description, ar: value } })}
+							/>
 							<div className="grid gap-1.5 md:grid-cols-2">
 								<input
 									type="text"
@@ -78,6 +91,12 @@ export function InitiativesSection({ initiatives, onAdd, onUpdate, onRemove }: P
 									className="w-full rounded border border-gray-200 bg-white px-2 py-1 text-[11px] outline-none focus:border-[var(--color-teal)]"
 								/>
 							</div>
+							<AutoTranslateSync
+								enValue={init.highlight?.en || ""}
+								arValue={init.highlight?.ar || ""}
+								onEnChange={(value) => onUpdate(i, { ...init, highlight: { en: value, ar: init.highlight?.ar || "" } })}
+								onArChange={(value) => onUpdate(i, { ...init, highlight: { en: init.highlight?.en || "", ar: value } })}
+							/>
 							{/* Partners as boxes */}
 							<div className="flex flex-wrap items-center gap-1.5">
 								{(init.partners ?? []).map((p, pi) => (

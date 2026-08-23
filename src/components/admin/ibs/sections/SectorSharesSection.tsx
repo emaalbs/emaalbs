@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import type { SectorShare } from "@/data/ibs/types";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -17,7 +18,8 @@ export function SectorSharesSection({ sectorShares, onAdd, onUpdate, onRemove }:
 	return (
 		<div className="space-y-3">
 			{sectorShares.map((s, i) => (
-				<div key={i} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+				<div key={i} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+					<div className="flex items-start gap-3">
 					<div className="flex-1 grid gap-3 md:grid-cols-3">
 						<input
 							type="text"
@@ -50,6 +52,14 @@ export function SectorSharesSection({ sectorShares, onAdd, onUpdate, onRemove }:
 					<button onClick={() => onRemove(i)} className="mt-1 text-red-400 hover:text-red-600 transition">
 						<Trash2 className="h-4 w-4" />
 					</button>
+					</div>
+					<AutoTranslateSync
+						className="mt-2"
+						enValue={s.sector.en}
+						arValue={s.sector.ar}
+						onEnChange={(value) => onUpdate(i, { ...s, sector: { ...s.sector, en: value } })}
+						onArChange={(value) => onUpdate(i, { ...s, sector: { ...s.sector, ar: value } })}
+					/>
 				</div>
 			))}
 			<button

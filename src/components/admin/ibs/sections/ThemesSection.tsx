@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import type { Theme } from "@/data/ibs/types";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
 import { EmptyState } from "../EmptyState";
 
 interface Props {
@@ -41,6 +42,12 @@ export function ThemesSection({ themes, onAdd, onUpdate, onRemove }: Props) {
 							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
 						/>
 					</div>
+					<AutoTranslateSync
+						enValue={t.title.en}
+						arValue={t.title.ar}
+						onEnChange={(value) => onUpdate(i, { ...t, title: { ...t.title, en: value } })}
+						onArChange={(value) => onUpdate(i, { ...t, title: { ...t.title, ar: value } })}
+					/>
 					<div className="grid gap-3 md:grid-cols-2">
 						<textarea
 							value={t.description.en}
@@ -58,6 +65,12 @@ export function ThemesSection({ themes, onAdd, onUpdate, onRemove }: Props) {
 							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)] resize-y"
 						/>
 					</div>
+					<AutoTranslateSync
+						enValue={t.description.en}
+						arValue={t.description.ar}
+						onEnChange={(value) => onUpdate(i, { ...t, description: { ...t.description, en: value } })}
+						onArChange={(value) => onUpdate(i, { ...t, description: { ...t.description, ar: value } })}
+					/>
 				</div>
 			))}
 			<button
