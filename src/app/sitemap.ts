@@ -10,6 +10,7 @@ const staticRoutes = [
 	"/contact",
 	"/whatWeDo",
 	"/news",
+	"/social",
 	"/ibs",
 ];
 

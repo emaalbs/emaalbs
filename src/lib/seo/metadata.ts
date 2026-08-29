@@ -7,6 +7,7 @@ export type SeoPage =
 	| { type: "contact"; locale: "en" | "ar" }
 	| { type: "whatWeDo"; locale: "en" | "ar" }
 	| { type: "blog"; locale: "en" | "ar" }
+	| { type: "social"; locale: "en" | "ar" }
 	| { type: "blogDetail"; locale: "en" | "ar"; slug: string; title: string; description: string; image?: string; date?: string }
 	| { type: "ibs"; locale: "en" | "ar" }
 	| { type: "ibsEdition"; locale: "en" | "ar"; slug: string; title: string; description: string; image?: string }
@@ -32,6 +33,10 @@ const pageTitles: Record<string, Record<"en" | "ar", string>> = {
 	blog: {
 		en: `Insights & Blog — ${siteConfig.name.en}`,
 		ar: `المدونة والرؤى — ${siteConfig.name.ar}`,
+	},
+	social: {
+		en: `Social Media — ${siteConfig.name.en}`,
+		ar: `منصاتنا الاجتماعية — ${siteConfig.name.ar}`,
 	},
 	ibs: {
 		en: `Iraq Business Summit (IBS) — ${siteConfig.name.en}`,
@@ -60,6 +65,10 @@ const pageDescriptions: Record<string, Record<"en" | "ar", string>> = {
 	blog: {
 		en: "Deep insights and analysis from EMAAL Business Space — stories, market intelligence, and updates from Iraq's business ecosystem.",
 		ar: "رؤى وتحليلات متعمقة من إعمال بيزنس سبيس — قصص، ذكاء السوق، وتحديثات من النظام الاقتصادي العراقي.",
+	},
+	social: {
+		en: "Explore EMAAL Business Space updates, events, and perspectives from LinkedIn, X, Instagram, YouTube, and Facebook.",
+		ar: "تابع آخر أخبار أعمال بيزنس سبيس وفعالياتها ورؤاها عبر لينكدإن وإكس وإنستغرام ويوتيوب وفيسبوك.",
 	},
 	ibs: {
 		en: "A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",

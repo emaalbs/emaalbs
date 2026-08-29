@@ -1,0 +1,47 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "emmal-social-preview",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-04-29",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"ai": {
+		"binding": "AI"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "emmal-social-preview"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"vars": {
+		"PREVIEW_MODE": "1"
+	},
+	"d1_databases": [
+		{
+			"database_name": "emmal-social-preview-db",
+			"binding": "DB",
+			"database_id": "ed8f5fe1-8327-4c61-9f3e-2fde7b41b559",
+			"migrations_dir": "db/migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "emmal-social-preview-media",
+			"binding": "MEDIA"
+		}
+	]
+}

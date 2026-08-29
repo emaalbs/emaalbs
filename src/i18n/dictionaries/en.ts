@@ -11,6 +11,7 @@ export const en = {
       { label: "IBS", href: "/ibs" },
       { label: "Services", href: "/whatWeDo" },
       { label: "News", href: "/news" },
+      { label: "Social", href: "/social" },
       { label: "Contact", href: "/contact" },
     ],
     cta: "Get in Touch",
@@ -41,6 +42,7 @@ export const en = {
       { label: "About EMAAL", href: "/about" },
       { label: "Our Services", href: "/whatWeDo" },
       { label: "News", href: "/news" },
+      { label: "Social Media", href: "/social" },
     ],
     ibsHeading: "IBS",
     ibsLinks: [

@@ -13,6 +13,7 @@ export const ar: Dictionary = {
       { label: "قمة الأعمال", href: "/ibs" },
       { label: "خدماتنا", href: "/whatWeDo" },
       { label: "أخبار", href: "/news" },
+      { label: "السوشيال", href: "/social" },
       { label: "تواصل", href: "/contact" },
     ],
     cta: "تواصل معنا",
@@ -40,6 +41,7 @@ export const ar: Dictionary = {
       { label: "عن أعمال", href: "/about" },
       { label: "خدماتنا", href: "/whatWeDo" },
       { label: "أخبار", href: "/news" },
+      { label: "منصاتنا الاجتماعية", href: "/social" },
     ],
     ibsHeading: "قمة الأعمال",
     ibsLinks: [

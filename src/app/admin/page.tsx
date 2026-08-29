@@ -2,17 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FileText, CalendarDays, Mail, Users, ArrowRight, BookOpen, PanelsTopLeft } from "lucide-react";
+import { FileText, CalendarDays, Mail, Users, ArrowRight, BookOpen, PanelsTopLeft, Share2 } from "lucide-react";
 
 export default function AdminDashboard() {
-	const [stats, setStats] = useState({ heroSlides: 0, blogs: 0, editions: 0, magazines: 0, contacts: 0, subscribers: 0 });
+	const [stats, setStats] = useState({ heroSlides: 0, socialPosts: 0, blogs: 0, editions: 0, magazines: 0, contacts: 0, subscribers: 0 });
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		async function load() {
 			try {
-				const [heroSlidesRes, blogsRes, editionsRes, magazinesRes, contactsRes, subscribersRes] = await Promise.all([
+				const [heroSlidesRes, socialPostsRes, blogsRes, editionsRes, magazinesRes, contactsRes, subscribersRes] = await Promise.all([
 					fetch("/api/hero-slides?admin=1"),
+					fetch("/api/social-posts?admin=1"),
 					fetch("/api/blogs"),
 					fetch("/api/ibs/editions"),
 					fetch("/api/magazines"),
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
 					fetch("/api/subscribers"),
 				]);
 				const heroSlides = (await heroSlidesRes.json()) as unknown[];
+				const socialPosts = (await socialPostsRes.json()) as unknown[];
 				const blogs = (await blogsRes.json()) as unknown[];
 				const editions = (await editionsRes.json()) as unknown[];
 				const magazines = (await magazinesRes.json()) as unknown[];
@@ -27,6 +29,7 @@ export default function AdminDashboard() {
 				const subscribers = (await subscribersRes.json()) as unknown[];
 				setStats({
 					heroSlides: heroSlides.length,
+					socialPosts: socialPosts.length,
 					blogs: blogs.length,
 					editions: editions.length,
 					magazines: magazines.length,
@@ -50,6 +53,17 @@ export default function AdminDashboard() {
 
 			{/* Stats cards */}
 			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50">
+							<Share2 className="h-5 w-5 text-cyan-700" />
+						</div>
+						<div>
+							<div className="text-sm text-gray-500">Social Media</div>
+							<div className="text-2xl font-bold text-gray-900">{stats.socialPosts}</div>
+						</div>
+					</div>
+				</div>
 				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
 					<div className="flex items-center gap-3">
 						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50">
@@ -121,6 +135,21 @@ export default function AdminDashboard() {
 			{/* Quick actions */}
 			<h2 className="mt-8 mb-4 text-lg font-semibold text-gray-900">Quick Actions</h2>
 			<div className="grid gap-4 sm:grid-cols-2">
+				<Link
+					href="/admin/social-posts/new"
+					className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-cyan-300 hover:shadow-md"
+				>
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-50">
+							<Share2 className="h-5 w-5 text-cyan-700" />
+						</div>
+						<div>
+							<div className="font-medium text-gray-900">Add Social Post</div>
+							<div className="text-sm text-gray-500">Paste a link or create a custom card</div>
+						</div>
+					</div>
+					<ArrowRight className="h-5 w-5 text-gray-400" />
+				</Link>
 				<Link
 					href="/admin/hero-slides/new"
 					className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-cyan-300 hover:shadow-md"

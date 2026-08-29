@@ -106,6 +106,15 @@ html[dir="rtl"] .font-numeric {
 	animation: reveal-up 0.6s ease-out both;
 }
 
+/* Official social widgets should respect the responsive card width. */
+.social-instagram-embed .instagram-media,
+.social-x-embed .twitter-tweet {
+	min-width: 0 !important;
+	max-width: 100% !important;
+	width: 100% !important;
+	margin: 0 auto !important;
+}
+
 /* Infinite marquee */
 @keyframes marquee {
 	from {
