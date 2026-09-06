@@ -244,9 +244,9 @@ export default function MagazineEditorPage({
 									setErrors((p) => { const n = { ...p }; delete n.cover_image; return n; });
 							}}
 							label={<>Cover Image <span className="text-red-500">*</span></>}
-							hint="Recommended: portrait format (e.g. 600 × 850)"
+							hint="Portrait cover used in the magazine library."
 							error={errors.cover_image}
-							preset="blog-cover"
+							preset="magazine-cover"
 							prefix="magazine-covers/"
 							fit="contain"
 						/>

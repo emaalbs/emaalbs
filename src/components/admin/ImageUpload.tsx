@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, ImageIcon } from "lucide-react";
-import { optimizeImage, type ImagePreset } from "@/lib/image-optimizer";
+import { Ruler, Upload, X, ImageIcon } from "lucide-react";
+import { getImagePresetRecommendation, optimizeImage, type ImagePreset } from "@/lib/image-optimizer";
 
 interface Props {
 	value: string;
@@ -14,11 +14,14 @@ interface Props {
 	error?: string;
 	preset?: ImagePreset;
 	prefix?: string;
+	recommendedSize?: string;
 }
 
-export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "" }: Props) {
+export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "", recommendedSize }: Props) {
 	const [uploading, setUploading] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const sizeGuidance = recommendedSize || getImagePresetRecommendation(preset);
+	const compactGuidance = sizeGuidance.replace(/\s*px$/i, "").replace(/\s*×\s*/g, "×");
 
 	async function handleFile(file: File) {
 		setUploading(true);
@@ -46,13 +49,22 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, f
 
 	return (
 		<div>
-			{label && (
-				<div className="mb-1">
-					<div className="block text-sm font-medium text-gray-700">{label}</div>
+			<div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5">
+				{label ? <div className="block text-sm font-medium text-gray-700">{label}</div> : <span />}
+				<span
+					className={`inline-flex items-center rounded-full border border-[#007F84]/15 bg-[#007F84]/[0.07] font-semibold text-[#006C71] ${compact ? "w-full justify-center px-1 py-0.5 text-[8px]" : "gap-1 px-2.5 py-1 text-[11px]"}`}
+					title={`Recommended image size: ${sizeGuidance}`}
+				>
+					{compact ? null : <Ruler className="h-3 w-3" />}
+					<span className="whitespace-nowrap">{compact ? compactGuidance : `Recommended ${sizeGuidance}`}</span>
+				</span>
+			</div>
+			{hint || error ? (
+				<div className="mb-1.5">
 					{hint && <p className="text-xs text-gray-400">{hint}</p>}
 					{error && <p className="text-xs text-red-500">{error}</p>}
 				</div>
-			)}
+			) : null}
 			{value ? (
 				<div className="relative overflow-hidden rounded-lg border border-gray-200">
 					<img src={value} alt="" className={`${heightClass} w-full object-${fit}`} />

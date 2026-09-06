@@ -127,6 +127,7 @@ export function InitiativesSection({ initiatives, onAdd, onUpdate, onRemove }: P
 								onChange={(url) => onUpdate(i, { ...init, image: url })}
 								label=""
 								compact
+								preset="blog-cover"
 								prefix="ibs/initiatives/"
 							/>
 						</div>

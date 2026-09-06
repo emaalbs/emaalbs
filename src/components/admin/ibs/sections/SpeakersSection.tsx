@@ -102,6 +102,7 @@ export function SpeakersSection({ speakers, onAdd, onUpdate, onRemove }: Props) 
 								onChange={(url) => onUpdate(i, { ...s, photo: url })}
 								label=""
 								compact
+								preset="portrait"
 								prefix="ibs/speakers/"
 							/>
 						</div>

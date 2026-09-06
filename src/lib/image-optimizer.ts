@@ -5,21 +5,27 @@
  * Tries WebP first for best compression; falls back to JPEG if the browser doesn't support WebP output.
  */
 
-export type ImagePreset = "blog-cover" | "ibs-hero" | "portrait" | "gallery" | "logo";
+export type ImagePreset = "blog-cover" | "ibs-hero" | "portrait" | "gallery" | "logo" | "magazine-cover";
 
 interface PresetConfig {
 	maxWidth: number;
 	maxHeight: number | null;
 	quality: number;
+	recommendedSize: string;
 }
 
 const PRESETS: Record<ImagePreset, PresetConfig> = {
-	"blog-cover": { maxWidth: 1200, maxHeight: 630,  quality: 0.82 },
-	"ibs-hero":   { maxWidth: 1920, maxHeight: 1080, quality: 0.85 },
-	portrait:     { maxWidth: 600,  maxHeight: 600,  quality: 0.82 },
-	gallery:      { maxWidth: 1200, maxHeight: null,  quality: 0.80 },
-	logo:         { maxWidth: 400,  maxHeight: null,  quality: 0.90 },
+	"blog-cover": { maxWidth: 1200, maxHeight: 630,  quality: 0.82, recommendedSize: "1200 × 630 px" },
+	"ibs-hero":   { maxWidth: 1920, maxHeight: 1080, quality: 0.85, recommendedSize: "1920 × 1080 px" },
+	portrait:     { maxWidth: 600,  maxHeight: 600,  quality: 0.82, recommendedSize: "600 × 600 px" },
+	gallery:      { maxWidth: 1200, maxHeight: null,  quality: 0.80, recommendedSize: "1200 × 900 px" },
+	logo:         { maxWidth: 400,  maxHeight: null,  quality: 0.90, recommendedSize: "400 × 400 px" },
+	"magazine-cover": { maxWidth: 800, maxHeight: 1200, quality: 0.85, recommendedSize: "600 × 850 px" },
 };
+
+export function getImagePresetRecommendation(preset: ImagePreset): string {
+	return PRESETS[preset].recommendedSize;
+}
 
 export interface OptimizedImage {
 	blob: Blob;

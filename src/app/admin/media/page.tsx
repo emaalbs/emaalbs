@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Ruler } from "lucide-react";
 
 export default function AdminMediaPage() {
 	const [file, setFile] = useState<File | null>(null);
@@ -39,12 +40,18 @@ export default function AdminMediaPage() {
 					/>
 				</div>
 				<div className="mb-4">
-					<label className="mb-1 block text-sm text-white/50">File</label>
+					<div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+						<label className="block text-sm text-white/50">File</label>
+						<span className="inline-flex items-center gap-1 rounded-full border border-[#EEC13B]/20 bg-[#EEC13B]/10 px-2.5 py-1 text-[11px] font-semibold text-[#EEC13B]">
+							<Ruler className="h-3 w-3" /> General images: 1600 × 1200 px
+						</span>
+					</div>
 					<input
 						type="file"
 						onChange={(e) => setFile(e.target.files?.[0] || null)}
 						className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-white file:bg-transparent file:text-white/70"
 					/>
+					<p className="mt-1.5 text-xs text-white/35">For banners, portraits, logos, and covers, upload from their editor to see the exact recommended size.</p>
 				</div>
 				<button
 					onClick={upload}

@@ -406,7 +406,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 								if (errors.image && url) setErrors((prev) => { const n = { ...prev }; delete n.image; return n; });
 							}}
 							label={<>Featured Image <span className="text-red-500">*</span></>}
-							hint="Recommended: 1200 × 630 (2:1)"
+							hint="Used on the blog listing and at the top of the article."
 							error={errors.image}
 							preset="blog-cover"
 							prefix="blogs/"
@@ -494,7 +494,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 											<ImageUpload
 												value={block.src}
 												onChange={(url) => updateBlock(i, { ...block, src: url })}
-												hint="Recommended: 800 × 450 (16:9)"
+												recommendedSize="800 × 450 px"
 												compact
 											/>
 										</div>
@@ -566,6 +566,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 															updateBlock(i, { ...block, images });
 														}}
 														compact
+														preset="gallery"
 													/>
 												</div>
 												<button

@@ -53,6 +53,7 @@ export function SponsorsSection({ sponsors, onAdd, onUpdate, onRemove }: Props) 
 							onChange={(url) => onUpdate(i, { ...s, logo: url })}
 							label="Logo"
 							compact
+							preset="logo"
 							prefix="ibs/sponsors/"
 						/>
 					</div>

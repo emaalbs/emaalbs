@@ -159,6 +159,7 @@ function ItemCard({
 										onChange={(url) => onUpdateSpeaker(di, ii, si, { ...sp, photo: url })}
 										label=""
 										compact
+										preset="portrait"
 										prefix="ibs/agenda/"
 									/>
 								</div>

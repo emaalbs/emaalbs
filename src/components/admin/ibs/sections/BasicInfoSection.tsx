@@ -181,7 +181,8 @@ export function BasicInfoSection({ edition, isNew, slugAuto, allEditions, errors
 						value={edition.heroImage}
 						onChange={(url) => { onChange({ heroImage: url }); onClearErr("heroImage"); }}
 						label="Hero Image"
-						hint="16:9 cover image"
+						hint="Landscape cover used at the top of the summit page."
+						preset="ibs-hero"
 						prefix="ibs/hero/"
 						error={errors.heroImage}
 					/>

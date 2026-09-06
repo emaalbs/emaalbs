@@ -32,6 +32,7 @@ export function GallerySection({ gallery, onAdd, onUpdate, onRemove }: Props) {
 							onChange={(url) => onUpdate(i, { ...g, src: url })}
 							compact
 							fit="contain"
+							preset="gallery"
 							prefix="ibs/gallery/"
 						/>
 						<div className="grid gap-2">

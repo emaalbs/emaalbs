@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowUp, ImagePlus, LoaderCircle, Star, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, LoaderCircle, Ruler, Star, Trash2 } from "lucide-react";
 import type { GalleryImageInput } from "@/data/gallery";
 import { BilingualField } from "@/components/admin/BilingualField";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -76,6 +76,12 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 
 	return (
 		<div className="space-y-5">
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<p className="text-sm font-semibold text-gray-700">Add album images</p>
+				<span className="inline-flex items-center gap-1.5 rounded-full border border-[#007F84]/15 bg-[#007F84]/[0.07] px-2.5 py-1 text-[11px] font-semibold text-[#006C71]">
+					<Ruler className="h-3 w-3" /> Recommended 1200 × 900 px
+				</span>
+			</div>
 			<button
 				type="button"
 				onClick={() => inputRef.current?.click()}

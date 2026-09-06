@@ -316,7 +316,7 @@ export default function HeroSlideEditorPage({ params }: { params: Promise<{ id: 
 							value={slide.imageUrl}
 							onChange={(imageUrl) => setSlide((current) => ({ ...current, imageUrl }))}
 							label={<>Banner Image <span className="text-red-500">*</span></>}
-							hint="Recommended: landscape image, 1920 × 1080 or larger"
+							hint="Landscape image displayed across the homepage hero."
 							error={errors.imageUrl}
 							preset="ibs-hero"
 							prefix="hero-slides/"
