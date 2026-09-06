@@ -8,6 +8,8 @@ export type SeoPage =
 	| { type: "whatWeDo"; locale: "en" | "ar" }
 	| { type: "blog"; locale: "en" | "ar" }
 	| { type: "social"; locale: "en" | "ar" }
+	| { type: "gallery"; locale: "en" | "ar" }
+	| { type: "galleryAlbum"; locale: "en" | "ar"; slug: string; title: string; description: string; image?: string }
 	| { type: "blogDetail"; locale: "en" | "ar"; slug: string; title: string; description: string; image?: string; date?: string }
 	| { type: "ibs"; locale: "en" | "ar" }
 	| { type: "ibsEdition"; locale: "en" | "ar"; slug: string; title: string; description: string; image?: string }
@@ -37,6 +39,10 @@ const pageTitles: Record<string, Record<"en" | "ar", string>> = {
 	social: {
 		en: `Social Media — ${siteConfig.name.en}`,
 		ar: `منصاتنا الاجتماعية — ${siteConfig.name.ar}`,
+	},
+	gallery: {
+		en: `Gallery Portfolio — ${siteConfig.name.en}`,
+		ar: `معرض الأعمال — ${siteConfig.name.ar}`,
 	},
 	ibs: {
 		en: `Iraq Business Summit (IBS) — ${siteConfig.name.en}`,
@@ -70,6 +76,10 @@ const pageDescriptions: Record<string, Record<"en" | "ar", string>> = {
 		en: "Explore EMAAL Business Space updates, events, and perspectives from LinkedIn, X, Instagram, YouTube, and Facebook.",
 		ar: "تابع آخر أخبار أعمال بيزنس سبيس وفعالياتها ورؤاها عبر لينكدإن وإكس وإنستغرام ويوتيوب وفيسبوك.",
 	},
+	gallery: {
+		en: "Explore EMAAL Business Space events, summits, and partnerships through curated photography and shareable visual stories.",
+		ar: "استكشف فعاليات وقمم وشراكات أعمال بيزنس سبيس من خلال صور مختارة وقصص بصرية قابلة للمشاركة.",
+	},
 	ibs: {
 		en: "A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
 		ar: "منصة رفيعة المستوى تجمع صناع القرار الحكومي والمستثمرين وقادة القطاع الخاص لتمكين الشراكات والاستثمار وتحقيق نتائج أعمال حقيقية في العراق.",
@@ -88,6 +98,8 @@ function getCanonicalPath(page: SeoPage): string {
 			return `/${page.locale}/news/${page.slug}`;
 		case "ibsEdition":
 			return `/${page.locale}/ibs/${page.slug}`;
+		case "galleryAlbum":
+			return `/${page.locale}/gallery/${page.slug}`;
 		default:
 			return `/${page.locale}/${page.type}`;
 	}
@@ -112,6 +124,12 @@ export function buildMetadata(page: SeoPage): Metadata {
 			break;
 		case "ibsEdition":
 			title = `${page.title} — IBS by ${siteConfig.name[locale]}`;
+			description = page.description;
+			path = getCanonicalPath(page);
+			ogImage = page.image || `${base}/opengraph-image`;
+			break;
+		case "galleryAlbum":
+			title = `${page.title} — ${siteConfig.name[locale]}`;
 			description = page.description;
 			path = getCanonicalPath(page);
 			ogImage = page.image || `${base}/opengraph-image`;
@@ -143,7 +161,7 @@ export function buildMetadata(page: SeoPage): Metadata {
 			url: canonical,
 			siteName: siteConfig.name[locale],
 			locale: isAr ? "ar_AR" : "en_US",
-			type: page.type === "blogDetail" || page.type === "ibsEdition" ? "article" : "website",
+			type: page.type === "blogDetail" || page.type === "ibsEdition" || page.type === "galleryAlbum" ? "article" : "website",
 			images: ogImage.startsWith("http")
 				? [{ url: ogImage, width: 1200, height: 630, alt: title }]
 				: [{ url: ogImage, width: 1200, height: 630, alt: title }],

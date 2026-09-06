@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/seo/site-config";
 import { listBlogs } from "@/lib/db/blogs";
 import { listEditions } from "@/lib/db/ibs";
+import { listGalleryAlbums } from "@/lib/db/gallery";
 import { locales } from "@/i18n/config";
 
 const staticRoutes = [
@@ -11,6 +12,7 @@ const staticRoutes = [
 	"/whatWeDo",
 	"/news",
 	"/social",
+	"/gallery",
 	"/ibs",
 ];
 
@@ -55,6 +57,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				entries.push({
 					url: `${base}/${locale}/ibs/${edition.slug}`,
 					lastModified: new Date(),
+					changeFrequency: "monthly",
+					priority: 0.7,
+				});
+			}
+		}
+	} catch {
+		// ignore
+	}
+
+	// Gallery albums
+	try {
+		const albums = await listGalleryAlbums();
+		for (const album of albums) {
+			for (const locale of locales) {
+				entries.push({
+					url: `${base}/${locale}/gallery/${album.slug}`,
+					lastModified: new Date(album.updatedAt || Date.now()),
 					changeFrequency: "monthly",
 					priority: 0.7,
 				});

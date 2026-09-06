@@ -118,7 +118,7 @@ export function Header({ forceLight }: { forceLight?: boolean } = {}) {
 						/>
 					</Link>
 
-					<nav className="hidden lg:flex items-center gap-9">
+					<nav className="hidden items-center gap-5 lg:flex xl:gap-7">
 						{t.header.nav.map((item) => {
 							const isIbs =
 								item.href === "/ibs" || item.href === "#ibs";

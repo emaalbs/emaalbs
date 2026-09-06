@@ -12,9 +12,11 @@ import { HomeHighlights } from "@/components/home/HomeHighlights";
 import { HomeStatsBar } from "@/components/home/HomeStatsBar";
 import { HomeCtaBand } from "@/components/home/HomeCtaBand";
 import { HomeSocialPulse } from "@/components/home/HomeSocialPulse";
+import { HomeGalleryShowcase } from "@/components/home/HomeGalleryShowcase";
 import { listBlogs } from "@/lib/db/blogs";
 import { getHeroCarouselSettings, listHeroSlides } from "@/lib/db/hero-slides";
 import { listSocialPosts } from "@/lib/db/social-posts";
+import { listGalleryAlbums } from "@/lib/db/gallery";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/structured-data";
 
@@ -34,11 +36,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Home({ params }: Props) {
 	const { locale } = await params;
-	const [blogs, heroSlides, heroSettings, socialPosts] = await Promise.all([
+	const [blogs, heroSlides, heroSettings, socialPosts, galleryAlbums] = await Promise.all([
 		listBlogs(),
 		listHeroSlides(),
 		getHeroCarouselSettings(),
 		listSocialPosts(),
+		listGalleryAlbums(),
 	]);
 	return (
 		<>
@@ -61,6 +64,7 @@ export default async function Home({ params }: Props) {
 				<HomeGroup />
 				<HomeWhyEmaal />
 				<HomeHighlights blogs={blogs.slice(0, 3)} locale={locale} />
+				<HomeGalleryShowcase albums={galleryAlbums.slice(0, 3)} locale={locale === "ar" ? "ar" : "en"} />
 				<HomeSocialPulse posts={socialPosts.slice(0, 3)} locale={locale === "ar" ? "ar" : "en"} />
 				<HomeStatsBar />
 				<HomeCtaBand />
