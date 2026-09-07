@@ -3,6 +3,7 @@ import { uploadToR2 } from "@/lib/r2";
 import { requireAuth } from "@/lib/auth";
 import { getEnv } from "@/lib/cloudflare";
 import { sha256Hex } from "@/lib/content-hash";
+import { createGalleryImage } from "@/lib/db/gallery";
 
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
 
@@ -49,9 +50,14 @@ export async function POST(request: Request) {
 		const prefix = (formData.get("prefix") as string) || "";
 		const suppliedHash = String(formData.get("contentHash") || "").toLowerCase();
 		const preventGalleryDuplicate = formData.get("preventGalleryDuplicate") === "1";
+		const galleryAlbumIdValue = String(formData.get("galleryAlbumId") || "");
+		const galleryAlbumId = galleryAlbumIdValue ? Number(galleryAlbumIdValue) : null;
 
 		if (!file) {
 			return NextResponse.json({ error: "No file provided" }, { status: 400 });
+		}
+		if (galleryAlbumId !== null && (!Number.isInteger(galleryAlbumId) || galleryAlbumId < 1 || !preventGalleryDuplicate)) {
+			return NextResponse.json({ error: "Invalid gallery album" }, { status: 400 });
 		}
 
 		if (preventGalleryDuplicate) {
@@ -68,10 +74,27 @@ export async function POST(request: Request) {
 		const ext = file.name.split(".").pop() || "bin";
 		const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 		const result = await uploadToR2(bucket, key, file, file.type);
+		if (galleryAlbumId !== null) {
+			try {
+				const galleryImage = await createGalleryImage(galleryAlbumId, {
+					imageUrl: result.url,
+					contentHash: suppliedHash,
+					title: { en: "", ar: "" },
+					description: { en: "", ar: "" },
+					alt: { en: "", ar: "" },
+					sortOrder: Number(formData.get("sortOrder")) || 0,
+				});
+				return NextResponse.json({ ...result, galleryImage });
+			} catch (galleryError) {
+				await bucket.delete(key).catch(() => undefined);
+				throw galleryError;
+			}
+		}
 		return NextResponse.json(result);
 	} catch (err) {
 		const message = err instanceof Error ? err.message : "Upload failed";
-		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : 500;
-		return NextResponse.json({ error: message }, { status });
+		const duplicate = message.includes("gallery_images.content_hash") || message.includes("UNIQUE constraint failed: gallery_images.content_hash");
+		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : duplicate ? 409 : message.includes("up to") || message === "Album not found" ? 400 : 500;
+		return NextResponse.json({ error: duplicate ? "هذه الصورة موجودة مسبقًا في المعرض" : message, duplicate }, { status });
 	}
 }

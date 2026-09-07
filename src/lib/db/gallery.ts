@@ -5,6 +5,7 @@ import type {
 	GalleryCategoryInput,
 	GalleryImage,
 } from "@/data/gallery";
+import { GALLERY_MAX_IMAGES } from "@/data/gallery";
 import { getEnv } from "@/lib/cloudflare";
 
 async function getDB(): Promise<D1Database> {
@@ -170,6 +171,65 @@ function imageInsert(db: D1Database, albumId: number, image: GalleryAlbumInput["
 	);
 }
 
+async function runStatementBatches(db: D1Database, statements: D1PreparedStatement[], size = 75): Promise<void> {
+	for (let index = 0; index < statements.length; index += size) {
+		await db.batch(statements.slice(index, index + size));
+	}
+}
+
+export async function createGalleryImage(albumId: number, image: GalleryAlbumInput["images"][number]): Promise<GalleryImage> {
+	const db = await getDB();
+	const album = await db.prepare(`SELECT id, cover_image_url,
+		(SELECT COUNT(*) FROM gallery_images WHERE album_id = ?) AS image_count
+		FROM gallery_albums WHERE id = ?`).bind(albumId, albumId).first();
+	if (!album) throw new Error("Album not found");
+	if (Number(album.image_count) >= GALLERY_MAX_IMAGES) throw new Error(`An album can contain up to ${GALLERY_MAX_IMAGES} images`);
+
+	const now = Date.now();
+	const { meta } = await imageInsert(db, albumId, image, now).run();
+	const imageId = Number(meta.last_row_id);
+	if (!String(album.cover_image_url || "")) {
+		await db.prepare("UPDATE gallery_albums SET cover_image_url = ?, updated_at = ? WHERE id = ?")
+			.bind(image.imageUrl.trim(), now, albumId).run();
+	}
+	const row = await db.prepare("SELECT * FROM gallery_images WHERE id = ? AND album_id = ?").bind(imageId, albumId).first();
+	if (!row) throw new Error("Failed to create gallery image");
+	return rowToImage(row);
+}
+
+export async function deleteGalleryImages(albumId: number, ids: number[]): Promise<string[]> {
+	const db = await getDB();
+	const uniqueIds = [...new Set(ids.filter((id) => Number.isInteger(id) && id > 0))];
+	if (!uniqueIds.length) return [];
+
+	const rows: Record<string, unknown>[] = [];
+	for (let index = 0; index < uniqueIds.length; index += 75) {
+		const chunk = uniqueIds.slice(index, index + 75);
+		const placeholders = chunk.map(() => "?").join(", ");
+		const result = await db.prepare(`SELECT id, image_url FROM gallery_images WHERE album_id = ? AND id IN (${placeholders})`)
+			.bind(albumId, ...chunk).all();
+		rows.push(...(result.results || []));
+	}
+	if (!rows.length) return [];
+
+	const deleteStatements: D1PreparedStatement[] = [];
+	for (let index = 0; index < rows.length; index += 75) {
+		const chunk = rows.slice(index, index + 75).map((row) => Number(row.id));
+		const placeholders = chunk.map(() => "?").join(", ");
+		deleteStatements.push(db.prepare(`DELETE FROM gallery_images WHERE album_id = ? AND id IN (${placeholders})`).bind(albumId, ...chunk));
+	}
+	await runStatementBatches(db, deleteStatements);
+
+	const deletedUrls = rows.map((row) => String(row.image_url || "")).filter(Boolean);
+	const album = await db.prepare("SELECT cover_image_url FROM gallery_albums WHERE id = ?").bind(albumId).first();
+	if (album && deletedUrls.includes(String(album.cover_image_url || ""))) {
+		await db.prepare(`UPDATE gallery_albums SET cover_image_url = COALESCE(
+			(SELECT image_url FROM gallery_images WHERE album_id = ? ORDER BY sort_order ASC, id ASC LIMIT 1), ''
+		), updated_at = ? WHERE id = ?`).bind(albumId, Date.now(), albumId).run();
+	}
+	return deletedUrls;
+}
+
 export async function createGalleryAlbum(data: GalleryAlbumInput): Promise<GalleryAlbum> {
 	const db = await getDB();
 	const now = Date.now();
@@ -183,7 +243,7 @@ export async function createGalleryAlbum(data: GalleryAlbumInput): Promise<Galle
 		data.published ? 1 : 0, data.featured ? 1 : 0, data.sortOrder, now, now,
 	).run();
 	const albumId = Number(meta.last_row_id);
-	if (data.images.length) await db.batch(data.images.map((image) => imageInsert(db, albumId, image, now)));
+	if (data.images.length) await runStatementBatches(db, data.images.map((image) => imageInsert(db, albumId, image, now)));
 	const created = await getGalleryAlbumById(albumId);
 	if (!created) throw new Error("Failed to create album");
 	return created;
@@ -195,6 +255,7 @@ export async function updateGalleryAlbum(id: number, data: GalleryAlbumInput): P
 	const cover = data.coverImageUrl.trim() || data.images[0]?.imageUrl.trim() || "";
 	const existing = await loadAlbumImages(db, id);
 	const existingIds = new Set(existing.map((image) => image.id));
+	const existingById = new Map(existing.map((image) => [image.id, image]));
 	const retainedIds = new Set(data.images.flatMap((image) => image.id && existingIds.has(image.id) ? [image.id] : []));
 	const statements: D1PreparedStatement[] = [
 		db.prepare(`UPDATE gallery_albums SET category_id = ?, slug = ?, title_en = ?, title_ar = ?, description_en = ?,
@@ -208,6 +269,16 @@ export async function updateGalleryAlbum(id: number, data: GalleryAlbumInput): P
 
 	for (const image of data.images) {
 		if (image.id && existingIds.has(image.id)) {
+			const previous = existingById.get(image.id);
+			const changed = previous && (
+				previous.imageUrl !== image.imageUrl.trim() ||
+				(Boolean(image.contentHash) && previous.contentHash !== image.contentHash.trim()) ||
+				previous.title.en !== image.title.en.trim() || previous.title.ar !== image.title.ar.trim() ||
+				previous.description.en !== image.description.en.trim() || previous.description.ar !== image.description.ar.trim() ||
+				previous.alt.en !== image.alt.en.trim() || previous.alt.ar !== image.alt.ar.trim() ||
+				previous.sortOrder !== image.sortOrder
+			);
+			if (!changed) continue;
 			statements.push(db.prepare(`UPDATE gallery_images SET image_url = ?, content_hash = COALESCE(NULLIF(?, ''), content_hash), title_en = ?, title_ar = ?,
 				description_en = ?, description_ar = ?, alt_en = ?, alt_ar = ?, sort_order = ?, updated_at = ?
 				WHERE id = ? AND album_id = ?`).bind(
@@ -221,7 +292,7 @@ export async function updateGalleryAlbum(id: number, data: GalleryAlbumInput): P
 	for (const image of existing) {
 		if (!retainedIds.has(image.id)) statements.push(db.prepare("DELETE FROM gallery_images WHERE id = ? AND album_id = ?").bind(image.id, id));
 	}
-	await db.batch(statements);
+	await runStatementBatches(db, statements);
 }
 
 export async function deleteGalleryAlbum(id: number): Promise<void> {
