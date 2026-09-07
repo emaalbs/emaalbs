@@ -1,6 +1,6 @@
 export type GalleryLocale = "en" | "ar";
 
-export const GALLERY_MAX_IMAGES = 600;
+export const GALLERY_MAX_IMAGES = 400;
 
 export type GalleryLocalizedText = {
 	en: string;
