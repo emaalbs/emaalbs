@@ -33,6 +33,7 @@ function rowToImage(row: Record<string, unknown>): GalleryImage {
 		id: Number(row.id),
 		albumId: Number(row.album_id),
 		imageUrl: String(row.image_url || ""),
+		contentHash: String(row.content_hash || ""),
 		title: { en: String(row.title_en || ""), ar: String(row.title_ar || "") },
 		description: { en: String(row.description_en || ""), ar: String(row.description_ar || "") },
 		alt: { en: String(row.alt_en || ""), ar: String(row.alt_ar || "") },
@@ -162,9 +163,9 @@ export async function getPublishedGalleryAlbumBySlug(slug: string): Promise<Gall
 
 function imageInsert(db: D1Database, albumId: number, image: GalleryAlbumInput["images"][number], now: number) {
 	return db.prepare(`INSERT INTO gallery_images
-		(album_id, image_url, title_en, title_ar, description_en, description_ar, alt_en, alt_ar, sort_order, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
-		albumId, image.imageUrl.trim(), image.title.en.trim(), image.title.ar.trim(), image.description.en.trim(),
+		(album_id, image_url, content_hash, title_en, title_ar, description_en, description_ar, alt_en, alt_ar, sort_order, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(
+		albumId, image.imageUrl.trim(), image.contentHash.trim(), image.title.en.trim(), image.title.ar.trim(), image.description.en.trim(),
 		image.description.ar.trim(), image.alt.en.trim(), image.alt.ar.trim(), image.sortOrder, now, now,
 	);
 }
@@ -207,10 +208,10 @@ export async function updateGalleryAlbum(id: number, data: GalleryAlbumInput): P
 
 	for (const image of data.images) {
 		if (image.id && existingIds.has(image.id)) {
-			statements.push(db.prepare(`UPDATE gallery_images SET image_url = ?, title_en = ?, title_ar = ?,
+			statements.push(db.prepare(`UPDATE gallery_images SET image_url = ?, content_hash = COALESCE(NULLIF(?, ''), content_hash), title_en = ?, title_ar = ?,
 				description_en = ?, description_ar = ?, alt_en = ?, alt_ar = ?, sort_order = ?, updated_at = ?
 				WHERE id = ? AND album_id = ?`).bind(
-				image.imageUrl.trim(), image.title.en.trim(), image.title.ar.trim(), image.description.en.trim(),
+				image.imageUrl.trim(), image.contentHash.trim(), image.title.en.trim(), image.title.ar.trim(), image.description.en.trim(),
 				image.description.ar.trim(), image.alt.en.trim(), image.alt.ar.trim(), image.sortOrder, now, image.id, id,
 			));
 		} else {

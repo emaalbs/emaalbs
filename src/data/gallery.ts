@@ -1,5 +1,7 @@
 export type GalleryLocale = "en" | "ar";
 
+export const GALLERY_MAX_IMAGES = 200;
+
 export type GalleryLocalizedText = {
 	en: string;
 	ar: string;
@@ -24,6 +26,7 @@ export type GalleryImage = {
 	id: number;
 	albumId: number;
 	imageUrl: string;
+	contentHash: string;
 	title: GalleryLocalizedText;
 	description: GalleryLocalizedText;
 	alt: GalleryLocalizedText;

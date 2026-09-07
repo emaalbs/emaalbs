@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Ruler, Upload, X, ImageIcon } from "lucide-react";
 import { getImagePresetRecommendation, optimizeImage, type ImagePreset } from "@/lib/image-optimizer";
+import { sha256Hex } from "@/lib/content-hash";
 
 interface Props {
 	value: string;
@@ -15,31 +16,52 @@ interface Props {
 	preset?: ImagePreset;
 	prefix?: string;
 	recommendedSize?: string;
+	preventGalleryDuplicate?: boolean;
+	duplicateHashes?: string[];
+	onContentHashChange?: (hash: string) => void;
 }
 
-export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "", recommendedSize }: Props) {
+export function ImageUpload({ value, onChange, label = "Image", hint, compact, fit = "cover", error, preset = "blog-cover", prefix = "", recommendedSize, preventGalleryDuplicate = false, duplicateHashes = [], onContentHashChange }: Props) {
 	const [uploading, setUploading] = useState(false);
+	const [uploadError, setUploadError] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
 	const sizeGuidance = recommendedSize || getImagePresetRecommendation(preset);
 	const compactGuidance = sizeGuidance.replace(/\s*px$/i, "").replace(/\s*×\s*/g, "×");
 
 	async function handleFile(file: File) {
 		setUploading(true);
+		setUploadError("");
 		try {
 			const optimized = await optimizeImage(file, preset);
+			const contentHash = preventGalleryDuplicate ? await sha256Hex(optimized.blob) : "";
+			if (contentHash && duplicateHashes.includes(contentHash)) {
+				setUploadError("هذه الصورة موجودة مسبقًا في المعرض ولم يتم رفع نسخة مكررة.");
+				return;
+			}
 			const baseName = file.name.replace(/\.[^.]+$/, "");
 			const fileName = `${baseName}.${optimized.extension}`;
 			const formData = new FormData();
 			formData.append("file", optimized.blob, fileName);
 			formData.append("prefix", prefix);
+			if (contentHash) {
+				formData.append("contentHash", contentHash);
+				formData.append("preventGalleryDuplicate", "1");
+			}
 			const res = await fetch("/api/media/upload", {
 				method: "POST",
 				body: formData,
 			});
-			const data = (await res.json()) as { key: string; url: string } | { error: string };
+			const data = (await res.json()) as { key: string; url: string } | { error: string; duplicate?: boolean };
+			if (!res.ok || !("url" in data)) {
+				setUploadError("duplicate" in data && data.duplicate ? "هذه الصورة موجودة مسبقًا في المعرض ولم يتم رفع نسخة مكررة." : ("error" in data ? data.error : "Image upload failed"));
+				return;
+			}
 			if ("url" in data) {
 				onChange(data.url);
+				onContentHashChange?.(contentHash);
 			}
+		} catch (uploadFailure) {
+			setUploadError(uploadFailure instanceof Error ? uploadFailure.message : "Image upload failed");
 		} finally {
 			setUploading(false);
 		}
@@ -59,10 +81,11 @@ export function ImageUpload({ value, onChange, label = "Image", hint, compact, f
 					<span className="whitespace-nowrap">{compact ? compactGuidance : `Recommended ${sizeGuidance}`}</span>
 				</span>
 			</div>
-			{hint || error ? (
+			{hint || error || uploadError ? (
 				<div className="mb-1.5">
 					{hint && <p className="text-xs text-gray-400">{hint}</p>}
 					{error && <p className="text-xs text-red-500">{error}</p>}
+					{uploadError && <p role="alert" dir={uploadError.startsWith("هذه") ? "rtl" : undefined} className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs font-semibold text-amber-800">{uploadError}</p>}
 				</div>
 			) : null}
 			{value ? (

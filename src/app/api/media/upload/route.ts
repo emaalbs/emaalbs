@@ -2,11 +2,44 @@ import { NextResponse } from "next/server";
 import { uploadToR2 } from "@/lib/r2";
 import { requireAuth } from "@/lib/auth";
 import { getEnv } from "@/lib/cloudflare";
+import { sha256Hex } from "@/lib/content-hash";
+
+const HASH_PATTERN = /^[a-f0-9]{64}$/;
+
+function mediaKeyFromUrl(url: string): string | null {
+	const prefix = "/api/media/";
+	return url.startsWith(prefix) ? decodeURIComponent(url.slice(prefix.length)) : null;
+}
+
+async function galleryContainsHash(db: D1Database, bucket: R2Bucket, targetHash: string): Promise<boolean> {
+	const direct = await db.prepare("SELECT id FROM gallery_images WHERE content_hash = ? LIMIT 1").bind(targetHash).first();
+	if (direct) return true;
+
+	const { results } = await db.prepare("SELECT id, image_url FROM gallery_images WHERE content_hash = '' ORDER BY id ASC").all();
+	for (const row of results || []) {
+		const key = mediaKeyFromUrl(String(row.image_url || ""));
+		if (!key) continue;
+		const object = await bucket.get(key);
+		if (!object) continue;
+		const existingHash = await sha256Hex(await object.arrayBuffer());
+		if (existingHash === targetHash) {
+			await db.prepare("UPDATE gallery_images SET content_hash = ? WHERE id = ? AND content_hash = ''")
+				.bind(existingHash, Number(row.id)).run().catch(() => undefined);
+			return true;
+		}
+		const alreadyStored = await db.prepare("SELECT id FROM gallery_images WHERE content_hash = ? LIMIT 1").bind(existingHash).first();
+		if (!alreadyStored) {
+			await db.prepare("UPDATE gallery_images SET content_hash = ? WHERE id = ? AND content_hash = ''")
+				.bind(existingHash, Number(row.id)).run().catch(() => undefined);
+		}
+	}
+	return false;
+}
 
 export async function POST(request: Request) {
 	try {
 		await requireAuth(request);
-		const { MEDIA: bucket } = await getEnv();
+		const { MEDIA: bucket, DB: db } = await getEnv();
 		if (!bucket) {
 			return NextResponse.json({ error: "R2 bucket unavailable" }, { status: 500 });
 		}
@@ -14,9 +47,22 @@ export async function POST(request: Request) {
 		const formData = await request.formData();
 		const file = formData.get("file") as File | null;
 		const prefix = (formData.get("prefix") as string) || "";
+		const suppliedHash = String(formData.get("contentHash") || "").toLowerCase();
+		const preventGalleryDuplicate = formData.get("preventGalleryDuplicate") === "1";
 
 		if (!file) {
 			return NextResponse.json({ error: "No file provided" }, { status: 400 });
+		}
+
+		if (preventGalleryDuplicate) {
+			if (!db) return NextResponse.json({ error: "Database unavailable" }, { status: 500 });
+			const actualHash = await sha256Hex(await file.arrayBuffer());
+			if (!HASH_PATTERN.test(suppliedHash) || suppliedHash !== actualHash) {
+				return NextResponse.json({ error: "Image fingerprint verification failed" }, { status: 400 });
+			}
+			if (await galleryContainsHash(db, bucket, actualHash)) {
+				return NextResponse.json({ duplicate: true, error: "هذه الصورة موجودة مسبقًا في المعرض" }, { status: 409 });
+			}
 		}
 
 		const ext = file.name.split(".").pop() || "bin";

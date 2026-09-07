@@ -7,7 +7,7 @@ import { validateGalleryAlbumInput } from "@/lib/gallery-validation";
 function errorResponse(error: unknown, fallback: string) {
 	const message = error instanceof Error ? error.message : fallback;
 	const status = message.includes("UNIQUE") ? 409 : message.includes("FOREIGN KEY") ? 400 : message === "Unauthorized" || message === "Invalid session" ? 401 : 500;
-	const safeMessage = message.includes("UNIQUE") ? "This album slug is already in use" : message.includes("FOREIGN KEY") ? "Choose an existing category" : message;
+	const safeMessage = message.includes("gallery_images.content_hash") ? "هذه الصورة موجودة مسبقًا في المعرض" : message.includes("UNIQUE") ? "This album slug is already in use" : message.includes("FOREIGN KEY") ? "Choose an existing category" : message;
 	return NextResponse.json({ error: safeMessage }, { status });
 }
 

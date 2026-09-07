@@ -1,4 +1,4 @@
-import type { GalleryAlbumInput, GalleryCategoryInput, GalleryLocalizedText } from "@/data/gallery";
+import { GALLERY_MAX_IMAGES, type GalleryAlbumInput, type GalleryCategoryInput, type GalleryLocalizedText } from "@/data/gallery";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -45,10 +45,11 @@ export function validateGalleryAlbumInput(data: GalleryAlbumInput): string | nul
 	if (data.eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.eventDate)) return "Event date is invalid";
 	if (!Number.isInteger(data.sortOrder) || Math.abs(data.sortOrder) > 9999) return "Album sort order is invalid";
 	if (!Array.isArray(data.images) || data.images.length < 1) return "Add at least one image to the album";
-	if (data.images.length > 100) return "An album can contain up to 100 images";
 	if (!isSafeGalleryImageUrl(data.coverImageUrl)) return "Album cover image URL is invalid";
+	if (data.images.length > GALLERY_MAX_IMAGES) return `An album can contain up to ${GALLERY_MAX_IMAGES} images`;
 	for (const image of data.images) {
 		if (!image.imageUrl || !isSafeGalleryImageUrl(image.imageUrl)) return "Every gallery item needs a valid image";
+		if (image.contentHash && !/^[a-f0-9]{64}$/.test(image.contentHash)) return "Gallery image fingerprint is invalid";
 		if (image.title.en.length > 180 || image.title.ar.length > 180) return "Image titles must be 180 characters or fewer";
 		if (image.description.en.length > 2000 || image.description.ar.length > 2000) return "Image descriptions must be 2,000 characters or fewer";
 		if (image.alt.en.length > 240 || image.alt.ar.length > 240) return "Alternative text must be 240 characters or fewer";

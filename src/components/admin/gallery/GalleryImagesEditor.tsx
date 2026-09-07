@@ -1,11 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowDown, ArrowUp, ImagePlus, LoaderCircle, Ruler, Star, Trash2 } from "lucide-react";
-import type { GalleryImageInput } from "@/data/gallery";
+import { AlertTriangle, ArrowDown, ArrowUp, ImagePlus, LoaderCircle, Ruler, Star, Trash2 } from "lucide-react";
+import { GALLERY_MAX_IMAGES, type GalleryImageInput } from "@/data/gallery";
 import { BilingualField } from "@/components/admin/BilingualField";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { optimizeImage } from "@/lib/image-optimizer";
+import { sha256Hex } from "@/lib/content-hash";
 
 type Props = {
 	images: GalleryImageInput[];
@@ -14,9 +15,10 @@ type Props = {
 	onCoverChange: (url: string) => void;
 };
 
-function blankImage(imageUrl: string, sortOrder: number): GalleryImageInput {
+function blankImage(imageUrl: string, contentHash: string, sortOrder: number): GalleryImageInput {
 	return {
 		imageUrl,
+		contentHash,
 		title: { en: "", ar: "" },
 		description: { en: "", ar: "" },
 		alt: { en: "", ar: "" },
@@ -29,6 +31,7 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 	const [uploading, setUploading] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [error, setError] = useState("");
+	const [duplicateNames, setDuplicateNames] = useState<string[]>([]);
 
 	function updateImage(index: number, image: GalleryImageInput) {
 		onChange(images.map((current, currentIndex) => currentIndex === index ? image : current));
@@ -43,24 +46,42 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 	}
 
 	async function uploadFiles(files: FileList) {
-		const selected = Array.from(files).slice(0, Math.max(0, 100 - images.length));
+		const selected = Array.from(files).slice(0, Math.max(0, GALLERY_MAX_IMAGES - images.length));
 		if (!selected.length) return;
 		setUploading(true);
 		setProgress(0);
 		setError("");
+		setDuplicateNames([]);
 		const uploaded: GalleryImageInput[] = [];
+		const knownHashes = new Set(images.map((image) => image.contentHash).filter(Boolean));
+		const duplicates: string[] = [];
 		try {
 			for (let index = 0; index < selected.length; index += 1) {
 				const file = selected[index];
 				const optimized = await optimizeImage(file, "gallery");
+				const contentHash = await sha256Hex(optimized.blob);
+				if (knownHashes.has(contentHash)) {
+					duplicates.push(file.name);
+					setProgress(index + 1);
+					continue;
+				}
 				const baseName = file.name.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9-_]+/g, "-");
 				const formData = new FormData();
 				formData.append("file", optimized.blob, `${baseName}.${optimized.extension}`);
 				formData.append("prefix", "gallery/albums/");
+				formData.append("contentHash", contentHash);
+				formData.append("preventGalleryDuplicate", "1");
 				const response = await fetch("/api/media/upload", { method: "POST", body: formData });
-				const data = (await response.json()) as { url?: string; error?: string };
+				const data = (await response.json()) as { url?: string; error?: string; duplicate?: boolean };
+				if (response.status === 409 && data.duplicate) {
+					duplicates.push(file.name);
+					knownHashes.add(contentHash);
+					setProgress(index + 1);
+					continue;
+				}
 				if (!response.ok || !data.url) throw new Error(data.error || `Failed to upload ${file.name}`);
-				uploaded.push(blankImage(data.url, images.length + uploaded.length));
+				uploaded.push(blankImage(data.url, contentHash, images.length + uploaded.length));
+				knownHashes.add(contentHash);
 				setProgress(index + 1);
 			}
 			onChange([...images, ...uploaded]);
@@ -69,6 +90,7 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 			if (uploaded.length) onChange([...images, ...uploaded]);
 			setError(uploadError instanceof Error ? uploadError.message : "Image upload failed");
 		} finally {
+			setDuplicateNames(duplicates);
 			setUploading(false);
 			if (inputRef.current) inputRef.current.value = "";
 		}
@@ -85,15 +107,21 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 			<button
 				type="button"
 				onClick={() => inputRef.current?.click()}
-				disabled={uploading || images.length >= 100}
+				disabled={uploading || images.length >= GALLERY_MAX_IMAGES}
 				className="flex min-h-36 w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 px-6 text-center text-gray-500 transition duration-300 hover:border-[#007F84] hover:bg-[#007F84]/5 hover:text-[#01334D] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007F84] disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
 			>
 				{uploading ? <LoaderCircle className="h-8 w-8 animate-spin motion-reduce:animate-none" /> : <ImagePlus className="h-8 w-8" />}
-				<span className="text-sm font-bold">{uploading ? `Optimizing and uploading ${progress}/${Math.min(100 - images.length, inputRef.current?.files?.length || 0)}` : "Upload one image or select multiple images"}</span>
-				<span className="text-xs text-gray-400">Images are optimized automatically. Maximum 100 images per album.</span>
+				<span className="text-sm font-bold">{uploading ? `Checking and uploading ${progress}/${Math.min(GALLERY_MAX_IMAGES - images.length, inputRef.current?.files?.length || 0)}` : "Upload one image or select multiple images"}</span>
+				<span className="text-xs text-gray-400">Images are optimized and checked for duplicates automatically. Maximum {GALLERY_MAX_IMAGES} images per album.</span>
 			</button>
 			<input ref={inputRef} type="file" accept="image/*" multiple className="hidden" onChange={(event) => event.target.files && void uploadFiles(event.target.files)} />
 			{error ? <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
+			{duplicateNames.length ? (
+				<div role="alert" className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+					<AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+					<div><p className="font-bold" dir="rtl">هذه الصورة موجودة مسبقًا في المعرض ولم يتم رفع نسخة مكررة.</p><p className="mt-1 break-all text-xs text-amber-700">{duplicateNames.join(", ")}</p></div>
+				</div>
+			) : null}
 
 			<div className="space-y-4">
 				{images.map((image, index) => (
@@ -112,7 +140,7 @@ export function GalleryImagesEditor({ images, coverImageUrl, onChange, onCoverCh
 						<div className="border-t border-gray-100 p-4 sm:p-5">
 							<div className="grid gap-5 lg:grid-cols-[240px_1fr]">
 								<div className="space-y-3">
-									<ImageUpload value={image.imageUrl} onChange={(url) => updateImage(index, { ...image, imageUrl: url })} label={null} compact preset="gallery" prefix="gallery/albums/" />
+									<ImageUpload value={image.imageUrl} onChange={(url) => updateImage(index, { ...image, imageUrl: url })} onContentHashChange={(contentHash) => updateImage(index, { ...image, contentHash })} duplicateHashes={images.filter((_, currentIndex) => currentIndex !== index).map((item) => item.contentHash).filter(Boolean)} preventGalleryDuplicate label={null} compact preset="gallery" prefix="gallery/albums/" />
 									<button type="button" onClick={() => onCoverChange(image.imageUrl)} className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 text-xs font-bold text-amber-800 transition hover:bg-amber-100">
 										<Star className="h-3.5 w-3.5" /> Use as album cover
 									</button>
