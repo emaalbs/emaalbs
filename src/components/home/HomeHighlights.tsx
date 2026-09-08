@@ -10,7 +10,7 @@ import { useI18n } from "@/i18n/provider";
 import type { Blog } from "@/data/blogs";
 
 type Props = {
-	blogs: Blog[];
+	blogs: Pick<Blog, "id" | "slug" | "title" | "image" | "date">[];
 	locale: string;
 };
 

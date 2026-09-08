@@ -56,13 +56,16 @@ export async function POST(request: Request) {
 		if (!file) {
 			return NextResponse.json({ error: "No file provided" }, { status: 400 });
 		}
+		let uploadBody: File | ArrayBuffer = file;
 		if (galleryAlbumId !== null && (!Number.isInteger(galleryAlbumId) || galleryAlbumId < 1 || !preventGalleryDuplicate)) {
 			return NextResponse.json({ error: "Invalid gallery album" }, { status: 400 });
 		}
 
 		if (preventGalleryDuplicate) {
 			if (!db) return NextResponse.json({ error: "Database unavailable" }, { status: 500 });
-			const actualHash = await sha256Hex(await file.arrayBuffer());
+			const fileBuffer = await file.arrayBuffer();
+			uploadBody = fileBuffer;
+			const actualHash = await sha256Hex(fileBuffer);
 			if (!HASH_PATTERN.test(suppliedHash) || suppliedHash !== actualHash) {
 				return NextResponse.json({ error: "Image fingerprint verification failed" }, { status: 400 });
 			}
@@ -73,7 +76,7 @@ export async function POST(request: Request) {
 
 		const ext = file.name.split(".").pop() || "bin";
 		const key = `${prefix}${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-		const result = await uploadToR2(bucket, key, file, file.type);
+		const result = await uploadToR2(bucket, key, uploadBody, file.type);
 		if (galleryAlbumId !== null) {
 			try {
 				const galleryImage = await createGalleryImage(galleryAlbumId, {

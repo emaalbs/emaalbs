@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { AlertTriangle, ArrowDown, ArrowUp, CheckCircle2, ImagePlus, LoaderCircle, Ruler, Star, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { AlertTriangle, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CheckCircle2, ImagePlus, LoaderCircle, Ruler, Star, Trash2 } from "lucide-react";
 import { GALLERY_MAX_IMAGES, type GalleryImage, type GalleryImageInput } from "@/data/gallery";
 import { BilingualField } from "@/components/admin/BilingualField";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -15,6 +15,8 @@ type Props = {
 	onChange: (images: GalleryImageInput[]) => void;
 	onCoverChange: (url: string) => void;
 };
+
+const PAGE_SIZE = 24;
 
 function blankImage(imageUrl: string, contentHash: string, sortOrder: number): GalleryImageInput {
 	return {
@@ -36,6 +38,15 @@ export function GalleryImagesEditor({ albumId, images, coverImageUrl, onChange, 
 	const [selectedUrls, setSelectedUrls] = useState<Set<string>>(new Set());
 	const [deleting, setDeleting] = useState(false);
 	const [savedUploadCount, setSavedUploadCount] = useState(0);
+	const [page, setPage] = useState(1);
+	const totalPages = Math.max(1, Math.ceil(images.length / PAGE_SIZE));
+	const safePage = Math.min(page, totalPages);
+	const pageStart = (safePage - 1) * PAGE_SIZE;
+	const pageImages = images.slice(pageStart, pageStart + PAGE_SIZE).map((image, offset) => ({ image, index: pageStart + offset }));
+
+	useEffect(() => {
+		setPage((current) => Math.min(current, Math.max(1, Math.ceil(images.length / PAGE_SIZE))));
+	}, [images.length]);
 
 	function updateImage(index: number, image: GalleryImageInput) {
 		onChange(images.map((current, currentIndex) => currentIndex === index ? image : current));
@@ -97,6 +108,7 @@ export function GalleryImagesEditor({ albumId, images, coverImageUrl, onChange, 
 			}
 			onChange([...images, ...uploaded]);
 			setSavedUploadCount(uploaded.length);
+			if (uploaded.length) setPage(Math.ceil((images.length + uploaded.length) / PAGE_SIZE));
 			if (!coverImageUrl && uploaded[0]) onCoverChange(uploaded[0].imageUrl);
 		} catch (uploadError) {
 			if (uploaded.length) onChange([...images, ...uploaded]);
@@ -185,17 +197,27 @@ export function GalleryImagesEditor({ albumId, images, coverImageUrl, onChange, 
 			) : null}
 
 			{images.length ? (
-				<div className="sticky top-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur">
-					<label className="inline-flex min-h-10 cursor-pointer items-center gap-2 text-sm font-semibold text-gray-700">
-						<input type="checkbox" checked={images.every((image) => selectedUrls.has(image.imageUrl))} onChange={toggleAll} className="h-4 w-4 accent-[#007F84]" />
-						Select all ({images.length})
-					</label>
-					<div className="flex items-center gap-3"><span className="text-xs font-semibold text-gray-500">{selectedUrls.size} selected</span><button type="button" onClick={() => void deleteImages([...selectedUrls])} disabled={!selectedUrls.size || deleting || uploading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-red-600 px-4 text-sm font-bold text-white transition duration-200 hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none">{deleting ? <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" /> : <Trash2 className="h-4 w-4" />} Delete selected</button></div>
-				</div>
+				<>
+					<div className="sticky top-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur">
+						<label className="inline-flex min-h-10 cursor-pointer items-center gap-2 text-sm font-semibold text-gray-700">
+							<input type="checkbox" checked={images.every((image) => selectedUrls.has(image.imageUrl))} onChange={toggleAll} className="h-4 w-4 accent-[#007F84]" />
+							Select all ({images.length})
+						</label>
+						<div className="flex items-center gap-3"><span className="text-xs font-semibold text-gray-500">{selectedUrls.size} selected</span><button type="button" onClick={() => void deleteImages([...selectedUrls])} disabled={!selectedUrls.size || deleting || uploading} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-red-600 px-4 text-sm font-bold text-white transition duration-200 hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none">{deleting ? <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" /> : <Trash2 className="h-4 w-4" />} Delete selected</button></div>
+					</div>
+					<div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+						<p className="text-xs font-semibold text-gray-500">Showing {pageStart + 1}–{Math.min(pageStart + PAGE_SIZE, images.length)} of {images.length} images</p>
+						<div className="flex items-center gap-2">
+							<button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={safePage === 1} className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 bg-white text-gray-600 disabled:opacity-35" aria-label="Previous image page"><ArrowLeft className="h-4 w-4" /></button>
+							<span className="min-w-24 text-center text-xs font-bold text-gray-700">Page {safePage} / {totalPages}</span>
+							<button type="button" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={safePage === totalPages} className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 bg-white text-gray-600 disabled:opacity-35" aria-label="Next image page"><ArrowRight className="h-4 w-4" /></button>
+						</div>
+					</div>
+				</>
 			) : null}
 
 			<div className="space-y-4">
-				{images.map((image, index) => (
+				{pageImages.map(({ image, index }) => (
 					<details key={image.id || `${image.imageUrl}-${index}`} open={images.length <= 2} className={`group overflow-hidden rounded-2xl border bg-white shadow-sm transition duration-200 motion-reduce:transition-none ${selectedUrls.has(image.imageUrl) ? "border-[#007F84] ring-2 ring-[#007F84]/15" : "border-gray-200"}`}>
 						<summary className="flex cursor-pointer list-none items-center gap-4 p-4 marker:hidden">
 							<label onClick={(event) => event.stopPropagation()} className="grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-xl border border-gray-200 bg-gray-50" aria-label={`Select image ${index + 1}`}><input type="checkbox" checked={selectedUrls.has(image.imageUrl)} onChange={() => toggleSelection(image.imageUrl)} className="h-4 w-4 accent-[#007F84]" /></label>

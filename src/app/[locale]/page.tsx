@@ -1,33 +1,13 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { HomeHero } from "@/components/home/HomeHero";
-import { HomeTrustStrip } from "@/components/home/HomeTrustStrip";
-import { HomeIbsBand } from "@/components/home/HomeIbsBand";
-import { HomeAbout } from "@/components/home/HomeAbout";
-import { HomeServices } from "@/components/home/HomeServices";
-import { HomeGroup } from "@/components/home/HomeGroup";
-import { HomeWhyEmaal } from "@/components/home/HomeWhyEmaal";
-import { HomeHighlights } from "@/components/home/HomeHighlights";
-import { HomeStatsBar } from "@/components/home/HomeStatsBar";
-import { HomeCtaBand } from "@/components/home/HomeCtaBand";
-import { HomeSocialPulse } from "@/components/home/HomeSocialPulse";
-import { HomeGalleryShowcase } from "@/components/home/HomeGalleryShowcase";
-import { listBlogs } from "@/lib/db/blogs";
-import { getHeroCarouselSettings, listHeroSlides } from "@/lib/db/hero-slides";
-import { listSocialPosts } from "@/lib/db/social-posts";
-import { listGalleryAlbums } from "@/lib/db/gallery";
+import { HomeClientContent } from "@/components/home/HomeClientContent";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/structured-data";
 
 type Props = {
 	params: Promise<{ locale: string }>;
 };
-
-// Homepage banners are managed from the admin panel, so the latest published
-// state must be read from D1 instead of being frozen into the production build.
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const { locale } = await params;
@@ -36,13 +16,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Home({ params }: Props) {
 	const { locale } = await params;
-	const [blogs, heroSlides, heroSettings, socialPosts, galleryAlbums] = await Promise.all([
-		listBlogs(),
-		listHeroSlides(),
-		getHeroCarouselSettings(),
-		listSocialPosts(),
-		listGalleryAlbums(),
-	]);
 	return (
 		<>
 			<script
@@ -55,20 +28,7 @@ export default async function Home({ params }: Props) {
 				}}
 			/>
 			<Header />
-			<main>
-				<HomeHero slides={heroSlides} autoplayDelayMs={heroSettings.autoplayDelayMs} />
-				<HomeTrustStrip />
-				<HomeIbsBand />
-				<HomeAbout />
-				<HomeServices />
-				<HomeGroup />
-				<HomeWhyEmaal />
-				<HomeHighlights blogs={blogs.slice(0, 3)} locale={locale} />
-				<HomeGalleryShowcase albums={galleryAlbums.slice(0, 3)} locale={locale === "ar" ? "ar" : "en"} />
-				<HomeSocialPulse posts={socialPosts.slice(0, 3)} locale={locale === "ar" ? "ar" : "en"} />
-				<HomeStatsBar />
-				<HomeCtaBand />
-			</main>
+			<HomeClientContent locale={locale === "ar" ? "ar" : "en"} />
 			<Footer />
 		</>
 	);
