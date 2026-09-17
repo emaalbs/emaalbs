@@ -60,15 +60,15 @@ export function EditionSponsors({ edition }: { edition: IbsEdition }) {
 								{g.sponsors.map((s) => (
 									<div
 										key={s.id}
-										className="group flex h-24 items-center justify-center rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] px-5 transition-all hover:-translate-y-0.5 hover:border-[var(--color-gold)] hover:shadow-[0_12px_32px_rgba(238,193,59,0.18)]"
+										className="group relative flex h-24 min-w-0 items-center justify-center rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] p-2 transition-all hover:-translate-y-0.5 hover:border-[var(--color-gold)] hover:shadow-[0_12px_32px_rgba(238,193,59,0.18)]"
 									>
 										{s.logo ? (
 											<Image
 												src={s.logo}
 												alt={s.name}
-												width={140}
-												height={56}
-												className="max-h-12 w-auto object-contain opacity-80 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+												fill
+												sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+												className="object-contain p-2 opacity-80 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
 												unoptimized
 											/>
 										) : (
