@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ExternalLink, Play } from "lucide-react";
 import { getVideoSource } from "@/lib/video-embed";
 
@@ -12,14 +12,23 @@ type Props = {
 
 export function BlogVideoBlock({ url, caption = "", isAr }: Props) {
 	const source = getVideoSource(url);
-	const [isPlaying, setIsPlaying] = useState(false);
+	const playerRef = useRef<HTMLIFrameElement>(null);
+	const [showPoster, setShowPoster] = useState(true);
 	if (!source) return null;
 
 	const frameTitle = caption.trim() || (isAr ? "فيديو المقال" : "Article video");
-	const showYouTubePoster = source.kind === "youtube" && source.thumbnail && !isPlaying;
-	const playerUrl = source.kind === "youtube" && isPlaying
-		? `${source.src}?autoplay=1&rel=0`
+	const playerUrl = source.kind === "youtube"
+		? `${source.src}?enablejsapi=1&rel=0&playsinline=1`
 		: source.src;
+	const showYouTubePoster = source.kind === "youtube" && source.thumbnail && showPoster;
+
+	function playYouTubeVideo() {
+		playerRef.current?.contentWindow?.postMessage(
+			JSON.stringify({ event: "command", func: "playVideo", args: [] }),
+			"https://www.youtube-nocookie.com",
+		);
+		setShowPoster(false);
+	}
 
 	return (
 		<figure className="mx-auto my-10 w-full max-w-[620px]">
@@ -34,14 +43,26 @@ export function BlogVideoBlock({ url, caption = "", isAr }: Props) {
 					>
 						{isAr ? "متصفحك لا يدعم تشغيل الفيديو." : "Your browser does not support video playback."}
 					</video>
-				) : showYouTubePoster ? (
+				) : (
+					<iframe
+						ref={playerRef}
+						src={playerUrl}
+						title={frameTitle}
+						loading={source.kind === "youtube" ? "eager" : "lazy"}
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowFullScreen
+						referrerPolicy="strict-origin-when-cross-origin"
+						sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+						className="absolute inset-0 h-full w-full border-0"
+					/>
+				)}
+				{showYouTubePoster && (
 					<button
 						type="button"
-						onClick={() => setIsPlaying(true)}
+						onClick={playYouTubeVideo}
 						className="absolute inset-0 z-10 h-full w-full cursor-pointer overflow-hidden text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-gold)]"
 						aria-label={isAr ? "تشغيل الفيديو" : "Play video"}
 					>
-						{/* YouTube thumbnails are intentionally loaded as plain images to avoid Next image proxying. */}
 						<img
 							src={source.thumbnail}
 							alt=""
@@ -70,17 +91,6 @@ export function BlogVideoBlock({ url, caption = "", isAr }: Props) {
 							</span>
 						</span>
 					</button>
-				) : (
-					<iframe
-						src={playerUrl}
-						title={frameTitle}
-						loading="lazy"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						allowFullScreen
-						referrerPolicy="strict-origin-when-cross-origin"
-						sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-						className="absolute inset-0 h-full w-full border-0"
-					/>
 				)}
 				<a
 					href={source.originalUrl}
