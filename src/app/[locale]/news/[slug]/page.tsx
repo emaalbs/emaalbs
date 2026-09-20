@@ -12,6 +12,7 @@ import { getBlogBySlug } from "@/lib/db/blogs";
 import type { BlogBlock } from "@/data/blogs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { articleJsonLd } from "@/lib/seo/structured-data";
+import { BlogVideoBlock } from "@/components/blog/BlogVideoBlock";
 
 type Props = {
 	params: Promise<{
@@ -114,6 +115,15 @@ function renderBlock(block: BlogBlock, index: number, isAr: boolean) {
 						</div>
 					))}
 				</div>
+			);
+		case "video":
+			return (
+				<BlogVideoBlock
+					key={index}
+					url={block.url}
+					caption={block.caption}
+					isAr={isAr}
+				/>
 			);
 		default:
 			return null;

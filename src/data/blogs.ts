@@ -4,6 +4,7 @@ export type BlogBlock =
 	| { type: "image"; src: string; alt: string }
 	| { type: "quote"; text: string }
 	| { type: "highlights"; items: string[] }
+	| { type: "video"; url: string; caption: string }
 	| { type: "gallery"; images: string[] };
 
 export type Blog = {

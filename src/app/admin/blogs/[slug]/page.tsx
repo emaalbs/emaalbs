@@ -6,6 +6,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import type { Blog, BlogBlock } from "@/data/blogs";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
+import { isValidVideoUrl } from "@/lib/video-embed";
 
 function toSlug(text: string): string {
 	return text
@@ -41,6 +42,8 @@ function makeEmptyCopy(block: BlogBlock): BlogBlock {
 			return { type: "highlights", items: [] };
 		case "image":
 			return { type: "image", src: block.src, alt: "" };
+		case "video":
+			return { type: "video", url: block.url, caption: "" };
 		case "gallery":
 			return { type: "gallery", images: [...block.images] };
 	}
@@ -82,6 +85,18 @@ function BlogBlockTranslation({
 				arValue={arBlock.alt}
 				onEnChange={(alt) => onEnChange({ ...enBlock, alt })}
 				onArChange={(alt) => onArChange({ ...arBlock, alt })}
+			/>
+		);
+	}
+
+	if (enBlock.type === "video" && arBlock.type === "video") {
+		return (
+			<AutoTranslateSync
+				className="mt-3 border-t border-gray-100 pt-3"
+				enValue={enBlock.caption}
+				arValue={arBlock.caption}
+				onEnChange={(caption) => onEnChange({ ...enBlock, caption })}
+				onArChange={(caption) => onArChange({ ...arBlock, caption })}
 			/>
 		);
 	}
@@ -161,7 +176,9 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 							? { type: "quote", text: "" }
 							: type === "highlights"
 								? { type: "highlights", items: [""] }
-								: { type: "gallery", images: [""] };
+								: type === "video"
+									? { type: "video", url: "", caption: "" }
+									: { type: "gallery", images: [""] };
 		const otherLocale = activeLocale === "en" ? "ar" : "en";
 		setBlog((prev) => ({
 			...prev,
@@ -183,6 +200,17 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 
 	function updateBlock(index: number, block: BlogBlock) {
 		updateBlockForLocale(activeLocale, index, block);
+	}
+
+	function updateVideoUrl(index: number, url: string) {
+		setBlog((prev) => {
+			const content = { en: [...prev.content.en], ar: [...prev.content.ar] };
+			for (const locale of ["en", "ar"] as const) {
+				const current = content[locale][index];
+				if (current?.type === "video") content[locale][index] = { ...current, url };
+			}
+			return { ...prev, content };
+		});
 	}
 
 	function removeBlock(index: number) {
@@ -207,6 +235,7 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 		return blog.content[locale].some((b) => {
 			if (b.type === "heading" || b.type === "paragraph" || b.type === "quote") return b.text.trim().length > 0;
 			if (b.type === "image") return b.src.length > 0;
+			if (b.type === "video") return isValidVideoUrl(b.url);
 			if (b.type === "highlights") return b.items.length > 0;
 			if (b.type === "gallery") return b.images.length > 0;
 			return false;
@@ -420,10 +449,10 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 							<span className="font-semibold">Warning:</span> {errors[`content${activeLocale === "en" ? "En" : "Ar"}`]} — add at least one block with content.
 						</div>
 					)}
-					<div className="mb-4 flex items-center justify-between">
+					<div className="mb-4 flex flex-col items-start justify-between gap-3 lg:flex-row">
 						<h2 className="font-semibold text-gray-900">Content Blocks ({activeLocale})</h2>
-						<div className="flex gap-2">
-							{(["heading", "paragraph", "image", "quote", "highlights", "gallery"] as const).map((t) => (
+						<div className="flex flex-wrap gap-2">
+							{(["heading", "paragraph", "image", "video", "quote", "highlights", "gallery"] as const).map((t) => (
 								<button
 									key={t}
 									onClick={() => addBlock(t)}
@@ -518,6 +547,35 @@ export default function BlogEditorPage({ params }: { params: Promise<{ slug: str
 										rows={3}
 										className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
 									/>
+								)}
+								{block.type === "video" && (
+									<div className="space-y-3">
+										<div>
+											<label className="mb-1.5 block text-xs font-semibold text-gray-600">Video URL</label>
+											<input
+												type="url"
+												dir="ltr"
+												value={block.url}
+												onChange={(e) => updateVideoUrl(i, e.target.value)}
+												placeholder="https://www.youtube.com/watch?v=..."
+												className={`w-full rounded-lg border bg-white px-4 py-2.5 text-start text-gray-900 outline-none focus:border-blue-500 ${block.url && !isValidVideoUrl(block.url) ? "border-red-300" : "border-gray-200"}`}
+											/>
+											<p className={`mt-1.5 text-xs ${block.url && !isValidVideoUrl(block.url) ? "text-red-600" : "text-gray-400"}`}>
+												{block.url && !isValidVideoUrl(block.url)
+													? "Enter a complete URL beginning with https:// or http://"
+													: "Supports YouTube, Vimeo, direct MP4/WebM files, and embeddable video links."}
+											</p>
+										</div>
+										<div>
+											<label className="mb-1.5 block text-xs font-semibold text-gray-600">Caption (optional)</label>
+											<input
+												value={block.caption}
+												onChange={(e) => updateBlock(i, { ...block, caption: e.target.value })}
+												placeholder="Short description shown below the video"
+												className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-gray-900 outline-none focus:border-blue-500"
+											/>
+										</div>
+									</div>
 								)}
 								{block.type === "highlights" && (
 									<div className="space-y-2">
