@@ -2,6 +2,7 @@ export type VideoSource = {
 	kind: "youtube" | "vimeo" | "file" | "embed";
 	src: string;
 	originalUrl: string;
+	thumbnail?: string;
 };
 
 const VIDEO_FILE_PATTERN = /\.(mp4|webm|ogg|ogv|mov|m4v)(?:$|\?)/i;
@@ -36,6 +37,7 @@ export function getVideoSource(value: string): VideoSource | null {
 			kind: "youtube",
 			src: `https://www.youtube-nocookie.com/embed/${id}`,
 			originalUrl: input,
+			thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
 		};
 	}
 
