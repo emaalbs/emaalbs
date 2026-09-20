@@ -49,7 +49,7 @@ CREATE TABLE ibs_sponsors (
   id TEXT PRIMARY KEY,
   edition_slug TEXT REFERENCES ibs_editions(slug) ON DELETE CASCADE,
   name TEXT NOT NULL,
-  tier TEXT NOT NULL CHECK (tier IN ('strategic','platinum','gold','silver','supporting')),
+  tier TEXT NOT NULL DEFAULT '' CHECK (tier IN ('','strategic','platinum','gold','silver','supporting')),
   logo TEXT,
   href TEXT,
   sort_order INTEGER

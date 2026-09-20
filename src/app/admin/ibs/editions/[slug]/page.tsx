@@ -245,7 +245,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 	const removeInitiative = (i: number) => setEdition((p) => ({ ...p, initiatives: p.initiatives.filter((_, j) => j !== i) }));
 
 	// --- Sponsors ---
-	const addSponsor = () => setEdition((p) => ({ ...p, sponsors: [...p.sponsors, { id: crypto.randomUUID(), name: "", tier: "gold", logo: "", href: "" }] }));
+	const addSponsor = () => setEdition((p) => ({ ...p, sponsors: [...p.sponsors, { id: crypto.randomUUID(), name: "", tier: "", logo: "", href: "" }] }));
 	const updateSponsor = (i: number, s: Sponsor) => setEdition((p) => { const a = [...p.sponsors]; a[i] = s; return { ...p, sponsors: a }; });
 	const removeSponsor = (i: number) => setEdition((p) => ({ ...p, sponsors: p.sponsors.filter((_, j) => j !== i) }));
 

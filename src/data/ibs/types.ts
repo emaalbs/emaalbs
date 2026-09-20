@@ -20,6 +20,7 @@ export type Speaker = {
 };
 
 export type SponsorTier =
+	| ""
 	| "strategic"
 	| "platinum"
 	| "gold"

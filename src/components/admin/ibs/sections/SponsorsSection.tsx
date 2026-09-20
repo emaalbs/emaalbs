@@ -40,6 +40,7 @@ export function SponsorsSection({ sponsors, onAdd, onUpdate, onRemove }: Props) 
 							onChange={(e) => onUpdate(i, { ...s, tier: e.target.value as SponsorTier })}
 							className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)]"
 						>
+							<option value="">No tier (optional)</option>
 							{TIERS.map((t) => (
 								<option key={t} value={t} className="capitalize">
 									{t.charAt(0).toUpperCase() + t.slice(1)}

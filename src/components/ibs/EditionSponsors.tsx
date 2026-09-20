@@ -8,6 +8,7 @@ import type { IbsEdition, SponsorTier } from "@/data/ibs/types";
 import { IbsSectionHeading } from "./IbsSectionHeading";
 
 const tierOrder: SponsorTier[] = [
+	"",
 	"strategic",
 	"platinum",
 	"gold",
@@ -28,7 +29,7 @@ export function EditionSponsors({ edition }: { edition: IbsEdition }) {
 		}))
 		.filter((g) => g.sponsors.length > 0);
 
-	const tierLabel = (tier: SponsorTier) => {
+	const tierLabel = (tier: Exclude<SponsorTier, "">) => {
 		const m = {
 			strategic: labels.tierStrategic,
 			platinum: labels.tierPlatinum,
@@ -47,12 +48,12 @@ export function EditionSponsors({ edition }: { edition: IbsEdition }) {
 			<div className="mt-12 space-y-10">
 				{grouped.map((g) => (
 					<div key={g.tier}>
-						<Container>
+						{g.tier ? <Container>
 							<div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em] text-[var(--color-gold-deep)]">
 								<span className="inline-block h-px w-8 bg-[var(--color-gold-deep)]" />{tierLabel(g.tier)}
 							</div>
-						</Container>
-						<div dir="ltr" className="relative mt-5 overflow-hidden py-1" style={{ maskImage: "linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%)" }}>
+						</Container> : null}
+						<div dir="ltr" className={`relative overflow-hidden py-1 ${g.tier ? "mt-5" : ""}`} style={{ maskImage: "linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%)" }}>
 							<div className="flex w-max items-center gap-4 py-2 animate-[marquee_36s_linear_infinite] hover:[animation-play-state:paused] motion-reduce:animate-none">
 								{Array.from({ length: g.copies }, (_, copyIndex) => g.sponsors.map((s) => (
 									<div key={`${s.id}-${copyIndex}`} aria-hidden={copyIndex > 0} className="group relative flex h-24 w-56 shrink-0 items-center justify-center rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-gold)] hover:shadow-[0_12px_32px_rgba(238,193,59,0.18)] sm:w-64">
