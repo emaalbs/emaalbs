@@ -12,6 +12,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ key?
 
 		const obj = await bucket.get(objectKey);
 		if (!obj) {
+			if (process.env.NODE_ENV === "development" && objectKey) {
+				const encodedKey = objectKey
+					.split("/")
+					.map((segment) => encodeURIComponent(segment))
+					.join("/");
+				return NextResponse.redirect(
+					new URL(`/api/media/${encodedKey}`, "https://emaalbs.com"),
+					307,
+				);
+			}
 			return NextResponse.json({ error: "Not found" }, { status: 404 });
 		}
 
