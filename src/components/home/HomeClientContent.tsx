@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import type { Blog } from "@/data/blogs";
 import type { GalleryAlbum, GalleryLocale } from "@/data/gallery";
 import type { HeroSlide } from "@/data/hero-slides";
+import type { HomeFeature } from "@/data/home-feature";
+import { EMPTY_HOME_FEATURE } from "@/data/home-feature";
 import type { SocialPost } from "@/data/social-posts";
 import { HomeAbout } from "@/components/home/HomeAbout";
 import { HomeCtaBand } from "@/components/home/HomeCtaBand";
 import { HomeGalleryShowcase } from "@/components/home/HomeGalleryShowcase";
 import { HomeGroup } from "@/components/home/HomeGroup";
 import { HomeHero } from "@/components/home/HomeHero";
+import { HomeFeature as HomeFeatureSection } from "@/components/home/HomeFeature";
 import { HomeHighlights } from "@/components/home/HomeHighlights";
 import { HomeIbsBand } from "@/components/home/HomeIbsBand";
 import { HomeServices } from "@/components/home/HomeServices";
@@ -26,6 +29,7 @@ type HomePayload = {
 	autoplayDelayMs: number;
 	socialPosts: SocialPost[];
 	galleryAlbums: GalleryAlbum[];
+	feature: HomeFeature;
 };
 
 const EMPTY_HOME: HomePayload = {
@@ -34,6 +38,7 @@ const EMPTY_HOME: HomePayload = {
 	autoplayDelayMs: 6500,
 	socialPosts: [],
 	galleryAlbums: [],
+	feature: EMPTY_HOME_FEATURE,
 };
 
 export function HomeClientContent({ locale }: { locale: GalleryLocale }) {
@@ -55,6 +60,7 @@ export function HomeClientContent({ locale }: { locale: GalleryLocale }) {
 			<HomeHero slides={data.heroSlides} autoplayDelayMs={data.autoplayDelayMs} />
 			<HomeTrustStrip />
 			<HomeIbsBand />
+			<HomeFeatureSection feature={data.feature} locale={locale} />
 			<HomeAbout />
 			<HomeServices />
 			<HomeGroup />

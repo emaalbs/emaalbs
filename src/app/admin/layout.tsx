@@ -3,11 +3,12 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, PanelsTopLeft, Share2, Images } from "lucide-react";
+import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, PanelsTopLeft, Share2, Images, Sparkles } from "lucide-react";
 
 const baseNav = [
 	{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
 	{ label: "Homepage Banners", href: "/admin/hero-slides", icon: PanelsTopLeft },
+	{ label: "Homepage Feature", href: "/admin/home-feature", icon: Sparkles },
 	{ label: "Social Media", href: "/admin/social-posts", icon: Share2 },
 	{ label: "Gallery Portfolio", href: "/admin/gallery", icon: Images },
 	{ label: "Blogs", href: "/admin/blogs", icon: FileText },
