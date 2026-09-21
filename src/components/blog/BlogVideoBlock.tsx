@@ -8,9 +8,10 @@ type Props = {
 	url: string;
 	caption?: string;
 	isAr: boolean;
+	compact?: boolean;
 };
 
-export function BlogVideoBlock({ url, caption = "", isAr }: Props) {
+export function BlogVideoBlock({ url, caption = "", isAr, compact = false }: Props) {
 	const source = getVideoSource(url);
 	const playerRef = useRef<HTMLIFrameElement>(null);
 	const [showPoster, setShowPoster] = useState(true);
@@ -31,7 +32,7 @@ export function BlogVideoBlock({ url, caption = "", isAr }: Props) {
 	}
 
 	return (
-		<figure className="mx-auto my-10 w-full max-w-[620px]">
+		<figure className={compact ? "w-full" : "mx-auto my-10 w-full max-w-[620px]"}>
 			<div className="group relative aspect-video w-full overflow-hidden rounded-[18px] border border-[var(--color-line)] bg-[#061923] shadow-[0_18px_50px_rgba(1,30,47,0.14)]">
 				{source.kind === "file" ? (
 					<video

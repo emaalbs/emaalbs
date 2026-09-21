@@ -102,6 +102,19 @@ html[dir="rtl"] .font-numeric {
 	}
 }
 
+@keyframes blog-hero-rise {
+	from { opacity: 0; transform: translateY(24px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.blog-hero-enter {
+	opacity: 0;
+	animation: blog-hero-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.blog-hero-enter-delay-1 { animation-delay: 0.1s; }
+.blog-hero-enter-delay-2 { animation-delay: 0.2s; }
+
 .reveal {
 	animation: reveal-up 0.6s ease-out both;
 }
@@ -179,6 +192,11 @@ html[dir="rtl"] .font-numeric {
 	}
 	.reveal {
 		animation: none;
+	}
+	.blog-hero-enter {
+		opacity: 1;
+		animation: none;
+		transform: none;
 	}
 	.gallery-enter,
 	.gallery-lightbox-image {
