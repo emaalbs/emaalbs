@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import type { SocialPostInput } from "@/data/social-posts";
 import { deleteSocialPost, getSocialPostById, updateSocialPost } from "@/lib/db/social-posts";
 import { validateSocialPostInput } from "@/lib/social-post-validation";
+import { resolveSocialPostUrl, SocialUrlResolutionError } from "@/lib/social-url-resolver";
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -32,13 +33,15 @@ export async function PUT(request: Request, { params }: Context) {
 		const id = parseId((await params).id);
 		if (!id) return NextResponse.json({ error: "Invalid social post id" }, { status: 400 });
 		const body = (await request.json()) as SocialPostInput;
+		body.postUrl = await resolveSocialPostUrl(body.postUrl || "");
 		const error = validateSocialPostInput(body);
 		if (error) return NextResponse.json({ error }, { status: 400 });
 		await updateSocialPost(id, body);
-		return NextResponse.json({ success: true });
+		const updated = await getSocialPostById(id);
+		return NextResponse.json(updated || { success: true, postUrl: body.postUrl });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : "Failed to update social post";
-		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : 500;
+		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : err instanceof SocialUrlResolutionError ? 400 : 500;
 		return NextResponse.json({ error: message }, { status });
 	}
 }

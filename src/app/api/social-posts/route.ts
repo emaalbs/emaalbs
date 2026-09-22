@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth";
 import type { SocialPostInput } from "@/data/social-posts";
 import { createSocialPost, listSocialPosts } from "@/lib/db/social-posts";
 import { validateSocialPostInput } from "@/lib/social-post-validation";
+import { resolveSocialPostUrl, SocialUrlResolutionError } from "@/lib/social-url-resolver";
 
 export async function GET(request: Request) {
 	try {
@@ -20,12 +21,13 @@ export async function POST(request: Request) {
 	try {
 		await requireAuth(request);
 		const body = (await request.json()) as SocialPostInput;
+		body.postUrl = await resolveSocialPostUrl(body.postUrl || "");
 		const error = validateSocialPostInput(body);
 		if (error) return NextResponse.json({ error }, { status: 400 });
 		return NextResponse.json(await createSocialPost(body), { status: 201 });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : "Failed to create social post";
-		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : 500;
+		const status = message === "Unauthorized" || message === "Invalid session" ? 401 : err instanceof SocialUrlResolutionError ? 400 : 500;
 		return NextResponse.json({ error: message }, { status });
 	}
 }

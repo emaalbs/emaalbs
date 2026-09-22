@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CheckCircle2, ExternalLink, FilePenLine, Link2, LoaderCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ExternalLink, FilePenLine, Link2, LoaderCircle, Sparkles, Trash2 } from "lucide-react";
 import type { SocialPost, SocialPostInput } from "@/data/social-posts";
 import { BilingualField } from "@/components/admin/BilingualField";
 import { ImageUpload } from "@/components/admin/ImageUpload";
@@ -47,6 +47,8 @@ export default function SocialPostEditor({ params }: { params: Promise<{ id: str
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState(false);
+	const [resolvingUrl, setResolvingUrl] = useState(false);
+	const [urlNotice, setUrlNotice] = useState("");
 	const platform = useMemo(() => detectSocialPlatform(post.postUrl), [post.postUrl]);
 	const descriptor = useMemo(() => getSocialEmbedDescriptor(post.postUrl), [post.postUrl]);
 
@@ -67,6 +69,31 @@ export default function SocialPostEditor({ params }: { params: Promise<{ id: str
 		setPost((current) => ({ ...current, [field]: { ...current[field], [locale]: value } }));
 	}
 
+	async function resolveUrl(showUnchanged = false): Promise<string | null> {
+		const originalUrl = post.postUrl.trim();
+		if (!originalUrl || resolvingUrl) return null;
+		setResolvingUrl(true);
+		setUrlNotice("");
+		try {
+			const response = await fetch("/api/social-posts/resolve-url", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ url: originalUrl }),
+			});
+			const data = (await response.json()) as { resolvedUrl?: string; changed?: boolean; error?: string };
+			if (!response.ok || !data.resolvedUrl) throw new Error(data.error || "Unable to prepare this social link");
+			setPost((current) => ({ ...current, postUrl: data.resolvedUrl || current.postUrl }));
+			if (data.changed) setUrlNotice("Shared link converted to its permanent post URL.");
+			else if (showUnchanged) setUrlNotice("Permanent post URL confirmed.");
+			return data.resolvedUrl;
+		} catch (reason) {
+			setError(reason instanceof Error ? reason.message : "Unable to prepare this social link");
+			return null;
+		} finally {
+			setResolvingUrl(false);
+		}
+	}
+
 	async function save() {
 		setSaving(true);
 		setError("");
@@ -77,8 +104,13 @@ export default function SocialPostEditor({ params }: { params: Promise<{ id: str
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(post),
 			});
-			const data = (await response.json()) as { id?: number; error?: string };
-			if (!response.ok) throw new Error(data.error || "Failed to save social post");
+			const data = (await response.json()) as SocialPost | { id?: number; error?: string };
+			if (!response.ok) throw new Error("error" in data && data.error ? data.error : "Failed to save social post");
+			if ("postUrl" in data) {
+				const resolvedPost = data as SocialPost;
+				if (resolvedPost.postUrl !== post.postUrl.trim()) setUrlNotice("Shared link converted to its permanent post URL.");
+				setPost(postToInput(resolvedPost));
+			}
 			setSuccess(true);
 			if (id === "new" && data.id) router.replace(`/admin/social-posts/${data.id}`);
 		} catch (err) {
@@ -133,7 +165,11 @@ export default function SocialPostEditor({ params }: { params: Promise<{ id: str
 						<div className="flex items-center gap-2"><Link2 className="h-5 w-5 text-[#007F84]" /><h2 className="font-bold text-gray-900">Post source</h2></div>
 						<p className="mt-1 text-sm text-gray-500">Paste a public post URL. The platform is detected automatically; no token or account login is needed.</p>
 						<label className="mt-5 block text-sm font-medium text-gray-700">Public post URL <span className="text-red-500">*</span></label>
-						<input value={post.postUrl} onChange={(event) => { setPost((current) => ({ ...current, postUrl: event.target.value })); setSuccess(false); }} placeholder="https://www.linkedin.com/posts/..." dir="ltr" className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-[#007F84]/20 ${post.postUrl && !platform ? "border-red-300" : "border-gray-200 focus:border-[#007F84]"}`} />
+						<div className="relative mt-2">
+							<input value={post.postUrl} onChange={(event) => { setPost((current) => ({ ...current, postUrl: event.target.value })); setSuccess(false); setUrlNotice(""); }} onBlur={() => void resolveUrl()} placeholder="https://www.linkedin.com/posts/..." dir="ltr" className={`w-full rounded-xl border bg-white px-4 py-3 pe-12 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-[#007F84]/20 ${post.postUrl && !platform ? "border-red-300" : "border-gray-200 focus:border-[#007F84]"}`} />
+							{resolvingUrl ? <LoaderCircle className="absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#007F84] motion-reduce:animate-none" aria-label="Preparing permanent URL" /> : null}
+						</div>
+						{urlNotice ? <div className="mt-3 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-semibold leading-5 text-emerald-700"><Sparkles className="mt-0.5 h-4 w-4 shrink-0" />{urlNotice}</div> : null}
 						<div className="mt-3 flex flex-wrap items-center gap-3">
 							{platform ? <SocialPlatformBadge platform={platform} /> : <span className="text-xs text-gray-400">Supported: LinkedIn, X, Instagram, YouTube, Facebook</span>}
 							{post.postUrl && descriptor ? <span className={`text-xs font-semibold ${descriptor.supported ? "text-emerald-600" : "text-red-600"}`}>{descriptor.supported ? "Embed link recognized" : descriptor.reason}</span> : null}
