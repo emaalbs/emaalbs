@@ -18,9 +18,12 @@ export function GallerySection({ gallery, onAdd, onUpdate, onRemove }: Props) {
 
 	return (
 		<div className="space-y-3">
+			<div className="rounded-lg border border-[#007F84]/15 bg-[#007F84]/5 px-3.5 py-3 text-xs leading-5 text-[#00666A]">
+				All edition photos are displayed in a consistent 4:3 grid. Recommended upload size: <strong>1200 × 900 px</strong>. Portrait images remain fully visible when opened in the photo viewer.
+			</div>
 			<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{gallery.map((g, i) => (
-					<div key={g.id} className="rounded-lg border border-gray-100 bg-gray-50 p-3 space-y-2">
+					<div key={g.id} className="space-y-2 rounded-lg border border-gray-100 bg-gray-50 p-3">
 						<div className="flex items-center justify-between">
 							<span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">#{i + 1}</span>
 							<button onClick={() => onRemove(i)} className="text-red-400 hover:text-red-600 transition">
@@ -31,7 +34,7 @@ export function GallerySection({ gallery, onAdd, onUpdate, onRemove }: Props) {
 							value={g.src}
 							onChange={(url) => onUpdate(i, { ...g, src: url })}
 							compact
-							fit="contain"
+							fit="cover"
 							preset="gallery"
 							prefix="ibs/gallery/"
 						/>
