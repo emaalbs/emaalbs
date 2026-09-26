@@ -19,6 +19,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           node <<'NODE'
+          const reportFailure = (reason) => {
+            const message = String(reason?.message || reason).replace(/[\r\n]+/g, " ");
+            console.error(`::error title=Cloudflare configuration failed::${message}`);
+            process.exit(1);
+          };
+          process.on("uncaughtException", reportFailure);
+          process.on("unhandledRejection", reportFailure);
+
           const token = process.env.CLOUDFLARE_API_TOKEN;
           if (!token) throw new Error("CLOUDFLARE_API_TOKEN is not configured");
 
