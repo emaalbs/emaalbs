@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, Users, Lightbulb, Rocket, HeartHandshake, Images, Play } from "lucide-react";
+import { Calendar, Users, Lightbulb, Rocket, HeartHandshake, Images, Play, Ticket } from "lucide-react";
 
 const navItems = [
+	{ id: "booking", icon: Ticket, label: { en: "Book", ar: "الحجز" } },
 	{ id: "themes", icon: Lightbulb, label: { en: "Themes", ar: "المواضيع" } },
 	{ id: "agenda", icon: Calendar, label: { en: "Agenda", ar: "الأجندة" } },
 	{ id: "speakers", icon: Users, label: { en: "Speakers", ar: "المتحدثون" } },
@@ -48,7 +49,7 @@ export function EditionQuickNav({ locale }: { locale: "en" | "ar" }) {
 	const scrollTo = (id: string) => {
 		const el = document.getElementById(id);
 		if (el) {
-			el.scrollIntoView({ behavior: "smooth", block: "start" });
+			el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" });
 		}
 	};
 
@@ -56,7 +57,8 @@ export function EditionQuickNav({ locale }: { locale: "en" | "ar" }) {
 
 	return (
 		<nav
-			className={`fixed bottom-6 z-50 flex gap-2 rounded-full border border-white/10 bg-[var(--color-navy)]/90 px-3 py-2 shadow-[0_12px_40px_rgba(1,30,47,0.45)] backdrop-blur-md transition-transform duration-300 ${
+			aria-label={isAr ? "أقسام القمة" : "Summit sections"}
+			className={`fixed bottom-6 z-50 flex max-w-[calc(100vw-2rem)] gap-1 overflow-x-auto rounded-full border border-white/10 bg-[var(--color-navy)]/90 px-3 py-2 shadow-[0_12px_40px_rgba(1,30,47,0.45)] backdrop-blur-md transition-transform duration-300 ${
 				isAr ? "left-1/2 -translate-x-1/2" : "left-1/2 -translate-x-1/2"
 			}`}
 		>
@@ -66,8 +68,10 @@ export function EditionQuickNav({ locale }: { locale: "en" | "ar" }) {
 				return (
 					<button
 						key={item.id}
+						aria-label={item.label[locale]}
+						aria-current={isActive ? "location" : undefined}
 						onClick={() => scrollTo(item.id)}
-						className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
+						className={`flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-colors ${
 							isActive
 								? "bg-[var(--color-gold)] text-[var(--color-navy)]"
 								: "text-white/70 hover:bg-white/10 hover:text-white"

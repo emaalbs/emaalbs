@@ -1,4 +1,4 @@
-import type { Magazine } from "@/data/magazines";
+import { magazinePdfUrl, type Magazine } from "@/data/magazines";
 import { getEnv } from "@/lib/cloudflare";
 
 async function getDB(): Promise<D1Database> {
@@ -21,6 +21,8 @@ function rowToMagazine(row: Record<string, unknown>): Magazine {
 		},
 		cover_image: (row.cover_image as string) || "",
 		pdf_url: (row.pdf_url as string) || "",
+		pdf_url_en: (row.pdf_url_en as string) || "",
+		pdf_url_ar: (row.pdf_url_ar as string) || "",
 		date: (row.date as string) || "",
 	};
 }
@@ -30,7 +32,7 @@ export async function listMagazines(): Promise<Magazine[]> {
 		const db = await getDB();
 		const { results } = await db
 			.prepare(
-				"SELECT id, slug, title_en, title_ar, description_en, description_ar, cover_image, pdf_url, date FROM magazines WHERE published = 1 ORDER BY created_at DESC"
+				"SELECT * FROM magazines WHERE published = 1 ORDER BY created_at DESC"
 			)
 			.all();
 		return (results || []).map(rowToMagazine);
@@ -53,11 +55,13 @@ export async function createMagazine(
 	data: Omit<Magazine, "id"> & { published?: number }
 ): Promise<Magazine> {
 	const db = await getDB();
+	data = { ...data, ...validatedPdfFields(data) };
+	if (!magazinePdfUrl(data, "en")) throw new MagazineInputError("Upload at least one PDF: English or Arabic.");
 	const now = Date.now();
 	const { meta } = await db
 		.prepare(
-			`INSERT INTO magazines (slug, title_en, title_ar, description_en, description_ar, cover_image, pdf_url, date, published, created_at, updated_at)
-			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+			`INSERT INTO magazines (slug, title_en, title_ar, description_en, description_ar, cover_image, pdf_url, pdf_url_en, pdf_url_ar, date, published, created_at, updated_at)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 		)
 		.bind(
 			data.slug,
@@ -67,6 +71,8 @@ export async function createMagazine(
 			data.description.ar,
 			data.cover_image,
 			data.pdf_url,
+			data.pdf_url_en,
+			data.pdf_url_ar,
 			data.date,
 			data.published ?? 1,
 			now,
@@ -81,6 +87,10 @@ export async function updateMagazine(
 	data: Partial<Omit<Magazine, "id">>
 ): Promise<void> {
 	const db = await getDB();
+	const current = await db.prepare("SELECT * FROM magazines WHERE slug = ?").bind(slug).first();
+	if (!current) throw new MagazineInputError("Magazine not found.");
+	const pdfs = validatedPdfFields(data, rowToMagazine(current));
+	if (!magazinePdfUrl(pdfs, "en")) throw new MagazineInputError("Upload at least one PDF: English or Arabic.");
 	const sets: string[] = [];
 	const values: unknown[] = [];
 	if (data.title) {
@@ -95,9 +105,11 @@ export async function updateMagazine(
 		sets.push("cover_image = ?");
 		values.push(data.cover_image);
 	}
-	if (data.pdf_url !== undefined) {
-		sets.push("pdf_url = ?");
-		values.push(data.pdf_url);
+	for (const field of ["pdf_url", "pdf_url_en", "pdf_url_ar"] as const) {
+		if (data[field] !== undefined) {
+			sets.push(`${field} = ?`);
+			values.push(pdfs[field]);
+		}
 	}
 	if (data.date !== undefined) {
 		sets.push("date = ?");
@@ -110,6 +122,27 @@ export async function updateMagazine(
 		.prepare(`UPDATE magazines SET ${sets.join(", ")} WHERE slug = ?`)
 		.bind(...values)
 		.run();
+}
+
+export class MagazineInputError extends Error {}
+
+function validatedPdfFields(data: Partial<Magazine>, current?: Magazine) {
+	const fields = { pdf_url: "", pdf_url_en: "", pdf_url_ar: "" };
+	for (const field of ["pdf_url", "pdf_url_en", "pdf_url_ar"] as const) {
+		const value = data[field] === undefined ? current?.[field] || "" : data[field];
+		if (typeof value !== "string" || value.length > 4096) throw new MagazineInputError("Invalid PDF URL.");
+		const url = value.trim();
+		if (url) {
+			// Accept site-relative media and HTTP(S) links, never executable/protocol-relative URLs.
+			if (/[\\\s\u0000-\u001f]/.test(url) || url.startsWith("//")) throw new MagazineInputError("Invalid PDF URL.");
+			if (!url.startsWith("/")) {
+				try { if (!["https:", "http:"].includes(new URL(url).protocol)) throw new Error(); }
+				catch { throw new MagazineInputError("Invalid PDF URL."); }
+			}
+		}
+		fields[field] = url;
+	}
+	return fields;
 }
 
 export async function deleteMagazine(slug: string): Promise<void> {

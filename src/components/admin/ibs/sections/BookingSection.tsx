@@ -1,0 +1,66 @@
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Ticket } from "lucide-react";
+import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
+import { currencyScale, defaultBookingConfig, type BookingConfig } from "@/lib/booking-config";
+
+export function BookingSection({ slug }: { slug: string | null }) {
+	const [config, setConfig] = useState<BookingConfig>(defaultBookingConfig);
+	const [loaded, setLoaded] = useState(false);
+	const [busy, setBusy] = useState(false);
+	const [message, setMessage] = useState("");
+	const [failure, setFailure] = useState(false);
+	const [price, setPrice] = useState("0");
+	useEffect(() => {
+		if (!slug || slug === "new") return;
+		let cancelled = false;
+		setLoaded(false);
+		fetch(`/api/ibs/editions/${slug}/booking`).then(async r => {
+			if (!r.ok) throw new Error("Could not load booking settings. Refresh the page.");
+			return r.json() as Promise<BookingConfig>;
+		}).then((data: BookingConfig) => { if (!cancelled) { setConfig(data); setPrice(String(data.amountMinor / currencyScale(data.currency))); setLoaded(true); } })
+			.catch(e => { if (!cancelled) { setFailure(true); setMessage(e.message); } });
+		return () => { cancelled = true; };
+	}, [slug]);
+	async function save() {
+		setBusy(true); setMessage(""); setFailure(false);
+		try {
+			if (!price.trim() || !Number.isFinite(Number(price)) || Number(price) < 0) throw new Error("Enter a valid price.");
+			const scaled = Number(price) * currencyScale(config.currency);
+			if (Math.abs(scaled - Math.round(scaled)) > 0.00001) throw new Error("Too many decimal places for this currency.");
+			const data = { ...config, amountMinor: Math.round(scaled) };
+			const r = await fetch(`/api/ibs/editions/${slug}/booking`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+			const result = await r.json() as BookingConfig & { error: string };
+			if (!r.ok) throw new Error(({ booking_text_required: "Fill in both languages for the title, description and button.", price_required: "Set a price greater than zero before enabling bookings.", invalid_capacity: "Capacity must be a whole number above zero, or leave it blank.", invalid_price: "Enter a valid price." } as Record<string, string>)[result.error] || "Could not save booking settings. Please retry.");
+			setConfig(result); setMessage("Booking settings saved. Refresh the edition page to view changes.");
+		} catch (e) { setFailure(true); setMessage(e instanceof Error ? e.message : "Save failed."); }
+		finally { setBusy(false); }
+	}
+	const fieldClass = "mt-2 min-h-11 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal)]/15";
+	return <section id="section-booking" className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+		<div className="flex flex-wrap items-center justify-between gap-4"><h2 className="flex items-center gap-2 font-bold text-[var(--color-navy)]"><Ticket size={20} /> Seat booking & payment <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-500">Optional</span></h2>
+			{slug && slug !== "new" && <Link className="text-sm font-semibold text-[var(--color-teal)] underline" href={`/admin/bookings?edition=${encodeURIComponent(slug)}`}>View bookings</Link>}</div>
+		{!slug || slug === "new" ? <p className="mt-4 text-sm leading-6 text-gray-500">Save this new edition first, then reopen it to configure optional bookings. Bookings are hidden by default.</p> : <>
+			<p className="mt-3 text-sm leading-6 text-gray-500">Control this edition independently. These settings have their own Save button. Hidden sections do not accept new bookings; existing payments can still be confirmed.</p>
+			{message && <p role={failure ? "alert" : "status"} className={`mt-4 rounded-lg p-3 text-sm ${failure ? "bg-red-50 text-red-700" : "bg-teal-50 text-teal-800"}`}>{message}</p>}
+			<fieldset disabled={!loaded || busy} className="mt-5 space-y-5 disabled:opacity-50">
+				<label className="flex min-h-12 cursor-pointer items-center justify-between gap-4 rounded-xl bg-gray-50 p-4 font-semibold"><span>Show booking section / إظهار قسم الحجز</span><input type="checkbox" role="switch" checked={config.enabled} onChange={e => setConfig(c => ({ ...c, enabled: e.target.checked }))} className="h-6 w-6 accent-[var(--color-teal)]" /></label>
+				{([ ["title", "Service / seat title"], ["description", "Description & inclusions"], ["buttonLabel", "Button label"], ["terms", "Booking & cancellation terms (optional)"] ] as const).map(([key, label]) => <div key={key}>
+					<div className="grid gap-4 sm:grid-cols-2">{(["en", "ar"] as const).map(lang => <label key={lang} className="block text-xs font-semibold text-gray-600">{label} ({lang.toUpperCase()})
+						<textarea rows={key === "description" || key === "terms" ? 3 : 1} maxLength={key === "title" || key === "buttonLabel" ? 160 : 4000} dir={lang === "ar" ? "rtl" : "ltr"} value={config[key][lang]} onChange={e => setConfig(c => ({ ...c, [key]: { ...c[key], [lang]: e.target.value } }))} className={fieldClass} />
+					</label>)}</div>
+					<AutoTranslateSync enValue={config[key].en} arValue={config[key].ar} onEnChange={value => setConfig(c => ({ ...c, [key]: { ...c[key], en: value } }))} onArChange={value => setConfig(c => ({ ...c, [key]: { ...c[key], ar: value } }))} />
+				</div>)}
+				<div className="grid gap-4 sm:grid-cols-3">
+					<label className="text-xs font-semibold text-gray-600">Price per seat / service<input type="number" min="0" step={config.currency === "IQD" ? "0.001" : "0.01"} value={price} onChange={e => setPrice(e.target.value)} className={fieldClass} /></label>
+					<label className="text-xs font-semibold text-gray-600">Currency<select value={config.currency} onChange={e => setConfig(c => ({ ...c, currency: e.target.value as BookingConfig["currency"] }))} className={fieldClass}><option value="IQD">IQD — Iraqi dinar</option><option value="USD">USD — US dollar</option></select></label>
+					<label className="text-xs font-semibold text-gray-600">Total seats / units (blank = unlimited)<input type="number" min="1" max="1000000" step="1" value={config.capacity ?? ""} onChange={e => setConfig(c => ({ ...c, capacity: e.target.value === "" ? null : Number(e.target.value) }))} className={fieldClass} /></label>
+				</div>
+				<p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs leading-6 text-amber-900">Localhost uses simulated payments only. Live checkout stays unavailable until a payment provider is configured on the server. Never enter API keys here.</p>
+				<button type="button" onClick={save} className="min-h-11 rounded-lg bg-[var(--color-navy)] px-5 text-sm font-bold text-white hover:bg-[var(--color-teal)]">{busy ? "Saving…" : "Save booking settings"}</button>
+				<Link target="_blank" href={`/en/ibs/${slug}#booking`} className="ms-4 inline-block py-3 text-sm font-semibold text-[var(--color-teal)]">Preview edition ↗</Link>
+			</fieldset>
+		</>}
+	</section>;
+}

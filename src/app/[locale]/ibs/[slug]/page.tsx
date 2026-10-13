@@ -16,6 +16,8 @@ import { EditionGallery } from "@/components/ibs/EditionGallery";
 import { EditionVideos } from "@/components/ibs/EditionVideos";
 import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
+import { EditionBooking } from "@/components/ibs/EditionBooking";
+import { getBookingConfig } from "@/lib/bookings";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { eventJsonLd } from "@/lib/seo/structured-data";
@@ -52,6 +54,7 @@ export default async function IbsEditionPage({
 	if (!edition) notFound();
 
 	const currentLocale = locale === "ar" ? "ar" : "en";
+	const booking = await getBookingConfig(slug);
 
 	return (
 		<>
@@ -75,6 +78,7 @@ export default async function IbsEditionPage({
 			<main>
 				<EditionHero edition={edition} />
 				<EditionStats edition={edition} />
+				<EditionBooking slug={slug} config={booking} date={edition.dates} location={edition.location} />
 				<section id="themes">
 					<EditionThemes edition={edition} />
 				</section>

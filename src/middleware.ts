@@ -9,6 +9,11 @@ export const config = {
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const method = request.method;
+	// Public checkout and capability-protected status; webhook verifies its own signature.
+	if ((method === "POST" && ["/api/bookings/checkout", "/api/payments/mock", "/api/payments/webhook/bridge"].includes(pathname)) ||
+		(method === "GET" && /^\/api\/bookings\/[a-f0-9-]{36}$/.test(pathname))) {
+		return NextResponse.next();
+	}
 
 	// Allow public reads on IBS/blog APIs and media serving
 	if (pathname === "/api/home" || pathname.startsWith("/api/blogs") || pathname.startsWith("/api/ibs") || pathname.startsWith("/api/media") || pathname.startsWith("/api/magazines") || pathname.startsWith("/api/social-posts") || pathname.startsWith("/api/gallery")) {

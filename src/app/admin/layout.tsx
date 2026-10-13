@@ -14,6 +14,7 @@ const baseNav = [
 	{ label: "Blogs", href: "/admin/blogs", icon: FileText },
 	{ label: "Magazines", href: "/admin/magazines", icon: BookOpen },
 	{ label: "IBS Editions", href: "/admin/ibs/editions", icon: CalendarDays },
+	{ label: "IBS Bookings", href: "/admin/bookings", icon: CalendarDays },
 	{ label: "Contacts", href: "/admin/contacts", icon: Mail },
 	{ label: "Subscribers", href: "/admin/subscribers", icon: Users },
 ];

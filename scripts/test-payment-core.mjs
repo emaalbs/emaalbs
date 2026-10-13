@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
+import vm from 'node:vm';
+import { createHmac, webcrypto } from 'node:crypto';
+// Compile the pure modules without adding a test runtime dependency.
+const configModule = {exports:{}};
+vm.runInNewContext(ts.transpile(readFileSync('src/lib/booking-config.ts','utf8'),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}), {module:configModule,exports:configModule.exports,Intl});
+const module = {exports:{}};
+vm.runInNewContext(ts.transpile(readFileSync('src/lib/payments/core.ts','utf8'),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}), {module,exports:module.exports,require:()=>configModule.exports,crypto:webcrypto,TextEncoder,URL,Uint8Array,Date});
+const {verifyPaymentSignature,isLocalPaymentTest,nextPaymentStatus,parsePaymentEvent}=module.exports;
+const secret='test-only-strong-signing-secret-32-characters';
+const timestamp=String(Math.floor(Date.now()/1000));
+const raw='{"bookingId":"123"}';
+const sig=createHmac('sha256',secret).update(`${timestamp}.${raw}`).digest('hex');
+assert.equal(await verifyPaymentSignature(raw,timestamp,sig,secret),true);
+assert.equal(await verifyPaymentSignature(raw+' ',timestamp,sig,secret),false);
+assert.equal(await verifyPaymentSignature(raw,timestamp,sig,secret,Date.now()+601000),false);
+assert.equal(await verifyPaymentSignature(raw,timestamp,'bad',secret),false);
+assert.equal(isLocalPaymentTest('http://localhost:3000','development'),true);
+assert.equal(isLocalPaymentTest('http://localhost:3000','production'),false);
+assert.equal(isLocalPaymentTest('https://emaalbs.com','development'),false);
+assert.equal(nextPaymentStatus('paid','failed',false),'paid');
+assert.equal(nextPaymentStatus('pending','paid',true),'review');
+assert.throws(()=>parsePaymentEvent({status:'paid',amountMinor:-1}));
+assert.throws(()=>configModule.exports.validateBookingConfig({...configModule.exports.defaultBookingConfig(),enabled:true}));
+console.log('PASS: signed payload, tampering, timestamp replay window, mock production gate, state guards and configuration validation.');

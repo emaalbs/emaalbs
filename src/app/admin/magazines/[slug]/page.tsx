@@ -24,6 +24,8 @@ function emptyMagazine(): Omit<Magazine, "id"> {
 		description: { en: "", ar: "" },
 		cover_image: "",
 		pdf_url: "",
+		pdf_url_en: "",
+		pdf_url_ar: "",
 		date: new Date().toISOString().split("T")[0],
 	};
 }
@@ -37,6 +39,11 @@ export default function MagazineEditorPage({
 	const [slug, setSlug] = useState<string | null>(null);
 	const [mag, setMag] = useState<Omit<Magazine, "id">>(emptyMagazine());
 	const [saving, setSaving] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [loadError, setLoadError] = useState("");
+	const [saveError, setSaveError] = useState("");
+	const [uploads, setUploads] = useState<Record<string, boolean>>({});
+	const uploading = Object.values(uploads).some(Boolean);
 	const [activeLocale, setActiveLocale] = useState<"en" | "ar">("en");
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -45,7 +52,7 @@ export default function MagazineEditorPage({
 			setSlug(p.slug);
 			if (p.slug !== "new") {
 				fetch(`/api/magazines/${p.slug}`)
-					.then((r) => r.json())
+					.then((r) => { if (!r.ok) throw new Error("Could not load this magazine. Please refresh the page."); return r.json(); })
 					.then((data) => {
 						const m = data as Magazine;
 						setMag({
@@ -54,10 +61,12 @@ export default function MagazineEditorPage({
 							description: m.description,
 							cover_image: m.cover_image,
 							pdf_url: m.pdf_url,
+							pdf_url_en: m.pdf_url_en || "",
+							pdf_url_ar: m.pdf_url_ar || "",
 							date: m.date,
 						});
-					});
-			}
+					}).catch(e => setLoadError(e.message)).finally(() => setLoading(false));
+			} else setLoading(false);
 		});
 	}, [params]);
 
@@ -73,25 +82,32 @@ export default function MagazineEditorPage({
 		if (!mag.title.en.trim()) next.titleEn = "English title is required";
 		if (!mag.title.ar.trim()) next.titleAr = "Arabic title is required";
 		if (!mag.cover_image) next.cover_image = "Cover image is required";
-		if (!mag.pdf_url) next.pdf_url = "PDF file is required";
+		if (!mag.pdf_url && !mag.pdf_url_en && !mag.pdf_url_ar) next.pdf_url = "Upload at least one PDF — English or Arabic. The second version is optional.";
 		if (!mag.date) next.date = "Date is required";
 		setErrors(next);
 		return Object.keys(next).length === 0;
 	}
 
 	async function save() {
+		if (loading || loadError || uploading || saving) return;
 		if (!validate()) return;
 		setSaving(true);
-		const url = slug === "new" ? "/api/magazines" : `/api/magazines/${mag.slug}`;
+		setSaveError("");
+		const url = slug === "new" ? "/api/magazines" : `/api/magazines/${slug}`;
 		const method = slug === "new" ? "POST" : "PUT";
-		await fetch(url, {
-			method,
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(mag),
-		});
-		setSaving(false);
-		router.push("/admin/magazines");
+		try {
+			const response = await fetch(url, {
+				method,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(mag),
+			});
+			if (!response.ok) { const result = await response.json() as { error?: string }; throw new Error(result.error || "Save failed. Please try again."); }
+			router.push("/admin/magazines");
+		} catch (e) { setSaveError(e instanceof Error ? e.message : "Save failed. Please try again."); }
+		finally { setSaving(false); }
 	}
+	if (loading) return <p className="text-gray-500">Loading magazine…</p>;
+	if (loadError) return <p role="alert" className="text-red-600">{loadError}</p>;
 
 	return (
 		<div>
@@ -108,14 +124,15 @@ export default function MagazineEditorPage({
 					</button>
 					<button
 						onClick={save}
-						disabled={saving}
+						disabled={saving || uploading}
 						className="rounded-lg bg-[#01334D] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#011E2F] disabled:opacity-50"
 					>
-						{saving ? "Saving..." : "Save"}
+						{uploading ? "Uploading PDF…" : saving ? "Saving..." : "Save"}
 					</button>
 				</div>
 			</div>
 
+			{saveError && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{saveError}</p>}
 			<div className="space-y-6">
 				{/* Title + Date */}
 				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -154,7 +171,7 @@ export default function MagazineEditorPage({
 											...prev,
 											title: { ...prev.title, [activeLocale]: value },
 										};
-										if (activeLocale === "en") {
+										if (activeLocale === "en" && slug === "new") {
 											next.slug = toSlug(value);
 										}
 										return next;
@@ -195,7 +212,7 @@ export default function MagazineEditorPage({
 						className="mt-4"
 						enValue={mag.title.en}
 						arValue={mag.title.ar}
-						onEnChange={(value) => setMag((prev) => ({ ...prev, title: { ...prev.title, en: value }, slug: toSlug(value) }))}
+						onEnChange={(value) => setMag((prev) => ({ ...prev, title: { ...prev.title, en: value }, slug: slug === "new" ? toSlug(value) : prev.slug }))}
 						onArChange={(value) => setMag((prev) => ({ ...prev, title: { ...prev.title, ar: value } }))}
 					/>
 
@@ -229,7 +246,7 @@ export default function MagazineEditorPage({
 						<div className="flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50 px-4 py-2">
 							<span className="text-sm text-gray-400">{mag.slug || "—"}</span>
 						</div>
-						<p className="mt-1 text-xs text-gray-400">Auto-generated from the English title</p>
+						<p className="mt-1 text-xs text-gray-400">{slug === "new" ? "Auto-generated from the English title" : "Existing link is preserved when editing the title"}</p>
 					</div>
 				</div>
 
@@ -251,18 +268,31 @@ export default function MagazineEditorPage({
 							fit="contain"
 						/>
 
-						<PdfUpload
-							value={mag.pdf_url}
-							onChange={(url) => {
-								setField("pdf_url", url);
-								if (errors.pdf_url && url)
-									setErrors((p) => { const n = { ...p }; delete n.pdf_url; return n; });
-							}}
-							label={<>PDF File <span className="text-red-500">*</span></>}
-							hint="Upload the magazine PDF"
-							error={errors.pdf_url}
-							prefix="magazines/"
-						/>
+						<div className="min-w-0 space-y-5" id="magazine-pdfs">
+							<div><h2 className="font-semibold text-[var(--color-navy)]">PDF language versions / نسخ الملف</h2>
+							<p className="mt-2 text-sm leading-6 text-gray-600">Upload English, Arabic, or both. Visitors receive the version matching the website language. If only one version exists, it is used for both languages.</p>
+							<p dir="rtl" className="mt-2 text-sm leading-7 text-gray-600">ارفع نسخة عربية أو إنكليزية أو كلتيهما. النسخة الثانية اختيارية. عند توفر نسخة واحدة تُعرض في اللغتين.</p></div>
+							{errors.pdf_url && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{errors.pdf_url}</p>}
+							{(["en", "ar"] as const).map(lang => <div key={lang} className="min-w-0 rounded-xl border border-gray-200 p-4">
+								<PdfUpload value={mag[`pdf_url_${lang}`]} disabled={saving}
+									onChange={url => { setField(`pdf_url_${lang}`, url); if (url) setErrors(p => { const n = {...p}; delete n.pdf_url; return n; }); }}
+									onUploadingChange={busy => setUploads(p => ({...p, [lang]: busy}))}
+									label={lang === "en" ? "English PDF / النسخة الإنكليزية" : "Arabic PDF / النسخة العربية"}
+									hint="Optional when another PDF is provided. PDF format only."
+									prefix={`magazines/${lang}/`} />
+							</div>)}
+							{mag.pdf_url && <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+								<PdfUpload value={mag.pdf_url} onChange={url => setField("pdf_url", url)} disabled={saving}
+									onUploadingChange={busy => setUploads(p => ({...p, legacy: busy}))}
+									label="Existing PDF — language not assigned"
+									hint="Your original file is preserved. Assign its language below; no upload is needed. New language versions take priority."
+									prefix="magazines/" />
+								<div className="mt-3 flex flex-wrap gap-2">{(["en", "ar"] as const).map(lang => <button key={lang} type="button" disabled={saving || uploading || !!mag[`pdf_url_${lang}`]}
+									onClick={() => setMag(p => ({...p, [`pdf_url_${lang}`]: p.pdf_url, pdf_url: ""}))}
+									className="min-h-11 rounded-lg border border-amber-300 bg-white px-3 text-sm text-[var(--color-navy)] transition-colors hover:bg-amber-100 focus-visible:outline-2 disabled:opacity-40">{lang === "en" ? "Use as English" : "Use as Arabic"}</button>)}</div>
+							</div>}
+							<p className="text-xs leading-6 text-gray-500">Removing a version here detaches it after Save; it does not delete the stored file.</p>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -83,7 +83,7 @@ export default function AdminMagazinesPage() {
 									</div>
 								)}
 
-								<div className="mt-4 flex items-center gap-2">
+								<div className="mt-4 flex flex-wrap items-center gap-2">
 									<Link
 										href={`/admin/magazines/${mag.slug}`}
 										className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
@@ -91,15 +91,16 @@ export default function AdminMagazinesPage() {
 										<Pencil className="h-3.5 w-3.5" />
 										Edit
 									</Link>
-									<a
-										href={mag.pdf_url}
+									{([{ label: "EN", url: mag.pdf_url_en }, { label: "AR", url: mag.pdf_url_ar }, { label: "PDF", url: mag.pdf_url }]).filter(file => file.url).map(file => <a
+										key={file.label}
+										href={file.url}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-										title="Preview PDF"
+										title={`Preview ${file.label} PDF`}
 									>
-										<FileText className="h-3.5 w-3.5" />
-									</a>
+										{file.label}
+									</a>)}
 									<button
 										onClick={() => deleteMagazine(mag.slug)}
 										className="inline-flex items-center justify-center rounded-lg border border-red-100 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"

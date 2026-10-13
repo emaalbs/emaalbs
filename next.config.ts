@@ -26,4 +26,6 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 // errors when the global AppData config directory is not writable.
 process.env.WRANGLER_LOG_PATH ??= ".wrangler/logs";
 
-initOpenNextCloudflareForDev();
+// Offline previews use local D1/R2 and do not require Cloudflare authentication.
+// Opt in explicitly when testing services such as Workers AI.
+initOpenNextCloudflareForDev({ remoteBindings: process.env.LOCAL_REMOTE_BINDINGS === "true" });

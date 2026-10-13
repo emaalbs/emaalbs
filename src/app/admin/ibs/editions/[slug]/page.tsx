@@ -42,6 +42,7 @@ import { GallerySection } from "@/components/admin/ibs/sections/GallerySection";
 import { AgendaSection } from "@/components/admin/ibs/sections/AgendaSection";
 import { SectorSharesSection } from "@/components/admin/ibs/sections/SectorSharesSection";
 import { VideosSection } from "@/components/admin/ibs/sections/VideosSection";
+import { BookingSection } from "@/components/admin/ibs/sections/BookingSection";
 
 type SectionId = "basic" | "stats" | "themes" | "speakers" | "initiatives" | "sponsors" | "gallery" | "agenda" | "sectorShares" | "videos";
 
@@ -400,6 +401,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 
 				{/* ── Content ── */}
 				<div className="flex-1 space-y-5 pb-20">
+					<BookingSection slug={slug} />
 					{/* Validation banner */}
 					{Object.keys(errors).length > 0 && (
 						<div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-600">

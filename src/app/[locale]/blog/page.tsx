@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/Container";
 
 import { listBlogs } from "@/lib/db/blogs";
 import { listMagazines } from "@/lib/db/magazines";
+import { magazinePdfUrl } from "@/data/magazines";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { Blog } from "@/data/blogs";
 
@@ -52,7 +53,7 @@ export default async function BlogPage({
 		date: m.date,
 		featured: false,
 		isPdf: true,
-		resolvedHref: m.pdf_url,
+		resolvedHref: magazinePdfUrl(m, locale === "ar" ? "ar" : "en"),
 	}));
 
 	const allItems: NewsItem[] = [...blogItems, ...magazineItems];
