@@ -34,7 +34,7 @@ export default async function SocialPage({ params }: { params: Promise<{ locale:
 							{isAr ? "نبض أعمال" : "EMAAL Social Pulse"}
 						</div>
 						<h1 className="mt-7 max-w-4xl font-display text-[clamp(3rem,8vw,6.8rem)] font-black leading-[1.02] tracking-[-0.045em] rtl:tracking-normal">
-							{isAr ? "منصاتنا. حوار واحد." : "Across every platform. One conversation."}
+							{isAr ? "منصاتنا وحوار واحد" : "Across every platform. One conversation."}
 						</h1>
 						<p className="mt-7 max-w-2xl text-lg leading-8 text-white/65 sm:text-xl">
 							{isAr

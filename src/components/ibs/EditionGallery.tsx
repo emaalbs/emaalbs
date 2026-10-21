@@ -47,7 +47,7 @@ export function EditionGallery({ edition }: { edition: IbsEdition }) {
 			<div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-teal)]/20 to-transparent" />
 			<Container>
 				<div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-					<IbsSectionHeading overline={labels.gallery[locale]} title={isAr ? "لقطات من القمة." : "Frames from the floor."} />
+					<IbsSectionHeading overline={labels.gallery[locale]} title={isAr ? "لقطات من القمة" : "Frames from the floor."} />
 					<div className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-line)] bg-white px-4 py-2 text-xs font-bold text-[var(--color-slate)] shadow-sm sm:self-auto">
 						<Images className="h-4 w-4 text-[var(--color-teal)]" aria-hidden="true" />
 						<span>{edition.gallery.length}</span>

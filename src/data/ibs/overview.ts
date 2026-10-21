@@ -25,7 +25,7 @@ export const ibsOverview = {
 	hero: {
 		overline: { en: "Iraq Business Summit", ar: "قمة الأعمال العراقية" } as Localized,
 		title: { en: "Iraq Business Summit (IBS)", ar: "قمة الأعمال العراقية" } as Localized,
-		subtitle: { en: "A platform for business.", ar: "منصة للأعمال." } as Localized,
+		subtitle: { en: "A platform for business.", ar: "منصة للأعمال" } as Localized,
 		description: {
 			en: "A high-level platform bringing together government decision-makers, investors, and private sector leaders to enable partnerships, investment, and real business outcomes in Iraq.",
 			ar: "منصة رفيعة المستوى تجمع صنّاع القرار الحكوميين والمستثمرين وقادة القطاع الخاص لتمكين الشراكات والاستثمار وتحقيق نتائج أعمال حقيقية في العراق.",

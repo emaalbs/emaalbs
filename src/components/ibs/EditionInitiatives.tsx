@@ -18,7 +18,7 @@ export function EditionInitiatives({ edition }: { edition: IbsEdition }) {
 					overline={labels.initiatives[locale]}
 					title={
 						locale === "ar"
-							? "نتائج تتجاوز الكلمات."
+							? "نتائج تتجاوز الكلمات"
 							: "Outcomes that move beyond the stage."
 					}
 				/>

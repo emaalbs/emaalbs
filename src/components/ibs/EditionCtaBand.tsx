@@ -32,7 +32,7 @@ export function EditionCtaBand({ edition, allEditions }: { edition: IbsEdition; 
 							{next
 								? next.title[locale]
 								: locale === "ar"
-								? "كن جزءاً من النسخة القادمة."
+								? "كن جزءاً من النسخة القادمة"
 								: "Be part of the next edition."}
 						</h2>
 						<p className="mt-4 max-w-xl text-[15px] leading-[1.7] text-[var(--color-silver)]">

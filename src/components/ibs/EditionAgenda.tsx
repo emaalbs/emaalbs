@@ -26,7 +26,7 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 					overline={labels.agenda[locale]}
 					title={
 						locale === "ar"
-							? "برنامج القمة — كل جلسة في وقتها."
+							? "برنامج القمة — كل جلسة في وقتها"
 							: "Summit programme — every session in its place."
 					}
 				/>

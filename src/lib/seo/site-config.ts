@@ -5,7 +5,7 @@ export const siteConfig = {
 	},
 	tagline: {
 		en: "Building Businesses. Scaling Growth.",
-		ar: "بناء الأعمال. توسيع النمو.",
+		ar: "بناء الأعمال وتوسيع النمو",
 	},
 	description: {
 		en:
