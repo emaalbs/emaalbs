@@ -1,7 +1,7 @@
 import { getEnv } from "@/lib/cloudflare";
 import { BookingError } from "@/lib/booking-config";
 import { isLocalPaymentTest } from "./core";
-import { paymentCheckoutsDisabled } from "./availability";
+import { paymentCheckoutsDisabled, localBookingSimulationEnabled } from "./availability";
 
 // A provider-specific adapter (or server-side bridge) implements this contract.
 export type CheckoutInput = { bookingId: string; amountMinor: number; currency: string; title: string; expiresAt: number; returnUrl: string; webhookUrl: string };
@@ -15,6 +15,10 @@ type PaymentEnv = { PAYMENT_PROVIDER?: string; PAYMENT_BRIDGE_URL?: string; PAYM
 export async function paymentEnv(): Promise<PaymentEnv> { return await getEnv() as PaymentEnv; }
 
 export async function getPaymentProvider(request: Request): Promise<PaymentProvider> {
+	if (await localBookingSimulationEnabled()) {
+		if (!isLocalPaymentTest(request.url, process.env.NODE_ENV) || request.headers.has("X-IBS-Payment-Preview")) throw new BookingError("real_payment_locked",403);
+		return {name:"mock",async createCheckout(input){return {sessionId:`mock-${input.bookingId}`,checkoutUrl:input.returnUrl};}};
+	}
 	if (await paymentCheckoutsDisabled()) throw new BookingError("booking_closed", 409);
 	const preview = request.headers.get("X-IBS-Payment-Preview");
 	if (preview === "tabadul" || preview === "tabadul-real") {

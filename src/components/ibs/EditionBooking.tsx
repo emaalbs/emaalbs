@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowUpRight, Check, Ticket, ShieldCheck, Clock3 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
-import { type BookingConfig, formatBookingPrice } from "@/lib/booking-config";
+import { type BookingConfig, formatBookingPrice, bookingTiers } from "@/lib/booking-config";
 
 const messages: Record<string, [string, string]> = {
 	payment_origin_required: ["Please open this edition on https://emaalbs.com to continue payment.", "يرجى فتح صفحة القمة على https://emaalbs.com لمتابعة الدفع."],
@@ -25,9 +25,12 @@ const messages: Record<string, [string, string]> = {
 export function bookingMessage(code: string, ar: boolean) {
 	return messages[code]?.[ar ? 1 : 0] || (ar ? "تعذر إكمال الطلب. أعد المحاولة لاحقًا." : "Unable to complete the request. Please try again shortly.");
 }
-export function EditionBooking({ slug, config, date, location }: { slug: string; config: BookingConfig; date: { en: string; ar: string }; location: { en: string; ar: string } }) {
+export function EditionBooking({ slug, config, date, location, simulation=false }: { slug: string; config: BookingConfig; date: { en: string; ar: string }; location: { en: string; ar: string }; simulation?:boolean }) {
 	const { locale } = useI18n();
 	const ar = locale === "ar";
+	const tiers = bookingTiers(config).filter(t => t.enabled);
+	const [tierId, setTierId] = useState(tiers[0]?.id || "");
+	const selectedTier = tiers.find(t => t.id === tierId) || tiers[0];
 	const [open, setOpen] = useState(false);
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
@@ -39,7 +42,7 @@ export function EditionBooking({ slug, config, date, location }: { slug: string;
 		const mode = new URLSearchParams(window.location.search).get("paymentPreview");
 		if (mode === "tabadul" || mode === "tabadul-real") setPreview(mode);
 	}, []);
-	if (!config.enabled) return null;
+	if (!config.enabled || !selectedTier) return null;
 	const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-[var(--color-line)] bg-white px-4 text-[var(--color-ink)] outline-none focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal)]/20";
 	async function submit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -54,7 +57,7 @@ export function EditionBooking({ slug, config, date, location }: { slug: string;
 				if (session.status === 401) { setNeedsLogin(true); throw new Error("unauthorized"); }
 				if (!session.ok) throw new Error("payments_unavailable");
 			}
-			const payload = JSON.stringify({ slug, name: form.get("name"), email: form.get("email"), phone: form.get("phone"), acceptedTerms: form.get("terms") === "on", locale, paymentPreview: preview, realPaymentConsent: form.get("realPaymentConsent") === "on" });
+			const payload = JSON.stringify({ slug, tierId:selectedTier.id, name: form.get("name"), email: form.get("email"), phone: form.get("phone"), acceptedTerms: form.get("terms") === "on", locale, paymentPreview: preview, realPaymentConsent: form.get("realPaymentConsent") === "on" });
 			const fingerprint = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(payload))), b => b.toString(16).padStart(2, "0")).join("");
 			const attemptKey = `ibs-booking-pending:${slug}`;
 			const previous = JSON.parse(sessionStorage.getItem(attemptKey) || "null") as { token: string; fingerprint: string; createdAt: number } | null;
@@ -86,10 +89,12 @@ export function EditionBooking({ slug, config, date, location }: { slug: string;
 						</div>
 					</div>
 					<div className="m-4 rounded-2xl bg-white p-6 text-[var(--color-ink)] sm:m-6 sm:p-9 lg:m-8">
+						{simulation && <p role="status" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">{ar?"تجربة محلية فقط — لا يُخصم أي مبلغ ولا تُفتح بوابة الدفع الحقيقية. يمكنك محاكاة النجاح ومراجعة الوصل.":"LOCAL TEST ONLY — no money is charged and no real gateway is contacted. Simulate success to preview your receipt."}</p>}
 						{preview && <p role="status" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">{preview === "tabadul" ? (ar ? "محاكاة ربط تبادل — لا يتم الاتصال بالشركة أو خصم أموال. لا تدخل بيانات بطاقة." : "Tabadul integration simulation — no gateway connection or money charged. Do not enter card details.") : (ar ? "اختبار دفع فعلي — قد يُخصم مبلغ حقيقي من بطاقتك. يتطلب حساب أدمن محليًا وتفعيلًا منفصلًا من الخادم." : "Real-money pilot — an actual charge may occur. Requires local admin sign-in and separate server activation.")}</p>}
 						<p className="text-sm font-semibold text-[var(--color-slate)]">{ar ? "سعر المقعد / الخدمة" : "PER SEAT / SERVICE"}</p>
 						{preview === "tabadul-real" && <a href="/admin/login" target="_blank" rel="noopener" className="my-4 block rounded-lg border border-[var(--color-line)] p-3 text-sm font-bold leading-7 text-[var(--color-teal)] hover:bg-[var(--color-warm)] focus-visible:outline-2 focus-visible:outline-[var(--color-teal)]">{ar ? "قبل التجربة: سجّل الدخول إلى الأدمن المحلي (تبويب جديد)، ثم عد إلى هنا" : "Before testing: sign in to local admin (new tab), then return here"}</a>}
-						<p className="mt-3 break-words text-4xl font-bold text-[var(--color-navy)]">{formatBookingPrice(config.amountMinor, config.currency, locale)}</p>
+						<fieldset className="mt-4 space-y-3" disabled={busy}><legend className="mb-3 font-bold">{ar ? "اختر فئة الحجز" : "Choose your category"}</legend>{tiers.map(tier => <label key={tier.id} className={`flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${selectedTier.id === tier.id ? "border-[var(--color-teal)] bg-[var(--color-warm)]" : "border-[var(--color-line)] hover:border-[var(--color-slate)]"}`}><input type="radio" name="booking-tier" value={tier.id} checked={selectedTier.id === tier.id} onChange={() => {setTierId(tier.id);setError("");}} className="h-5 w-5 shrink-0 accent-[var(--color-teal)]" /><span className="flex flex-1 flex-wrap items-center justify-between gap-2"><strong className="break-words">{tier.name[locale]}</strong><span className="font-bold text-[var(--color-navy)]">{formatBookingPrice(tier.amountMinor,config.currency,locale)}</span></span></label>)}</fieldset>
+						<p className="mt-5 break-words text-3xl font-bold text-[var(--color-navy)]">{formatBookingPrice(selectedTier.amountMinor, config.currency, locale)}</p>
 						<p className="mt-3 text-sm leading-6 text-[var(--color-slate)]">{ar ? "حجز واحد لكل عملية، دون إنشاء حساب. يتأكد الحجز بعد التحقق من نجاح الدفع." : "One reservation per checkout. No account required. Confirmed after payment is verified."}</p>
 						{!open ? <button onClick={() => setOpen(true)} className="mt-8 flex min-h-14 w-full items-center justify-between gap-4 rounded-xl bg-[var(--color-gold)] px-6 font-bold text-[var(--color-navy)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-teal)] motion-reduce:transform-none">{config.buttonLabel[locale]}<ArrowUpRight className={ar ? "-scale-x-100" : ""} /></button> :
 						<form onSubmit={submit} className="mt-7 space-y-4" aria-label={ar ? "بيانات الحجز" : "Booking details"}>

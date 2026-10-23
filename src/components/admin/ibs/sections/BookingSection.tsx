@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Ticket } from "lucide-react";
 import { AutoTranslateSync } from "@/components/admin/AutoTranslateSync";
-import { currencyScale, defaultBookingConfig, type BookingConfig } from "@/lib/booking-config";
+import { bookingTiers, currencyScale, defaultBookingConfig, type BookingConfig, type BookingTier } from "@/lib/booking-config";
 
 export function BookingSection({ slug }: { slug: string | null }) {
 	const [config, setConfig] = useState<BookingConfig>(defaultBookingConfig);
@@ -11,7 +11,8 @@ export function BookingSection({ slug }: { slug: string | null }) {
 	const [busy, setBusy] = useState(false);
 	const [message, setMessage] = useState("");
 	const [failure, setFailure] = useState(false);
-	const [price, setPrice] = useState("0");
+	const [prices, setPrices] = useState<Record<string,string>>({});
+	function updateTier(id: string, changes: Partial<BookingTier>) { setConfig(c => ({...c, tiers:bookingTiers(c).map(t => t.id === id ? {...t,...changes} : t)})); }
 	useEffect(() => {
 		if (!slug || slug === "new") return;
 		let cancelled = false;
@@ -19,17 +20,23 @@ export function BookingSection({ slug }: { slug: string | null }) {
 		fetch(`/api/ibs/editions/${slug}/booking`).then(async r => {
 			if (!r.ok) throw new Error("Could not load booking settings. Refresh the page.");
 			return r.json() as Promise<BookingConfig>;
-		}).then((data: BookingConfig) => { if (!cancelled) { setConfig(data); setPrice(String(data.amountMinor / currencyScale(data.currency))); setLoaded(true); } })
+		}).then((data: BookingConfig) => { if (!cancelled) { setConfig({...data,tiers:bookingTiers(data)}); setPrices(Object.fromEntries(bookingTiers(data).map(t => [t.id,String(t.amountMinor / currencyScale(data.currency))]))); setLoaded(true); } })
 			.catch(e => { if (!cancelled) { setFailure(true); setMessage(e.message); } });
 		return () => { cancelled = true; };
 	}, [slug]);
 	async function save() {
 		setBusy(true); setMessage(""); setFailure(false);
 		try {
-			if (!price.trim() || !Number.isFinite(Number(price)) || Number(price) < 0) throw new Error("Enter a valid price.");
-			const scaled = Number(price) * currencyScale(config.currency);
-			if (Math.abs(scaled - Math.round(scaled)) > 0.00001) throw new Error("Too many decimal places for this currency.");
-			const data = { ...config, amountMinor: Math.round(scaled) };
+			const tiers = bookingTiers(config).map(t => {
+				const price = prices[t.id] ?? "";
+				if (!price.trim() || !Number.isFinite(Number(price)) || Number(price) < 0) throw new Error("أدخل سعرًا صحيحًا لكل فئة / Enter a valid price for each category.");
+				const scaled = Number(price) * currencyScale(config.currency);
+				if (Math.abs(scaled - Math.round(scaled)) > 0.00001) throw new Error("Too many decimal places for this currency.");
+				return {...t,amountMinor:Math.round(scaled)};
+			});
+			if (tiers.some(t => !t.name.en.trim() || !t.name.ar.trim())) throw new Error("أدخل اسم كل فئة بالعربية والإنجليزية / Add each category name in both languages.");
+			if (config.enabled && !tiers.some(t => t.enabled)) throw new Error("فعّل فئة واحدة على الأقل / Enable at least one category.");
+			const data = { ...config, tiers, amountMinor: tiers[0]?.amountMinor ?? 0, capacity:null };
 			const r = await fetch(`/api/ibs/editions/${slug}/booking`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
 			const result = await r.json() as BookingConfig & { error: string };
 			if (!r.ok) throw new Error(({ booking_terms_required: "أدخل شروط الحجز والإلغاء باللغتين قبل تفعيل الدفع. Add booking/cancellation terms in both languages.", gateway_currency_unavailable: "تبادل يدعم الدينار العراقي حاليًا. Select IQD for Tabadul.", booking_text_required: "Fill in both languages for the title, description and button.", price_required: "Set a price greater than zero before enabling bookings.", invalid_capacity: "Capacity must be a whole number above zero, or leave it blank.", invalid_price: "Enter a valid price." } as Record<string, string>)[result.error] || "Could not save booking settings. Please retry.");
@@ -52,10 +59,20 @@ export function BookingSection({ slug }: { slug: string | null }) {
 					</label>)}</div>
 					<AutoTranslateSync enValue={config[key].en} arValue={config[key].ar} onEnChange={value => setConfig(c => ({ ...c, [key]: { ...c[key], en: value } }))} onArChange={value => setConfig(c => ({ ...c, [key]: { ...c[key], ar: value } }))} />
 				</div>)}
-				<div className="grid gap-4 sm:grid-cols-3">
-					<label className="text-xs font-semibold text-gray-600">Price per seat / service<input type="number" min="0" step={config.currency === "IQD" ? "0.001" : "0.01"} value={price} onChange={e => setPrice(e.target.value)} className={fieldClass} /></label>
+				<div className="max-w-sm">
 					<label className="text-xs font-semibold text-gray-600">Currency<select value={config.currency} onChange={e => setConfig(c => ({ ...c, currency: e.target.value as BookingConfig["currency"] }))} className={fieldClass}><option value="IQD">IQD — Iraqi dinar / دينار عراقي</option><option value="USD" disabled>USD — not supported by Tabadul</option></select></label>
-					<label className="text-xs font-semibold text-gray-600">Total seats / units (blank = unlimited)<input type="number" min="1" max="1000000" step="1" value={config.capacity ?? ""} onChange={e => setConfig(c => ({ ...c, capacity: e.target.value === "" ? null : Number(e.target.value) }))} className={fieldClass} /></label>
+				</div>
+				<div className="space-y-4 rounded-xl border border-gray-200 p-4">
+					<h3 className="font-bold text-[var(--color-navy)]">Booking categories / فئات الحجز</h3>
+					<p className="text-sm leading-7 text-gray-500">سعر وسعة مستقلان لكل فئة. الحجوزات السابقة تحتفظ بتفاصيلها. إخفاء الفئة يوقف الحجوزات الجديدة فقط. لا يوجد توزيع مرقّم لكراسي القاعة.</p>
+					{bookingTiers(config).map((tier,index) => <div key={tier.id} data-tier-editor={tier.id} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+						<div className="flex flex-wrap items-center justify-between gap-3"><strong>الفئة {index+1} / Category {index+1}</strong><label className="flex min-h-11 items-center gap-3 text-sm"><input type="checkbox" checked={tier.enabled} onChange={e => updateTier(tier.id,{enabled:e.target.checked})} className="h-5 w-5 accent-[var(--color-teal)]" />Visible / ظاهرة</label></div>
+						<div className="grid gap-4 sm:grid-cols-2">{(["en","ar"] as const).map(lang => <label key={lang} className="text-xs font-semibold text-gray-600">Category name ({lang.toUpperCase()})<input maxLength={120} dir={lang === "ar" ? "rtl" : "ltr"} value={tier.name[lang]} onChange={e => updateTier(tier.id,{name:{...tier.name,[lang]:e.target.value}})} className={fieldClass} /></label>)}</div>
+						<AutoTranslateSync enValue={tier.name.en} arValue={tier.name.ar} onEnChange={value => updateTier(tier.id,{name:{...tier.name,en:value}})} onArChange={value => updateTier(tier.id,{name:{...tier.name,ar:value}})} />
+						<div className="grid gap-4 sm:grid-cols-2"><label className="text-xs font-semibold text-gray-600">Price / السعر ({config.currency})<input type="number" min="0" step={config.currency === "IQD" ? "0.001" : "0.01"} value={prices[tier.id] ?? "0"} onChange={e => setPrices(p => ({...p,[tier.id]:e.target.value}))} className={fieldClass} /></label><label className="text-xs font-semibold text-gray-600">Seats / المقاعد (فارغ = بلا حد)<input type="number" min="1" max="1000000" step="1" value={tier.capacity ?? ""} onChange={e => updateTier(tier.id,{capacity:e.target.value === "" ? null : Number(e.target.value)})} className={fieldClass} /></label></div>
+						<button type="button" disabled={bookingTiers(config).length === 1} onClick={() => { if (window.confirm("إزالة هذه الفئة من العرض؟ ستبقى حجوزاتها السابقة محفوظة. Remove this category? Existing bookings remain.")) setConfig(c => ({...c,tiers:bookingTiers(c).filter(t => t.id !== tier.id)})); }} className="mt-3 min-h-11 text-sm font-semibold text-red-700 underline disabled:opacity-40">Remove category / إزالة الفئة</button>
+					</div>)}
+					<button type="button" disabled={bookingTiers(config).length >= 30} onClick={() => { const id=crypto.randomUUID(); setConfig(c => ({...c,tiers:[...bookingTiers(c),{id,name:{en:"",ar:""},amountMinor:0,capacity:null,enabled:false}]})); setPrices(p => ({...p,[id]:"0"})); }} className="min-h-11 rounded-lg border border-[var(--color-teal)] px-4 font-bold text-[var(--color-teal)] disabled:opacity-40">+ Add category / إضافة فئة</button>
 				</div>
 				<div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-warm)] p-4 text-sm leading-7 text-[var(--color-navy)]"><p dir="rtl">أنت تتحكم بظهور الحجز وسعر المقعد والسعة لكل قمة. اكتب السعر بالدينار كما سيدفعه الزائر، وأضف شروط الحجز والإلغاء باللغتين. التفعيل والحفظ على الموقع الحي يتيحان دفعًا حقيقيًا عبر تبادل، دون حساب للزائر. تعديل السعر لا يغيّر الحجوزات السابقة.</p><p className="mt-3 text-xs">Tabadul accepts IQD. One seat per checkout; blank capacity means unlimited. Hiding closes new bookings, not pending payments. Local development remains a simulation. API credentials never belong in these fields.</p><Link href="/admin/payments" className="mt-3 inline-block min-h-11 py-2 font-bold text-[var(--color-teal)]">سجل المدفوعات / Payment history ↗</Link></div>
 				<button type="button" onClick={save} className="min-h-11 rounded-lg bg-[var(--color-navy)] px-5 text-sm font-bold text-white hover:bg-[var(--color-teal)]">{busy ? "Saving…" : "Save booking settings"}</button>

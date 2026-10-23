@@ -18,7 +18,7 @@ import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { EditionBooking } from "@/components/ibs/EditionBooking";
 import { getBookingConfig } from "@/lib/bookings";
-import { paymentCheckoutsDisabled } from "@/lib/payments/availability";
+import { paymentCheckoutsDisabled, localBookingSimulationEnabled } from "@/lib/payments/availability";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { eventJsonLd } from "@/lib/seo/structured-data";
@@ -56,7 +56,8 @@ export default async function IbsEditionPage({
 
 	const currentLocale = locale === "ar" ? "ar" : "en";
 	const booking = await getBookingConfig(slug);
-	if (await paymentCheckoutsDisabled()) booking.enabled = false;
+	const simulation = await localBookingSimulationEnabled();
+	if (await paymentCheckoutsDisabled() && !simulation) booking.enabled = false;
 
 	return (
 		<>
@@ -80,7 +81,7 @@ export default async function IbsEditionPage({
 			<main>
 				<EditionHero edition={edition} />
 				<EditionStats edition={edition} />
-				<EditionBooking slug={slug} config={booking} date={edition.dates} location={edition.location} />
+				<EditionBooking slug={slug} config={booking} date={edition.dates} location={edition.location} simulation={simulation} />
 				<section id="themes">
 					<EditionThemes edition={edition} />
 				</section>

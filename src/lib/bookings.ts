@@ -3,7 +3,7 @@ import { BookingError, defaultBookingConfig, type BookingConfig } from "./bookin
 import { digest, type BookingStatus, type PaymentEvent } from "./payments/core";
 import { guestBookingCookie } from "./payments/guest-access";
 
-export type BookingRow = { id: string; edition_slug: string; offer_title: string; customer_name: string; email: string; phone: string; locale: string; amount_minor: number; currency: string; status: BookingStatus; provider: string; access_hash: string; request_hash: string; provider_session: string | null; checkout_url: string | null; transaction_id: string | null; expires_at: number; created_at: number };
+export type BookingRow = { id: string; edition_slug: string; offer_title: string; customer_name: string; email: string; phone: string; locale: string; amount_minor: number; currency: string; status: BookingStatus; provider: string; access_hash: string; request_hash: string; provider_session: string | null; checkout_url: string | null; transaction_id: string | null; expires_at: number; created_at: number; tier_id: string; tier_name: string; edition_snapshot: string | null; receipt_token: string | null };
 export async function getBookingConfig(slug: string): Promise<BookingConfig> {
 	const { DB } = await getEnv();
 	const row = await DB.prepare("SELECT config_json FROM ibs_booking_settings WHERE edition_slug = ?").bind(slug).first<{ config_json: string }>();
@@ -21,7 +21,7 @@ export async function authorizedBooking(id: string, request: Request) {
 	return row;
 }
 export function publicBooking(row: BookingRow) {
-	return { id: row.id, editionSlug: row.edition_slug, title: row.offer_title, amountMinor: row.amount_minor, currency: row.currency, status: row.status === "pending" && row.expires_at <= Date.now() ? "expired" : row.status, provider: row.provider, expiresAt: row.expires_at };
+	return { id: row.id, editionSlug: row.edition_slug, title: row.offer_title, tierName: row.tier_name, amountMinor: row.amount_minor, currency: row.currency, status: row.status === "pending" && row.expires_at <= Date.now() ? "expired" : row.status, provider: row.provider, expiresAt: row.expires_at };
 }
 
 export async function applyPaymentEvent(provider: string, event: PaymentEvent) {

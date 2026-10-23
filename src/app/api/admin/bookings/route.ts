@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 		const { DB } = await getEnv();
 		const filter = slug ? " WHERE edition_slug = ?" : "";
 		const args = slug ? [slug] : [];
-		const results = await DB.prepare(`SELECT id,edition_slug,customer_name,email,phone,amount_minor,currency,
+		const results = await DB.prepare(`SELECT id,edition_slug,tier_id,tier_name,customer_name,email,phone,amount_minor,currency,
 			CASE WHEN status='pending' AND expires_at<=? THEN 'expired' ELSE status END AS status,
 			provider,transaction_id,created_at FROM ibs_bookings${filter} ORDER BY created_at DESC LIMIT 50 OFFSET ?`).bind(Date.now(), ...args, (Math.floor(page) - 1) * 50).all();
 		const count = await DB.prepare(`SELECT COUNT(*) AS total FROM ibs_bookings${filter}`).bind(...args).first<{ total: number }>();

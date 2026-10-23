@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 		}
 		if (dates[0] && dates[1] && dates[0]>dates[1]) throw new BookingError("invalid_dates");
 		const now = Date.now();
-		const cte = `WITH ledger AS (SELECT b.id,b.edition_slug,b.customer_name,b.email,b.phone,b.amount_minor,b.currency,b.provider,b.transaction_id,b.provider_session,b.created_at,
+		const cte = `WITH ledger AS (SELECT b.id,b.edition_slug,b.tier_id,b.tier_name,b.customer_name,b.email,b.phone,b.amount_minor,b.currency,b.provider,b.transaction_id,b.provider_session,b.created_at,
 			(SELECT MIN(e.received_at) FROM ibs_payment_events e WHERE e.booking_id=b.id AND e.provider=b.provider AND e.status='paid') AS confirmed_at,
 			CASE WHEN EXISTS(SELECT 1 FROM ibs_payment_events e WHERE e.booking_id=b.id AND e.provider=b.provider AND e.status='refunded') THEN 'refund_reported'
 			WHEN b.status='paid' AND NOT EXISTS(SELECT 1 FROM ibs_payment_events e WHERE e.booking_id=b.id AND e.provider=b.provider AND e.status='paid') THEN 'review'

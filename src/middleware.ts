@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getAdminSecret, parseSessionCookie, verifySession } from "@/lib/auth";
 
 export const config = {
-	matcher: ["/admin/:path*", "/api/:path*", "/ar/ibs/:path*", "/en/ibs/:path*", "/ar/booking/:path*", "/en/booking/:path*"],
+	matcher: ["/admin/:path*", "/api/:path*", "/ar/ibs/:path*", "/en/ibs/:path*", "/ar/booking/:path*", "/en/booking/:path*", "/ar/receipt/:path*", "/en/receipt/:path*"],
 };
 
 export async function middleware(request: NextRequest) {
@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 	if (method === "POST" && pathname === "/api/internal/payments/reconcile") return NextResponse.next();
 	// Public checkout and capability-protected status; webhook verifies its own signature.
 	if ((method === "POST" && (["/api/bookings/checkout", "/api/payments/mock", "/api/payments/tabadul-preview", "/api/payments/webhook/bridge"].includes(pathname) || /^\/api\/bookings\/[a-f0-9-]{36}\/verify-payment$/.test(pathname))) ||
-		(method === "GET" && /^\/api\/bookings\/[a-f0-9-]{36}$/.test(pathname))) {
+		(method === "GET" && (/^\/api\/bookings\/[a-f0-9-]{36}(\/receipt)?$/.test(pathname) || /^\/api\/receipts\/[a-f0-9-]{36}$/.test(pathname)))) {
 		return NextResponse.next();
 	}
 

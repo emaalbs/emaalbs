@@ -1,5 +1,5 @@
 import { getEnv } from "@/lib/cloudflare";
-import { BookingError } from "@/lib/booking-config";
+import { BookingError, bookingTiers } from "@/lib/booking-config";
 import { getBookingConfig, limitBookingRequests, publicBooking, type BookingRow } from "@/lib/bookings";
 import { bookingBody, bookingFailure, bookingJson, requireSameOrigin } from "@/lib/booking-http";
 import { digest } from "@/lib/payments/core";
@@ -11,30 +11,35 @@ export async function POST(request: Request) {
 		requireSameOrigin(request);
 		const body = await bookingBody(request);
 		const { slug, name, email, phone, locale, acceptedTerms } = body;
+		if (body.tierId !== undefined && (typeof body.tierId !== "string" || !/^[a-z0-9-]{1,64}$/.test(body.tierId))) throw new BookingError("invalid_details");
+		const tierId = body.tierId || "standard";
 		const token = request.headers.get("Idempotency-Key") || "";
 		if (!/^[a-f0-9]{64}$/.test(token) || typeof slug !== "string" || !/^[a-z0-9-]{1,160}$/.test(slug) || typeof name !== "string" || name.trim().length < 2 || name.length > 120 || typeof email !== "string" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || typeof phone !== "string" || phone.length > 40 || !/^[+\d ()-]{6,40}$/.test(phone) || !["en", "ar"].includes(locale) || acceptedTerms !== true) throw new BookingError("invalid_details");
 		const provider = await getPaymentProvider(request);
 		const { DB } = await getEnv();
 		const accessHash = await digest(token);
-		const requestHash = await digest(JSON.stringify({ slug, name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), locale }));
+		// Preserve pre-tier retries for the original standard category.
+		const requestHash = await digest(JSON.stringify({ slug, name: name.trim(), email: email.trim().toLowerCase(), phone: phone.trim(), locale, ...(tierId !== "standard" ? {tierId} : {}) }));
 		let row = await DB.prepare("SELECT * FROM ibs_bookings WHERE access_hash=?").bind(accessHash).first<BookingRow>();
 		if (row && row.request_hash !== requestHash) throw new BookingError("request_conflict", 409);
 		if (!row) {
 			await limitBookingRequests(request);
 			const config = await getBookingConfig(slug);
-			if (!config.enabled || config.amountMinor <= 0) throw new BookingError("booking_closed", 409);
-			provider.validateOffer?.({ slug, amountMinor: config.amountMinor, currency: config.currency, realPaymentConsent: body.realPaymentConsent === true });
+			const tier = bookingTiers(config).find(t => t.id === tierId && t.enabled);
+			if (!config.enabled || !tier || tier.amountMinor <= 0) throw new BookingError("booking_closed", 409);
+			provider.validateOffer?.({ slug, amountMinor: tier.amountMinor, currency: config.currency, realPaymentConsent: body.realPaymentConsent === true });
 			const now = Date.now();
 			const id = crypto.randomUUID();
 			// The capacity predicate and insert execute as ONE statement, including concurrent requests.
 			await DB.prepare(`INSERT OR IGNORE INTO ibs_bookings
-				(id,edition_slug,offer_title,customer_name,email,phone,locale,amount_minor,currency,status,provider,access_hash,request_hash,terms_snapshot,expires_at,created_at,updated_at)
-				SELECT ?,?,?,?,?,?,?,?,?,'pending',?,?,?,?,?,?,?
+				(id,edition_slug,offer_title,customer_name,email,phone,locale,amount_minor,currency,status,provider,access_hash,request_hash,terms_snapshot,expires_at,created_at,updated_at,tier_id,tier_name,edition_snapshot)
+				SELECT ?,?,?,?,?,?,?,?,?,'pending',?,?,?,?,?,?,?,?,?,
+				(SELECT json_object('title',json_object('en',title_en,'ar',title_ar),'date',json_object('en',dates_en,'ar',dates_ar),'location',json_object('en',location_en,'ar',location_ar)) FROM ibs_editions WHERE slug=?)
 				WHERE EXISTS(SELECT 1 FROM ibs_editions WHERE slug=? AND published=1)
 				AND EXISTS(SELECT 1 FROM ibs_booking_settings WHERE edition_slug=? AND config_json=?)
-				AND (? IS NULL OR (SELECT COUNT(*) FROM ibs_bookings WHERE edition_slug=? AND
+				AND (? IS NULL OR (SELECT COUNT(*) FROM ibs_bookings WHERE edition_slug=? AND tier_id=? AND
 				(status IN ('paid','review') OR (status='pending' AND expires_at>?))) < ?)`)
-				.bind(id, slug, JSON.stringify(config.title), name.trim(), email.trim().toLowerCase(), phone.trim(), locale, config.amountMinor, config.currency, provider.name, accessHash, requestHash, JSON.stringify(config.terms), now + 20 * 60000, now, now, slug, slug, JSON.stringify(config), config.capacity, slug, now, config.capacity).run();
+				.bind(id, slug, JSON.stringify(config.title), name.trim(), email.trim().toLowerCase(), phone.trim(), locale, tier.amountMinor, config.currency, provider.name, accessHash, requestHash, JSON.stringify(config.terms), now + 20 * 60000, now, now, tier.id, JSON.stringify(tier.name), slug, slug, slug, JSON.stringify(config), tier.capacity, slug, tier.id, now, tier.capacity).run();
 			row = await DB.prepare("SELECT * FROM ibs_bookings WHERE access_hash=?").bind(accessHash).first<BookingRow>();
 			if (!row) throw new BookingError("sold_out_or_changed", 409);
 			if (row.request_hash !== requestHash) throw new BookingError("request_conflict", 409);

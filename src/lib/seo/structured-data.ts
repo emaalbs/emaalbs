@@ -115,8 +115,10 @@ export function eventJsonLd({
 		name: title,
 		description,
 		image: image ? (image.startsWith("http") ? image : `${base}${image}`) : `${base}${siteConfig.logo}`,
-		startDate: startDate ? new Date(startDate).toISOString() : undefined,
-		endDate: endDate ? new Date(endDate).toISOString() : undefined,
+		// Edition dates are editable display labels (including ranges / "TBC").
+		// An unparseable label must not crash the entire booking page.
+		startDate: startDate && Number.isFinite(Date.parse(startDate)) ? new Date(startDate).toISOString() : undefined,
+		endDate: endDate && Number.isFinite(Date.parse(endDate)) ? new Date(endDate).toISOString() : undefined,
 		eventStatus: "https://schema.org/EventScheduled",
 		eventAttendanceMode: "https://schema.org/MixedEventAttendanceMode",
 		location: location

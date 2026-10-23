@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Clock3, CircleAlert, Ticket } from "lucide-react";
 import { formatBookingPrice } from "@/lib/booking-config";
+import { BookingReceipt } from "./BookingReceipt";
+import type { BookingReceipt as Receipt } from "@/lib/receipt-types";
 
-type Status = { id: string; editionSlug: string; title: string; amountMinor: number; currency: string; status: string; provider: string };
+type Status = { id: string; editionSlug: string; title: string; tierName?: string; amountMinor: number; currency: string; status: string; provider: string };
 const text: Record<string, [string, string]> = {
 	pending: ["Awaiting payment", "بانتظار الدفع"], paid: ["Your booking is confirmed", "تم تأكيد حجزك"], failed: ["Payment was unsuccessful", "لم تنجح عملية الدفع"], cancelled: ["Payment was cancelled", "أُلغيت عملية الدفع"], expired: ["Your reservation has expired", "انتهت مهلة الحجز"], review: ["Payment needs organizer review", "عملية الدفع تحتاج مراجعة المنظم"],
 };
@@ -15,6 +17,20 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 	const [busy, setBusy] = useState(false);
 	const [checks, setChecks] = useState(0);
 	const [verification, setVerification] = useState("");
+	const [receipt,setReceipt] = useState<Receipt|null>(null);
+	const [receiptError,setReceiptError] = useState(false);
+	useEffect(()=>{
+		let stopped=false;
+		setReceipt(null);setReceiptError(false);
+		if(booking?.status !== "paid")return;
+		async function load(){try{
+			let token="";try{token=sessionStorage.getItem(`ibs-booking:${id}`)||"";}catch{}
+			const r=await fetch(`/api/bookings/${id}/receipt`,{headers:token?{Authorization:`Bearer ${token}`}:{},credentials:"same-origin",cache:"no-store"});
+			if(!r.ok)throw new Error();const data=await r.json() as Receipt;
+			if(!stopped)setReceipt(data);
+		}catch{if(!stopped)setReceiptError(true);}}
+		void load();return ()=>{stopped=true;};
+	},[id,booking]);
 	async function refresh() {
 		try {
 			let token: string | null = null;
@@ -67,6 +83,7 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 			<Icon size={48} className={`mt-10 ${successful ? "text-[var(--color-teal)]" : "text-[var(--color-navy)]"}`} />
 			<h1 className="mt-6 text-3xl font-bold leading-tight">{booking ? text[booking.status]?.[ar ? 1 : 0] : ar ? "متابعة الحجز" : "Booking status"}</h1>
 			{booking && <><p className="mt-4 leading-7 text-[var(--color-slate)]">{JSON.parse(booking.title)[locale]}</p><p className="mt-4 text-2xl font-bold">{formatBookingPrice(booking.amountMinor, booking.currency, locale)}</p></>}
+			{booking?.tierName && <p className="mt-3 text-sm font-semibold text-[var(--color-teal)]">{ar?"الفئة: ":"Category: "}{JSON.parse(booking.tierName)[locale]}</p>}
 			<p className="mt-8 text-xs text-[var(--color-slate)]">{ar ? "رقم الحجز" : "Booking reference"}</p><p dir="ltr" className="mt-2 break-all font-mono text-sm">{id}</p>
 			{booking?.status === "pending" && <p className="mt-6 text-sm leading-7">{ar ? "ننتظر تأكيد شركة الدفع. العودة لهذه الصفحة وحدها لا تؤكد الحجز." : "Waiting for payment provider confirmation. Returning to this page alone does not confirm payment."}</p>}
 			{booking?.status === "review" && <p className="mt-6 text-sm leading-7">{ar ? "تحتاج العملية مراجعة بسبب توقيت الدفع أو تغيّر حالته، وقد يشمل ذلك الاسترجاع. تواصل مع المنظم لتأكيد المقعد وحالة المبلغ." : "The payment timing or status needs review, which may include a refund. Contact the organizer to confirm your seat and payment status."}</p>}
@@ -83,5 +100,7 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 			<Link href={`/${locale}/ibs/${booking?.editionSlug || ""}#booking`} className="mt-4 block py-3 text-sm font-bold text-[var(--color-teal)]">{ar ? "العودة إلى القمة" : "Back to the summit"}</Link>
 			<Link href={`/${locale}/contact`} className="block py-3 text-sm font-bold text-[var(--color-teal)]">{ar ? "التواصل بشأن الحجز أو الاسترجاع" : "Contact us about your booking or refund"}</Link>
 		</div>
+		{successful && receipt && <BookingReceipt receipt={receipt} locale={locale}/>}
+		{successful && receiptError && <p role="alert" className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 p-5 text-sm leading-7">{ar?"تعذر تجهيز الوصل الآن. حدّث الحالة أو تواصل مع المنظم، ولا تكرر الدفع.":"The receipt is unavailable right now. Refresh the status or contact the organizer. Do not pay again."}</p>}
 	</main>;
 }
