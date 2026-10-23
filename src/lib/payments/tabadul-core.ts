@@ -38,7 +38,9 @@ export function validateTabadulCheckout(value: unknown, hosts: string[]) {
 export const tabadulHttpTransport: TabadulTransport = async (operation, fields) => {
 	try {
 		const response = await fetch(TABADUL_ENDPOINT + operation, {
-			method: "POST", redirect: "error", cache: "no-store", signal: AbortSignal.timeout(12000),
+			// Workers does not support redirect: "error". Never follow redirects with
+			// merchant credentials: manual returns 3xx, rejected by response.ok below.
+			method: "POST", redirect: "manual", cache: "no-store", signal: AbortSignal.timeout(12000),
 			headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" }, body: fields.toString(),
 		});
 		if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) throw new Error();

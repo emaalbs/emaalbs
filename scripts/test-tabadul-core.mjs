@@ -4,12 +4,13 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
 const modules = new Map();
+let mockFetch=()=>{throw new Error('NO NETWORK ALLOWED');};
 const load = path => {
   if (modules.has(path)) return modules.get(path);
   const m = {exports:{}};
   vm.runInNewContext(ts.transpile(readFileSync(path,'utf8'),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}), {
     module:m,exports:m.exports,require:()=>load('src/lib/booking-config.ts'),URL,URLSearchParams,Date,TextDecoder,AbortSignal,
-    fetch:()=>{throw new Error('NO NETWORK ALLOWED');},Intl
+    fetch:(...args)=>mockFetch(...args),Intl
   }); modules.set(path,m.exports); return m.exports;
 };
 const {createTabadulClient,tabadulAmount,tabadulOrderNumber,validateTabadulCheckout,tabadulHttpTransport}=load('src/lib/payments/tabadul-core.ts');
@@ -46,6 +47,36 @@ assert.equal((await check({OrderStatus:6})).status,'failed');
 for(const bad of [{Amount:100},{Amount:undefined},{currency:'840'},{OrderNumber:'another-order'},{OrderNumber:undefined},{ErrorCode:undefined},{ErrorCode:'5'},{depositAmount:1},{OrderStatus:99},{OrderStatus:null},{Amount:'1e6'}]) await assert.rejects(()=>check(bad));
 await assert.rejects(()=>tabadulHttpTransport('register.do',new URLSearchParams()),e=>e.code==='gateway_unavailable' && !e.message.includes(config.password));
 console.log('PASS: Tabadul form encoding, fixed endpoint, order length, exact currency conversion, response identity/amount checks, status mapping, redirect allowlist, expiry and sanitized failures. No network used.');
+
+// Exercise the actual HTTP transport with Workers-compatible fetch semantics.
+const transportFields=new URLSearchParams({userName:config.userName,password:config.password});
+let fetchCount=0;
+for(const operation of ['register.do','getOrderStatus.do']) {
+  mockFetch=async(url,options)=>{
+    fetchCount++;
+    assert.equal(url,`https://epg.tabadul.iq/epg/rest/${operation}`);
+    assert.equal(options.redirect,'manual','Workers rejects error mode; follow would leak credentials on redirects');
+    assert.equal(options.method,'POST');assert.equal(options.cache,'no-store');
+    assert.equal(new URLSearchParams(options.body).get('password'),config.password);
+    return Response.json({ok:true});
+  };
+  assert.equal((await tabadulHttpTransport(operation,transportFields)).ok,true);
+}
+for(const status of [301,302,303,307,308]) {
+  mockFetch=async(_url,options)=>{
+    fetchCount++;assert.equal(options.redirect,'manual');
+    return new Response('{"ok":true}',{status,headers:{Location:'https://untrusted.example/collect','Content-Type':'application/json'}});
+  };
+  const before=fetchCount;
+  await assert.rejects(()=>tabadulHttpTransport('register.do',transportFields),e=>e.code==='gateway_unavailable');
+  assert.equal(fetchCount,before+1,'No redirect follow or registration retry');
+}
+for(const response of [new Response('unavailable',{status:503}),new Response('<html>not JSON</html>'),new Response('invalid',{headers:{'Content-Type':'application/json'}}),Response.json([]),Response.json(null)]) {
+  mockFetch=async()=>response;
+  await assert.rejects(()=>tabadulHttpTransport('getOrderStatus.do',transportFields),e=>e.code==='gateway_unavailable');
+}
+mockFetch=()=>{throw new Error('NO NETWORK ALLOWED');};
+console.log('PASS: real HTTP transport supports Workers, rejects every redirect without following or retrying, and rejects invalid/error responses. No network used.');
 
 // Exercise the actual preview/real-money gate with injected env only; never load real secrets.
 function providerModule(nodeEnv,env={},authorized=true) {
