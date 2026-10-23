@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowUpRight, Check, Ticket, ShieldCheck, Clock3 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
-import { type BookingConfig, formatBookingPrice, bookingTiers } from "@/lib/booking-config";
+import { type BookingConfig, type BookingAvailability, formatBookingPrice, bookingTiers } from "@/lib/booking-config";
 
 const messages: Record<string, [string, string]> = {
 	payment_origin_required: ["Please open this edition on https://emaalbs.com to continue payment.", "يرجى فتح صفحة القمة على https://emaalbs.com لمتابعة الدفع."],
@@ -37,6 +37,41 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 	const [needsLogin, setNeedsLogin] = useState(false);
 	const [preview, setPreview] = useState("");
 	const [bookingReference, setBookingReference] = useState("");
+	const [availability, setAvailability] = useState<BookingAvailability | null>(null);
+	const [availabilityError, setAvailabilityError] = useState(false);
+	useEffect(() => {
+		if (!config.enabled) return;
+		let disposed = false, inFlight = false;
+		const controller = new AbortController();
+		async function refresh() {
+			if (document.visibilityState === "hidden" || inFlight) return;
+			inFlight = true;
+			try {
+				const response = await fetch(`/api/ibs/editions/${encodeURIComponent(slug)}/booking/availability`, { cache: "no-store", signal: AbortSignal.any([controller.signal, AbortSignal.timeout(10000)]) });
+				if (!response.ok) throw new Error("availability_unavailable");
+				const data = await response.json() as BookingAvailability;
+				if (!disposed) { setAvailability(data); setAvailabilityError(false); }
+			} catch { if (!disposed) setAvailabilityError(true); }
+			finally { inFlight = false; }
+		}
+		setAvailability(null); setAvailabilityError(false);
+		void refresh();
+		const timer = window.setInterval(() => void refresh(), 30000);
+		window.addEventListener("focus", refresh);
+		document.addEventListener("visibilitychange", refresh);
+		return () => { disposed = true; controller.abort(); window.clearInterval(timer); window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", refresh); };
+	}, [slug, config.enabled]);
+	const isUnavailable = (id: string) => !!availability && (!availability.enabled || !availability.tiers.some(t => t.id === id) || availability.tiers.find(t => t.id === id)?.remaining === 0);
+	const soldOut = selectedTier ? isUnavailable(selectedTier.id) : false;
+	function seatLabel(id: string) {
+		if (availabilityError) return ar ? "تعذر تحديث عدد المقاعد" : "Seat availability could not be refreshed";
+		if (!availability) return ar ? "جارٍ التحقق من المقاعد…" : "Checking available seats…";
+		const tier = availability.tiers.find(t => t.id === id);
+		if (!availability.enabled || !tier) return ar ? "الحجز مغلق" : "Booking closed";
+		if (tier.remaining === null) return ar ? "مقاعد غير محدودة" : "Unlimited seats";
+		if (tier.remaining === 0) return ar ? "نفدت المقاعد" : "Sold out";
+		return ar ? `المقاعد المتبقية: ${tier.remaining}` : `Seats remaining: ${tier.remaining}`;
+	}
 	useEffect(() => {
 		if (process.env.NODE_ENV !== "development" || !["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname)) return;
 		const mode = new URLSearchParams(window.location.search).get("paymentPreview");
@@ -46,7 +81,7 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 	const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-[var(--color-line)] bg-white px-4 text-[var(--color-ink)] outline-none focus:border-[var(--color-teal)] focus:ring-2 focus:ring-[var(--color-teal)]/20";
 	async function submit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		if (busy) return;
+		if (busy || soldOut) return;
 		setBusy(true); setError(""); setNeedsLogin(false);
 		try {
 			const form = new FormData(event.currentTarget);
@@ -83,7 +118,7 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 					<div className="relative p-7 sm:p-12 lg:p-16">
 						<span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-gold)]/30 px-4 py-2 text-xs font-bold text-[var(--color-gold)]"><Ticket size={16} />{ar ? "مقعدك في القمة" : "YOUR PLACE AT THE SUMMIT"}</span>
 						<h2 className="mt-8 max-w-xl text-4xl font-bold leading-tight sm:text-5xl">{config.title[locale]}</h2>
-						<p className="mt-6 whitespace-pre-line text-base leading-8 text-white/80">{config.description[locale]}</p>
+						{config.description[locale].trim() && <p className="mt-6 whitespace-pre-line text-base leading-8 text-white/80">{config.description[locale]}</p>}
 						<div className="mt-10 grid gap-4 border-t border-white/15 pt-7 text-sm text-white/85">
 							{[date[locale], location[locale]].filter(Boolean).map((text, i) => <div key={i} className="flex items-start gap-3"><Check size={18} className="shrink-0 text-[var(--color-gold)]" /><span>{text}</span></div>)}
 						</div>
@@ -93,25 +128,26 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 						{preview && <p role="status" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">{preview === "tabadul" ? (ar ? "محاكاة ربط تبادل — لا يتم الاتصال بالشركة أو خصم أموال. لا تدخل بيانات بطاقة." : "Tabadul integration simulation — no gateway connection or money charged. Do not enter card details.") : (ar ? "اختبار دفع فعلي — قد يُخصم مبلغ حقيقي من بطاقتك. يتطلب حساب أدمن محليًا وتفعيلًا منفصلًا من الخادم." : "Real-money pilot — an actual charge may occur. Requires local admin sign-in and separate server activation.")}</p>}
 						<p className="text-sm font-semibold text-[var(--color-slate)]">{ar ? "سعر المقعد / الخدمة" : "PER SEAT / SERVICE"}</p>
 						{preview === "tabadul-real" && <a href="/admin/login" target="_blank" rel="noopener" className="my-4 block rounded-lg border border-[var(--color-line)] p-3 text-sm font-bold leading-7 text-[var(--color-teal)] hover:bg-[var(--color-warm)] focus-visible:outline-2 focus-visible:outline-[var(--color-teal)]">{ar ? "قبل التجربة: سجّل الدخول إلى الأدمن المحلي (تبويب جديد)، ثم عد إلى هنا" : "Before testing: sign in to local admin (new tab), then return here"}</a>}
-						<fieldset className="mt-4 space-y-3" disabled={busy}><legend className="mb-3 font-bold">{ar ? "اختر فئة الحجز" : "Choose your category"}</legend>{tiers.map(tier => <label key={tier.id} className={`flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${selectedTier.id === tier.id ? "border-[var(--color-teal)] bg-[var(--color-warm)]" : "border-[var(--color-line)] hover:border-[var(--color-slate)]"}`}><input type="radio" name="booking-tier" value={tier.id} checked={selectedTier.id === tier.id} onChange={() => {setTierId(tier.id);setError("");}} className="h-5 w-5 shrink-0 accent-[var(--color-teal)]" /><span className="flex flex-1 flex-wrap items-center justify-between gap-2"><strong className="break-words">{tier.name[locale]}</strong><span className="font-bold text-[var(--color-navy)]">{formatBookingPrice(tier.amountMinor,config.currency,locale)}</span></span></label>)}</fieldset>
+						<fieldset className="mt-4 space-y-3" disabled={busy}><legend className="mb-3 font-bold">{ar ? "اختر فئة الحجز" : "Choose your category"}</legend>{tiers.map(tier => <label key={tier.id} className={`flex min-h-20 items-center gap-3 rounded-xl border-2 p-4 ${isUnavailable(tier.id) ? "cursor-not-allowed opacity-60" : "cursor-pointer"} ${selectedTier.id === tier.id ? "border-[var(--color-teal)] bg-[var(--color-warm)]" : "border-[var(--color-line)] hover:border-[var(--color-slate)]"}`}><input type="radio" name="booking-tier" value={tier.id} disabled={isUnavailable(tier.id)} checked={selectedTier.id === tier.id} onChange={() => {setTierId(tier.id);setError("");}} className="h-5 w-5 shrink-0 accent-[var(--color-teal)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-teal)]" /><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center justify-between gap-2"><strong className="break-words">{tier.name[locale]}</strong><span className="font-bold text-[var(--color-navy)]">{formatBookingPrice(tier.amountMinor,config.currency,locale)}</span></span><span data-seats-for={tier.id} className="mt-2 block text-sm font-semibold leading-6 text-[var(--color-teal)]">{seatLabel(tier.id)}</span></span></label>)}</fieldset>
+						<p data-selected-availability role="status" className="mt-4 text-sm font-semibold leading-6 text-[var(--color-teal)]">{seatLabel(selectedTier.id)}</p>
 						<p className="mt-5 break-words text-3xl font-bold text-[var(--color-navy)]">{formatBookingPrice(selectedTier.amountMinor, config.currency, locale)}</p>
 						<p className="mt-3 text-sm leading-6 text-[var(--color-slate)]">{ar ? "حجز واحد لكل عملية، دون إنشاء حساب. يتأكد الحجز بعد التحقق من نجاح الدفع." : "One reservation per checkout. No account required. Confirmed after payment is verified."}</p>
-						{!open ? <button onClick={() => setOpen(true)} className="mt-8 flex min-h-14 w-full items-center justify-between gap-4 rounded-xl bg-[var(--color-gold)] px-6 font-bold text-[var(--color-navy)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-teal)] motion-reduce:transform-none">{config.buttonLabel[locale]}<ArrowUpRight className={ar ? "-scale-x-100" : ""} /></button> :
+						{!open ? <button disabled={soldOut} onClick={() => setOpen(true)} className="mt-8 flex min-h-14 w-full items-center justify-between gap-4 rounded-xl bg-[var(--color-gold)] px-6 font-bold text-[var(--color-navy)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-teal)] motion-reduce:transform-none disabled:opacity-50 disabled:cursor-not-allowed">{soldOut ? (ar ? "غير متاح للحجز" : "Booking unavailable") : config.buttonLabel[locale]}<ArrowUpRight className={ar ? "-scale-x-100" : ""} /></button> :
 						<form onSubmit={submit} className="mt-7 space-y-4" aria-label={ar ? "بيانات الحجز" : "Booking details"}>
 							<label className="block text-sm font-semibold">{ar ? "الاسم الكامل" : "Full name"}<input autoFocus required minLength={2} maxLength={120} name="name" autoComplete="name" className={inputClass} disabled={busy} /></label>
 							<label className="block text-sm font-semibold">{ar ? "البريد الإلكتروني" : "Email address"}<input required type="email" maxLength={254} name="email" autoComplete="email" dir="ltr" className={inputClass} disabled={busy} /></label>
 							<label className="block text-sm font-semibold">{ar ? "رقم الهاتف" : "Phone number"}<input required type="tel" minLength={6} maxLength={40} name="phone" autoComplete="tel" dir="ltr" className={inputClass} disabled={busy} /></label>
-							{config.terms[locale] && <p className="max-h-40 overflow-auto whitespace-pre-line rounded-lg bg-[var(--color-warm)] p-4 text-xs leading-6">{config.terms[locale]}</p>}
-							<label className="flex items-start gap-3 py-2 text-sm leading-6"><input type="checkbox" name="terms" required className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-teal)]" />{ar ? "أؤكد بياناتي وأوافق على تفاصيل الحجز وشروطه الموضحة أعلاه." : "I confirm my details and accept the booking details and terms shown above."}</label>
+							{config.terms[locale].trim() && <p className="max-h-40 overflow-auto whitespace-pre-line rounded-lg bg-[var(--color-warm)] p-4 text-xs leading-6">{config.terms[locale]}</p>}
+							<label className="flex items-start gap-3 py-2 text-sm leading-6"><input type="checkbox" name="terms" required className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-teal)]" />{config.terms[locale].trim() ? (ar ? "أؤكد بياناتي وأوافق على تفاصيل الحجز وشروطه الموضحة أعلاه." : "I confirm my details and accept the booking details and terms shown above.") : (ar ? "أؤكد صحة بياناتي وأوافق على تفاصيل الحجز والمبلغ المعروض." : "I confirm my details and accept the booking details and displayed amount.")}</label>
 							{error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 							{needsLogin && <a href="/admin/login" target="_blank" rel="noopener" className="block min-h-11 rounded-lg border border-[var(--color-line)] p-3 text-sm font-bold text-[var(--color-teal)] hover:bg-[var(--color-warm)] focus-visible:outline-2 focus-visible:outline-[var(--color-teal)]">{ar ? "تسجيل دخول الأدمن المحلي — ثم عد لإكمال الطلب" : "Sign in to local admin — then return to continue"}</a>}
 							{error && bookingReference && <a href={`/${locale}/booking/${bookingReference}`} className="block break-all py-3 text-sm font-bold text-[var(--color-teal)]">{ar ? "متابعة الحجز: " : "Track booking: "}{bookingReference}</a>}
 							{preview === "tabadul-real" && <label className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7"><input name="realPaymentConsent" type="checkbox" required className="mt-1 h-5 w-5 shrink-0" />{ar ? "أفهم أن هذه عملية مالية حقيقية وأوافق على دفع المبلغ المعروض، وليس محاكاة." : "I understand this is a real payment and consent to paying the displayed amount, not a simulation."}</label>}
-							<button disabled={busy} className="min-h-14 w-full rounded-xl bg-[var(--color-gold)] px-5 font-bold text-[var(--color-navy)] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-[var(--color-teal)] disabled:opacity-50">{busy ? (ar ? "جارٍ تجهيز الحجز…" : "Preparing checkout…") : (ar ? "المتابعة إلى الدفع" : "Continue to payment")}</button>
+							<button disabled={busy || soldOut} className="min-h-14 w-full rounded-xl bg-[var(--color-gold)] px-5 font-bold text-[var(--color-navy)] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-[var(--color-teal)] disabled:opacity-50">{soldOut ? (ar ? "غير متاح للحجز" : "Booking unavailable") : busy ? (ar ? "جارٍ تجهيز الحجز…" : "Preparing checkout…") : (ar ? "المتابعة إلى الدفع" : "Continue to payment")}</button>
 						</form>}
 						<div className="mt-6 space-y-3 border-t border-[var(--color-line)] pt-5 text-xs leading-5 text-[var(--color-slate)]">
 							<p className="flex items-center gap-2"><ShieldCheck size={16} />{ar ? "لن نطلب بيانات بطاقتك على هذه الصفحة." : "Card details are entered only on the payment provider’s page."}</p>
-							<p className="flex items-center gap-2"><Clock3 size={16} />{ar ? "يبقى المقعد محجوزًا مؤقتًا لمدة 20 دقيقة." : "Your place is held for 20 minutes during checkout."}</p>
+							<p className="flex items-start gap-2"><Clock3 size={16} className="shrink-0" />{ar ? "يبقى المقعد محجوزًا مؤقتًا لمدة 20 دقيقة أثناء الدفع. العدد المتبقي يستثني الحجوزات المؤكدة والمؤقتة، ويُحدّث تلقائيًا." : "Seats are held for 20 minutes during checkout. Availability excludes confirmed bookings and active holds, and refreshes automatically."}</p>
 						</div>
 					</div>
 				</div>

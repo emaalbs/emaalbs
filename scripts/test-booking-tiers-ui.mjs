@@ -38,7 +38,8 @@ try {
  const extraId=await page.$eval('[data-tier-editor]:last-of-type',e=>e.dataset.tierEditor);
  const editor=`[data-tier-editor="${extraId}"]`;
  await page.type(editor+' input[dir="ltr"]','Business');await page.type(editor+' input[dir="rtl"]','الأعمال');
- const numbers=await page.$$(editor+' input[type="number"]');await numbers[0].click({clickCount:3});await numbers[0].type('125000');await numbers[1].type('3');
+ await page.select(editor+' [data-seat-limit]','limited');
+ const numbers=await page.$$(editor+' input[type="number"]');await numbers[0].click({clickCount:3});await numbers[0].type('125000');await numbers[1].click({clickCount:3});await numbers[1].type('3');
  await page.click(editor+' input[type="checkbox"]');await saveUi();
  const third=await page.evaluate(async slug=>(await (await fetch(`/api/ibs/editions/${slug}/booking`)).json()).tiers[2],slug);
  assert.equal(third.id,extraId);assert.equal(third.amountMinor,125000000);assert.equal(third.capacity,3);assert.equal(third.enabled,true);

@@ -43,7 +43,10 @@ const request=(path,body,extra={})=>new Request(origin+path,{method:'POST',heade
 const cfgRequest=c=>new Request(origin+'/api/ibs/editions/qa-public/booking',{method:'PUT',headers:{Origin:origin,'Content-Type':'application/json',cookie:'admin=test'},body:JSON.stringify(c)});
 const cfgCtx={params:Promise.resolve({slug:'qa-public'})};
 assert.equal((await save(cfgRequest({...offer,currency:'USD'}),cfgCtx)).status,400);
-assert.equal((await save(cfgRequest({...offer,terms:{ar:'',en:''}}),cfgCtx)).status,400);
+assert.equal((await save(cfgRequest({...offer,description:{ar:'',en:''},terms:{ar:'',en:''}}),cfgCtx)).status,200,'Descriptions and terms are optional even for live Tabadul');
+assert.equal((await save(cfgRequest({...offer,description:{ar:'اختياري',en:''},terms:{ar:'',en:'Optional'}}),cfgCtx)).status,200,'Optional copy can be provided in one language');
+assert.equal((await save(cfgRequest({...offer,title:{ar:'',en:'Seat'}}),cfgCtx)).status,400,'Title remains required');
+assert.equal((await save(cfgRequest({...offer,terms:{ar:'',en:'x'.repeat(4001)}}),cfgCtx)).status,400,'Optional text still length limited');
 assert.equal((await save(cfgRequest(offer),cfgCtx)).status,200);
 const body={slug:'qa-public',name:'Test Guest',email:'guest@example.invalid',phone:'0000000000',locale:'ar',acceptedTerms:true,amountMinor:1};
 const token=randomBytes(32).toString('hex');
@@ -129,5 +132,40 @@ sql.prepare("UPDATE ibs_bookings SET status='paid',transaction_id='fake' WHERE i
 assert.equal((await ownerReceipt(new Request(origin+'/api/bookings/'+vip.data.booking.id+'/receipt',{headers:{Authorization:'Bearer '+vip.key}}),{params:Promise.resolve({id:vip.data.booking.id})})).status,409,'Paid flag without verified event cannot issue receipt');
 env.LOCAL_BOOKING_SIMULATION='true';env.PAYMENT_CHECKOUTS_DISABLED='true';assert.equal((await start({tierId:'vip'})).r.status,409,'Local sandbox flag cannot bypass production pause');
 assert.equal(sql.prepare('PRAGMA foreign_key_check').all().length,0);
+// Public availability: same paid/review/active-hold predicate as atomic checkout.
+delete env.PAYMENT_CHECKOUTS_DISABLED;delete env.LOCAL_BOOKING_SIMULATION;
+const availability=load('src/app/api/ibs/editions/[slug]/booking/availability/route.ts').GET;
+const availabilityResponse=(slug='qa-availability')=>availability(new Request(origin+'/api/ibs/editions/'+slug+'/booking/availability'),{params:Promise.resolve({slug})});
+sql.prepare('INSERT INTO ibs_editions(slug,published) VALUES(?,1)').run('qa-availability');
+const availabilityOffer={...offer,tiers:[{...tiers[0],capacity:5},{...tiers[1],capacity:null},tiers[2]]};
+sql.prepare('INSERT INTO ibs_booking_settings VALUES(?,?,?)').run('qa-availability',JSON.stringify(availabilityOffer),Date.now());
+const seed=(id,status,expiresAt=Date.now()+600000,tier='guest')=>{
+ const row={...guestRow,id,edition_slug:'qa-availability',access_hash:'availability-'+id,status,expires_at:expiresAt,tier_id:tier,transaction_id:null,receipt_token:null};
+ const keys=Object.keys(row);sql.prepare(`INSERT INTO ibs_bookings (${keys.join(',')}) VALUES (${keys.map(()=>'?').join(',')})`).run(...keys.map(k=>row[k]));
+};
+for(let i=0;i<4;i++)seed('paid-'+i,'paid');
+seed('expired-hold','pending',1);seed('failed-seat','failed');seed('cancelled-seat','cancelled');
+let available=await availabilityResponse();assert.equal(available.status,200);assert.match(available.headers.get('cache-control'),/no-store/);
+let data=await available.json();assert.deepEqual(data,{enabled:true,tiers:[{id:'guest',remaining:1},{id:'vip',remaining:null}]},'5 total minus 4 paid = 1; unlimited stays null; hidden not exposed');
+seed('active-hold','pending');assert.equal((await (await availabilityResponse()).json()).tiers[0].remaining,0,'Active checkout temporarily reserves last seat');
+sql.prepare('UPDATE ibs_bookings SET expires_at=1 WHERE id=?').run('active-hold');
+assert.equal((await (await availabilityResponse()).json()).tiers[0].remaining,1,'Expired hold releases seat');
+seed('review-seat','review');assert.equal((await (await availabilityResponse()).json()).tiers[0].remaining,0,'Review holds count just as checkout does');
+seed('over-capacity','paid');assert.equal((await (await availabilityResponse()).json()).tiers[0].remaining,0,'Never negative after capacity reductions');
+sql.exec('DELETE FROM ibs_booking_limits');
+assert.equal((await start({slug:'qa-availability',tierId:'guest'})).r.status,409,'Sold out is enforced on the server, not just the display');
+const unlimitedConfig={...availabilityOffer,tiers:[{...tiers[0],capacity:null}]};
+sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify(unlimitedConfig),'qa-availability');
+assert.equal((await start({slug:'qa-availability',tierId:'guest'})).r.status,200,'Unlimited checkout succeeds beyond previous capacity');
+assert.equal((await (await availabilityResponse()).json()).tiers[0].remaining,null);
+env.PAYMENT_CHECKOUTS_DISABLED='true';assert.deepEqual(await (await availabilityResponse()).json(),{enabled:false,tiers:[]});delete env.PAYMENT_CHECKOUTS_DISABLED;
+sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify({...availabilityOffer,enabled:false}),'qa-availability');
+assert.deepEqual(await (await availabilityResponse()).json(),{enabled:false,tiers:[]});
+sql.prepare('UPDATE ibs_editions SET published=0 WHERE slug=?').run('qa-availability');
+assert.equal((await availabilityResponse()).status,404);assert.equal((await availabilityResponse('missing')).status,404);assert.equal((await availabilityResponse('../bad')).status,404);
+// Original offers without tier configuration still expose the standard category.
+sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify({...offer,capacity:500}),'qa-public');
+assert.equal((await (await availabilityResponse('qa-public')).json()).tiers[0].id,'standard');
+console.log('PASS: public remaining seats, sold out, independent unlimited category, expired/active holds, review, no negative counts, no private data, no caching, legacy offers and optional descriptions/terms.');
 sql.close();
 console.log('PASS: production guest checkout, server price, admin validation/toggle, canonical returns, secure cookie recovery, idempotency, capacity, identity-bound decline, paid-state guards, late-money review, protected background reconciliation, outage safety and pause. Isolated DB; fake gateway only.');

@@ -1,4 +1,5 @@
 export type BookingTier = { id: string; name: { en: string; ar: string }; amountMinor: number; capacity: number | null; enabled: boolean };
+export type BookingAvailability = { enabled: boolean; tiers: { id: string; remaining: number | null }[] };
 export type BookingConfig = {
 	tiers?: BookingTier[];
 	enabled: boolean;
@@ -35,7 +36,7 @@ export function validateBookingConfig(value: unknown): BookingConfig {
 	for (const field of ["title", "description", "buttonLabel", "terms"] as const) {
 		for (const lang of ["en", "ar"] as const) {
 			if (typeof c[field]?.[lang] !== "string" || c[field][lang].length > (field === "title" || field === "buttonLabel" ? 160 : 4000)) throw new BookingError("invalid_text");
-			if (c.enabled && field !== "terms" && !c[field][lang].trim()) throw new BookingError("booking_text_required");
+			if (c.enabled && (field === "title" || field === "buttonLabel") && !c[field][lang].trim()) throw new BookingError("booking_text_required");
 		}
 	}
 	let tiers: BookingTier[] | undefined;
