@@ -4,6 +4,7 @@ import { listGalleryAlbums } from "@/lib/db/gallery";
 import { getHeroCarouselSettings, listHeroSlides } from "@/lib/db/hero-slides";
 import { listSocialPosts } from "@/lib/db/social-posts";
 import { getHomeFeature } from "@/lib/db/home-feature";
+import { latestSocialPostsByPlatform } from "@/lib/social-post-order";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function GET() {
 		blogs: blogs.slice(0, 3).map(({ id, slug, title, image, date }) => ({ id, slug, title, image, date })),
 		heroSlides,
 		autoplayDelayMs: heroSettings.autoplayDelayMs,
-		socialPosts: socialPosts.slice(0, 3),
+		socialPosts: latestSocialPostsByPlatform(socialPosts),
 		galleryAlbums: galleryAlbums.slice(0, 3),
 		feature,
 	}, {

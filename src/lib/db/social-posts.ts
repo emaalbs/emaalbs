@@ -30,8 +30,9 @@ export async function listSocialPosts(includeUnpublished = false): Promise<Socia
 	try {
 		const db = await getDB();
 		const where = includeUnpublished ? "" : "WHERE published = 1";
+		const order = includeUnpublished ? "pinned DESC, sort_order ASC, post_date DESC, id DESC" : "created_at DESC, id DESC";
 		const { results } = await db
-			.prepare(`SELECT * FROM social_posts ${where} ORDER BY pinned DESC, sort_order ASC, post_date DESC, id DESC`)
+			.prepare(`SELECT * FROM social_posts ${where} ORDER BY ${order}`)
 			.all();
 		return (results || []).map(rowToSocialPost);
 	} catch (error) {

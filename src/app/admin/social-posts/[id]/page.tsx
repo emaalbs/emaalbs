@@ -199,6 +199,8 @@ export default function SocialPostEditor({ params }: { params: Promise<{ id: str
 
 					<section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 						<h2 className="font-bold text-gray-900">Publishing & order</h2>
+						<p className="mt-3 text-sm leading-7 text-gray-500">Public posts appear newest-added first. The homepage shows the latest published post per platform. Pinning and manual order below apply only to the admin list.</p>
+						<p dir="rtl" className="mt-2 text-sm leading-7 text-gray-500">يظهر الأحدث إضافةً أولاً للزوار، وتعرض الرئيسية أحدث منشور متاح للعامة من كل منصة. التثبيت والترتيب اليدوي أدناه لتنظيم قائمة الأدمن فقط.</p>
 						<div className="mt-5 grid gap-4 sm:grid-cols-2">
 							<label className="text-sm font-medium text-gray-700">Post date<input type="date" value={post.postDate} onChange={(event) => setPost((current) => ({ ...current, postDate: event.target.value }))} className="mt-2 block w-full rounded-xl border border-gray-200 px-3 py-2.5 outline-none focus:border-[#007F84]" /></label>
 							<label className="text-sm font-medium text-gray-700">Sort order<input type="number" value={post.sortOrder} onChange={(event) => setPost((current) => ({ ...current, sortOrder: Number(event.target.value) || 0 }))} className="mt-2 block w-full rounded-xl border border-gray-200 px-3 py-2.5 outline-none focus:border-[#007F84]" /></label>

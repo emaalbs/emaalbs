@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { SocialPlatform, SocialPost } from "@/data/social-posts";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
+import { newestSocialPosts } from "@/lib/social-post-order";
 
 type Filter = "all" | SocialPlatform;
 
@@ -18,7 +19,7 @@ const filters: { value: Filter; en: string; ar: string }[] = [
 export function SocialFeed({ posts, locale }: { posts: SocialPost[]; locale: "en" | "ar" }) {
 	const [filter, setFilter] = useState<Filter>("all");
 	const visiblePosts = useMemo(
-		() => filter === "all" ? posts : posts.filter((post) => post.platform === filter),
+		() => newestSocialPosts(posts).filter(post => filter === "all" || post.platform === filter),
 		[filter, posts],
 	);
 
@@ -43,9 +44,9 @@ export function SocialFeed({ posts, locale }: { posts: SocialPost[]; locale: "en
 			</div>
 
 			{visiblePosts.length ? (
-				<div className="mt-12 columns-1 gap-7 lg:columns-2">
+				<div data-social-feed className="mt-12 grid grid-cols-1 items-start gap-7 lg:grid-cols-2">
 					{visiblePosts.map((post) => (
-						<div key={post.id} className="mb-7 break-inside-avoid">
+						<div key={post.id} data-social-post={post.id} data-social-platform={post.platform} className="min-w-0">
 							<SocialPostCard post={post} locale={locale} />
 						</div>
 					))}

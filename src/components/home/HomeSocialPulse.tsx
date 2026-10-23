@@ -4,6 +4,7 @@ import type { SocialPost } from "@/data/social-posts";
 import { Container } from "@/components/ui/Container";
 import { SocialPlatformBadge } from "@/components/social/SocialPlatformBadge";
 import { getSocialPlatformLabel, getYouTubeVideoId } from "@/lib/social-platforms";
+import { latestSocialPostsByPlatform } from "@/lib/social-post-order";
 
 function previewImage(post: SocialPost): string {
 	if (post.imageUrl) return post.imageUrl;
@@ -23,10 +24,11 @@ const platformTone: Record<SocialPost["platform"], string> = {
 };
 
 export function HomeSocialPulse({ posts, locale }: { posts: SocialPost[]; locale: "en" | "ar" }) {
-	if (!posts.length) return null;
+	const latestPosts = latestSocialPostsByPlatform(posts);
+	if (!latestPosts.length) return null;
 	const isAr = locale === "ar";
 	return (
-		<section className="relative overflow-hidden bg-white py-24 lg:py-32">
+		<section id="home-social-pulse" className="relative overflow-hidden bg-white py-24 lg:py-32">
 			<div className="absolute -end-24 top-12 h-72 w-72 rounded-full bg-[var(--color-teal)]/5 blur-3xl" />
 			<Container>
 				<div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
@@ -42,12 +44,12 @@ export function HomeSocialPulse({ posts, locale }: { posts: SocialPost[]; locale
 					</Link>
 				</div>
 
-				<div className="mt-14 grid gap-6 lg:grid-cols-3">
-					{posts.slice(0, 3).map((post, index) => {
+				<div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					{latestPosts.map((post, index) => {
 						const image = previewImage(post);
 						const title = post.title[locale] || post.caption[locale] || (isAr ? `تابع أحدث منشوراتنا على ${getSocialPlatformLabel(post.platform)}` : `See our latest update on ${getSocialPlatformLabel(post.platform)}`);
 						return (
-							<a key={post.id} href={post.postUrl} target="_blank" rel="noopener noreferrer" className="group overflow-hidden rounded-[26px] border border-[var(--color-line)] bg-[var(--color-warm)] transition duration-500 hover:-translate-y-1 hover:border-[var(--color-teal)]/35 hover:shadow-[0_22px_60px_rgba(1,51,77,0.12)] motion-reduce:transition-none">
+							<a key={post.id} data-social-post={post.id} data-social-platform={post.platform} href={post.postUrl} target="_blank" rel="noopener noreferrer" className="group overflow-hidden rounded-[26px] border border-[var(--color-line)] bg-[var(--color-warm)] transition duration-500 hover:-translate-y-1 hover:border-[var(--color-teal)]/35 hover:shadow-[0_22px_60px_rgba(1,51,77,0.12)] motion-reduce:transition-none">
 								<div className={`relative aspect-[16/10] overflow-hidden bg-gradient-to-br ${platformTone[post.platform]}`}>
 									{image ? <img src={image} alt="" className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.035] motion-reduce:transition-none" /> : null}
 									<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-navy-dark)]/65 via-transparent to-transparent" />
