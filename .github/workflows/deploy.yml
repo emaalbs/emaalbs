@@ -16,13 +16,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Verify payment safety guards
-        run: node scripts/test-payment-core.mjs
+        run: |
+          node scripts/test-payment-core.mjs
+          node scripts/test-tabadul-core.mjs
+          node scripts/test-public-payments.mjs
 
       - name: Deploy with OpenNext
         run: npm run deploy

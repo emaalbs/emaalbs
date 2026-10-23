@@ -18,6 +18,7 @@ import { EditionCtaBand } from "@/components/ibs/EditionCtaBand";
 import { EditionQuickNav } from "@/components/ibs/EditionQuickNav";
 import { EditionBooking } from "@/components/ibs/EditionBooking";
 import { getBookingConfig } from "@/lib/bookings";
+import { paymentCheckoutsDisabled } from "@/lib/payments/availability";
 import { getEditionBySlug, getEditions } from "@/data/ibs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { eventJsonLd } from "@/lib/seo/structured-data";
@@ -55,6 +56,7 @@ export default async function IbsEditionPage({
 
 	const currentLocale = locale === "ar" ? "ar" : "en";
 	const booking = await getBookingConfig(slug);
+	if (await paymentCheckoutsDisabled()) booking.enabled = false;
 
 	return (
 		<>

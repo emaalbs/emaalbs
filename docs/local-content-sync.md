@@ -1,5 +1,18 @@
 # Live → local content sync
 
+## Verified private-content sync — 2026-10-23
+
+Authenticated, read-only production D1 export was compared with a fresh local backup. Content was merged into LOCAL D1 only, including unpublished drafts. Production IDs were mapped for magazines (by slug) and social posts (saved ID map); local primary keys were retained to avoid collisions.
+
+- Imported two unpublished social posts, updated three video titles and one Edition sort order, and aligned source timestamps. The 392 gallery photos already matched.
+- Verified all live content rows against the local result. Preserved local-only content, including one older social post and two archived payment demo Editions; this is not a deletion mirror.
+- Verified all non-content tables unchanged, including bookings, payment events, Tabadul attempts, booking settings/limits, migrations, admin accounts, contacts and subscribers.
+- Checked 524 referenced media keys: 522 existed locally and two missing hero images were downloaded and verified. Unreferenced R2 objects were not cloned. External embeds still require internet.
+- Remote Git `main` and the local base both pointed to `5479a6c384e2e729a0a7e39338808236f60a3514`. Local uncommitted payment work was preserved; this Git check does not establish the provenance of an independently deployed Worker bundle.
+- No push, deployment, production database write, or payment-gateway request was performed. Checkout pause and archived demo visibility remain local safeguards.
+
+Private artifacts in `.wrangler/backups/`: `live-readonly-sync-20261023.sql`, `local-before-sync-20261023.sql`, `code-before-sync-20261023.zip`, `live-social-id-map-before-20261023.json`, and `full-sync-applied-20261023.json`. Keep SQL exports private. The dated helper in `.wrangler/` is a one-shot merge, not a reusable sync command; take new snapshots and re-plan before any future sync.
+
 The owner's standing rule: **sync means bring live content into the offline test checkout. Never push, deploy, run a remote mutation, or publish without a separate explicit request.**
 
 Working folder: `C:\Users\PC\Desktop\emaal-website-test`.

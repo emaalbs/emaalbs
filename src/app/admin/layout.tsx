@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, PanelsTopLeft, Share2, Images, Sparkles } from "lucide-react";
+import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, PanelsTopLeft, Share2, Images, Sparkles, Wallet } from "lucide-react";
 
 const baseNav = [
 	{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -15,6 +15,7 @@ const baseNav = [
 	{ label: "Magazines", href: "/admin/magazines", icon: BookOpen },
 	{ label: "IBS Editions", href: "/admin/ibs/editions", icon: CalendarDays },
 	{ label: "IBS Bookings", href: "/admin/bookings", icon: CalendarDays },
+	{ label: "Payments / المدفوعات", href: "/admin/payments", icon: Wallet },
 	{ label: "Contacts", href: "/admin/contacts", icon: Mail },
 	{ label: "Subscribers", href: "/admin/subscribers", icon: Users },
 ];

@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
 		const token = await signSession({ userId: user.id as number, username, isSuperAdmin: (user.is_super_admin as number) === 1 }, ADMIN_SECRET);
 		const response = NextResponse.json({ success: true });
-		response.headers.set("Set-Cookie", sessionCookie(token, 24 * 60 * 60));
+		response.headers.set("Set-Cookie", sessionCookie(token, 24 * 60 * 60, new URL(request.url).protocol === "https:"));
 		return response;
 	} catch (err) {
 		return NextResponse.json({ error: "Login failed" }, { status: 500 });

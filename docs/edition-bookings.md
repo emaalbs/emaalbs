@@ -15,7 +15,7 @@ Local D1/R2 are used by default without Cloudflare login. `LOCAL_REMOTE_BINDINGS
 
 ## Gateway contract — real integration still required
 
-No commercial gateway has been selected or integrated. `src/lib/payments/provider.ts` defines `PaymentProvider`. Its bridge adapter is an integration contract, not a working universal payment gateway. Implement a provider-specific adapter or a trusted server-side bridge for the selected vendor, then test against that vendor's sandbox before enabling real payments.
+`src/lib/payments/provider.ts` defines `PaymentProvider`. Its bridge adapter is an integration contract, not a working universal payment gateway. A local-only Tabadul adapter and simulator are implemented; see `docs/tabadul-preview.md`. An unpaid registration and authenticated status queries were tested with the owner's production account; the hosted page displayed IQD 1,000. Actual card/3DS/settlement testing remains for the owner. Public Tabadul rollout remains disabled. The following bridge contract is unchanged and is not Tabadul's native API or webhook format.
 
 Server-only configuration, never entered in admin fields or exposed with `NEXT_PUBLIC_`:
 

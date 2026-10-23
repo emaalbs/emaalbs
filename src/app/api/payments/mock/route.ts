@@ -2,9 +2,11 @@ import { authorizedBooking, applyPaymentEvent } from "@/lib/bookings";
 import { bookingBody, bookingFailure, bookingJson, requireSameOrigin } from "@/lib/booking-http";
 import { BookingError } from "@/lib/booking-config";
 import { isLocalPaymentTest } from "@/lib/payments/core";
+import { paymentCheckoutsDisabled } from "@/lib/payments/availability";
 export async function POST(request: Request) {
 	try {
 		if (!isLocalPaymentTest(request.url, process.env.NODE_ENV)) throw new BookingError("not_found", 404);
+		if (await paymentCheckoutsDisabled()) throw new BookingError("not_found", 404);
 		requireSameOrigin(request);
 		const { id, status } = await bookingBody(request);
 		if (typeof id !== "string" || !["paid", "failed", "cancelled"].includes(status)) throw new BookingError("invalid_details");

@@ -76,13 +76,14 @@ export async function verifySession(token: string, secret: string): Promise<Sess
 
 const COOKIE_NAME = "emmal-session";
 
-export function sessionCookie(value: string, maxAge?: number): string {
+export function sessionCookie(value: string, maxAge?: number, secure = false): string {
 	const attrs = [
 		"HttpOnly",
 		"SameSite=Strict",
 		"Path=/",
 	];
 	if (maxAge) attrs.push(`Max-Age=${maxAge}`);
+	if (secure) attrs.push("Secure");
 	return `${COOKIE_NAME}=${value}; ${attrs.join("; ")}`;
 }
 
@@ -99,10 +100,12 @@ export function parseSessionCookie(header?: string | null): string | null {
 // ---- Middleware / Route helpers ----
 
 export async function getAdminSecret(): Promise<string | undefined> {
+	if (process.env.ADMIN_SESSION_SECRET) return process.env.ADMIN_SESSION_SECRET;
 	if (process.env.ADMIN_SECRET) return process.env.ADMIN_SECRET;
 	try {
 		const { env } = await getCloudflareContext({ async: true });
-		return (env as unknown as { ADMIN_SECRET?: string }).ADMIN_SECRET;
+		const secrets = env as unknown as { ADMIN_SESSION_SECRET?: string; ADMIN_SECRET?: string };
+		return secrets.ADMIN_SESSION_SECRET || secrets.ADMIN_SECRET;
 	} catch {
 		return undefined;
 	}

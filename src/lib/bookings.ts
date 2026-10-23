@@ -1,6 +1,7 @@
 import { getEnv } from "@/lib/cloudflare";
 import { BookingError, defaultBookingConfig, type BookingConfig } from "./booking-config";
 import { digest, type BookingStatus, type PaymentEvent } from "./payments/core";
+import { guestBookingCookie } from "./payments/guest-access";
 
 export type BookingRow = { id: string; edition_slug: string; offer_title: string; customer_name: string; email: string; phone: string; locale: string; amount_minor: number; currency: string; status: BookingStatus; provider: string; access_hash: string; request_hash: string; provider_session: string | null; checkout_url: string | null; transaction_id: string | null; expires_at: number; created_at: number };
 export async function getBookingConfig(slug: string): Promise<BookingConfig> {
@@ -13,7 +14,7 @@ export async function findBooking(id: string) {
 	return DB.prepare("SELECT * FROM ibs_bookings WHERE id = ?").bind(id).first<BookingRow>();
 }
 export async function authorizedBooking(id: string, request: Request) {
-	const token = request.headers.get("Authorization")?.replace(/^Bearer /, "") ?? "";
+	const token = request.headers.get("Authorization")?.replace(/^Bearer /, "") || guestBookingCookie(id, request);
 	if (!/^[a-f0-9]{64}$/.test(token)) throw new BookingError("not_found", 404);
 	const row = await findBooking(id);
 	if (!row || row.access_hash !== await digest(token)) throw new BookingError("not_found", 404);

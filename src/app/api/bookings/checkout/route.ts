@@ -4,6 +4,7 @@ import { getBookingConfig, limitBookingRequests, publicBooking, type BookingRow 
 import { bookingBody, bookingFailure, bookingJson, requireSameOrigin } from "@/lib/booking-http";
 import { digest } from "@/lib/payments/core";
 import { getPaymentProvider, paymentEnv } from "@/lib/payments/provider";
+import { withGuestBookingAccess } from "@/lib/payments/guest-access";
 
 export async function POST(request: Request) {
 	try {
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
 			await limitBookingRequests(request);
 			const config = await getBookingConfig(slug);
 			if (!config.enabled || config.amountMinor <= 0) throw new BookingError("booking_closed", 409);
+			provider.validateOffer?.({ slug, amountMinor: config.amountMinor, currency: config.currency, realPaymentConsent: body.realPaymentConsent === true });
 			const now = Date.now();
 			const id = crypto.randomUUID();
 			// The capacity predicate and insert execute as ONE statement, including concurrent requests.
@@ -38,15 +40,23 @@ export async function POST(request: Request) {
 			if (row.request_hash !== requestHash) throw new BookingError("request_conflict", 409);
 		}
 		if (row.provider !== provider.name) throw new BookingError("payments_unavailable", 503);
-		if (row.status !== "pending" || row.expires_at <= Date.now()) return bookingJson({ booking: publicBooking(row), checkoutUrl: null });
+		provider.validateOffer?.({ slug: row.edition_slug, amountMinor: row.amount_minor, currency: row.currency, realPaymentConsent: body.realPaymentConsent === true });
+		const reply = (value: unknown, status = 200) => withGuestBookingAccess(bookingJson(value, status), row!.id, token, request);
+		if (row.status !== "pending" || row.expires_at <= Date.now()) return reply({ booking: publicBooking(row), checkoutUrl: null });
 		if (!row.checkout_url) {
-			const origin = provider.name === "mock" ? new URL(request.url).origin : (await paymentEnv()).PAYMENT_PUBLIC_ORIGIN!;
-			if (provider.name !== "mock" && new URL(origin).protocol !== "https:") throw new BookingError("payments_unavailable", 503);
-			const checkout = await provider.createCheckout({ bookingId: row.id, amountMinor: row.amount_minor, currency: row.currency, title: JSON.parse(row.offer_title)[locale], expiresAt: row.expires_at,
-				returnUrl: `${origin}/${locale}/booking/${row.id}`, webhookUrl: `${origin}/api/payments/webhook/bridge` });
-			await DB.prepare("UPDATE ibs_bookings SET provider_session=?,checkout_url=?,updated_at=? WHERE id=? AND provider_session IS NULL").bind(checkout.sessionId, checkout.checkoutUrl, Date.now(), row.id).run();
+			const origin = provider.returnOrigin || (provider.name === "mock" ? new URL(request.url).origin : (await paymentEnv()).PAYMENT_PUBLIC_ORIGIN!);
+			if (provider.name === "bridge" && new URL(origin).protocol !== "https:") throw new BookingError("payments_unavailable", 503);
+			let checkout;
+			try {
+				checkout = await provider.createCheckout({ bookingId: row.id, amountMinor: row.amount_minor, currency: row.currency, title: JSON.parse(row.offer_title)[locale], expiresAt: row.expires_at,
+					returnUrl: `${origin}/${locale}/booking/${row.id}`, webhookUrl: `${origin}/api/payments/webhook/bridge` });
+			} catch (error) {
+				if (error instanceof BookingError) return reply({ error: error.code, booking: publicBooking(row) }, error.status);
+				throw error;
+			}
+			await DB.prepare("UPDATE ibs_bookings SET provider_session=?,checkout_url=?,updated_at=? WHERE id=? AND (provider_session IS NULL OR provider_session=?)").bind(checkout.sessionId, checkout.checkoutUrl, Date.now(), row.id, checkout.sessionId).run();
 			row = (await DB.prepare("SELECT * FROM ibs_bookings WHERE id=?").bind(row.id).first<BookingRow>())!;
 		}
-		return bookingJson({ booking: publicBooking(row), checkoutUrl: row.checkout_url });
+		return reply({ booking: publicBooking(row), checkoutUrl: row.checkout_url });
 	} catch (error) { return bookingFailure(error); }
 }
