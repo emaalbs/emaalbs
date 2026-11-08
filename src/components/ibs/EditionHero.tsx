@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
 import type { IbsEdition } from "@/data/ibs/types";
+import { EditionDateList } from "./EditionDateList";
 
 export function EditionHero({ edition }: { edition: IbsEdition }) {
 	const { locale, dir } = useI18n();
@@ -75,7 +76,7 @@ export function EditionHero({ edition }: { edition: IbsEdition }) {
 						<div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-[13.5px] text-white/80">
 							<span className="inline-flex items-center gap-2">
 								<Calendar className="h-4 w-4 text-[var(--color-gold)]" />
-								{edition.dates[locale]}
+								<EditionDateList dates={edition.dates} locale={locale} />
 							</span>
 							<span className="inline-flex items-center gap-2">
 								<MapPin className="h-4 w-4 text-[var(--color-gold)]" />

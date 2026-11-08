@@ -22,6 +22,7 @@ import { paymentCheckoutsDisabled, localBookingSimulationEnabled } from "@/lib/p
 import { getEditionBySlug, getEditions } from "@/data/ibs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { eventJsonLd } from "@/lib/seo/structured-data";
+import { readEditionDates } from "@/lib/edition-dates";
 
 export async function generateMetadata({
 	params,
@@ -69,7 +70,7 @@ export default async function IbsEditionPage({
 							title: edition.title[currentLocale],
 							description: edition.summary[currentLocale],
 							image: edition.heroImage,
-							startDate: edition.dates?.en,
+							startDate: readEditionDates(edition.dates).primary.en,
 							location: edition.location?.[currentLocale],
 							slug,
 							locale: currentLocale,

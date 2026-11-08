@@ -33,6 +33,7 @@ import type {
 } from "@/data/ibs/types";
 import { SectionCard } from "@/components/admin/ibs/SectionCard";
 import { BasicInfoSection } from "@/components/admin/ibs/sections/BasicInfoSection";
+import { readEditionDates } from "@/lib/edition-dates";
 import { StatsSection } from "@/components/admin/ibs/sections/StatsSection";
 import { ThemesSection } from "@/components/admin/ibs/sections/ThemesSection";
 import { SpeakersSection } from "@/components/admin/ibs/sections/SpeakersSection";
@@ -179,6 +180,7 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 
 	function validate(): boolean {
 		const e: Record<string, string> = {};
+		const { primary } = readEditionDates(edition.dates);
 		const req = [
 			["title_en", edition.title.en, "Title (EN)"],
 			["title_ar", edition.title.ar, "Title (AR)"],
@@ -186,8 +188,8 @@ export default function IbsEditionEditorPage({ params }: { params: Promise<{ slu
 			["tagline_ar", edition.tagline.ar, "Tagline (AR)"],
 			["summary_en", edition.summary.en, "Summary (EN)"],
 			["summary_ar", edition.summary.ar, "Summary (AR)"],
-			["dates_en", edition.dates.en, "Dates (EN)"],
-			["dates_ar", edition.dates.ar, "Dates (AR)"],
+			["dates_en", primary.en, "Dates (EN)"],
+			["dates_ar", primary.ar, "Dates (AR)"],
 			["location_en", edition.location.en, "Location (EN)"],
 			["location_ar", edition.location.ar, "Location (AR)"],
 		] as const;

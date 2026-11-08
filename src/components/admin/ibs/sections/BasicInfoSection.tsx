@@ -3,7 +3,7 @@
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { VideoUpload } from "@/components/admin/VideoUpload";
 import { BilingualField } from "@/components/admin/BilingualField";
-import { Globe } from "lucide-react";
+import { EditionDateFields } from "../EditionDateFields";
 import type { IbsEdition } from "@/data/ibs/types";
 
 interface Props {
@@ -72,40 +72,8 @@ export function BasicInfoSection({ edition, isNew, slugAuto, allEditions, errors
 				placeholderAr="نظرة عامة موجزة عن هذه النسخة..."
 			/>
 
-			<div className="grid gap-4 md:grid-cols-2">
-				<div>
-					<label className="mb-1 block text-sm font-medium text-gray-700">
-						Start Date <span className="text-red-500">*</span>
-					</label>
-					<input
-						type="date"
-						value={edition.dates.en ? edition.dates.en.split("T")[0] : ""}
-						onChange={(e) => {
-							const v = e.target.value;
-							onChange({ dates: { en: v, ar: v } });
-							onClearErr("dates_en");
-							onClearErr("dates_ar");
-						}}
-						className={inputCls(errors.dates_en)}
-					/>
-					{(errors.dates_en || errors.dates_ar) && (
-						<p className="mt-1 text-xs text-red-500">{errors.dates_en || errors.dates_ar}</p>
-					)}
-				</div>
-				<div>
-					<label className="mb-1 block text-sm font-medium text-gray-700">
-						Display Date (EN)
-					</label>
-					<input
-						type="text"
-						value={edition.dates.en}
-						onChange={(e) => onChange({ dates: { ...edition.dates, en: e.target.value } })}
-						className={inputCls()}
-						placeholder="March 15-17, 2026"
-					/>
-					<p className="mt-1 text-xs text-gray-400">Override how the date appears on the site</p>
-				</div>
-			</div>
+			<EditionDateFields dates={edition.dates} error={errors.dates_en || errors.dates_ar}
+				onChange={(dates) => { onChange({ dates }); onClearErr("dates_en"); onClearErr("dates_ar"); }} />
 
 			<BilingualField
 				label="Location"

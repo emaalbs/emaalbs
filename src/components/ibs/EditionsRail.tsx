@@ -8,6 +8,7 @@ import { useI18n } from "@/i18n/provider";
 import { ibsOverview } from "@/data/ibs";
 import type { IbsEdition } from "@/data/ibs/types";
 import { IbsSectionHeading } from "./IbsSectionHeading";
+import { EditionDateList } from "./EditionDateList";
 
 export function EditionsRail({ editions }: { editions: IbsEdition[] }) {
 	const { locale, dir } = useI18n();
@@ -76,7 +77,7 @@ export function EditionsRail({ editions }: { editions: IbsEdition[] }) {
 									{e.tagline[locale]}
 								</p>
 								<div className="mt-5 flex items-center justify-between border-t border-[var(--color-line)] pt-4 text-[12px] text-[var(--color-slate)]">
-									<span>{e.dates[locale]}</span>
+									<EditionDateList dates={e.dates} locale={locale} />
 									<span className="inline-flex items-center gap-1.5 font-semibold text-[var(--color-navy)] transition-colors group-hover:text-[var(--color-gold-deep)]">
 										{t.viewEdition[locale]}
 										<ArrowRight
