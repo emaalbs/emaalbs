@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
 	// This endpoint independently authenticates a server-only cron secret.
 	if (method === "POST" && pathname === "/api/internal/payments/reconcile") return NextResponse.next();
 	// Public checkout and capability-protected status; webhook verifies its own signature.
-	if ((method === "POST" && (["/api/bookings/checkout", "/api/payments/mock", "/api/payments/tabadul-preview", "/api/payments/webhook/bridge"].includes(pathname) || /^\/api\/bookings\/[a-f0-9-]{36}\/verify-payment$/.test(pathname))) ||
+	if ((method === "POST" && (["/api/bookings/checkout", "/api/payments/mock", "/api/payments/tabadul-preview", "/api/payments/webhook/bridge"].includes(pathname) || /^\/api\/bookings\/[a-f0-9-]{36}\/(verify-payment|retry-payment)$/.test(pathname))) ||
 		(method === "GET" && (/^\/api\/bookings\/[a-f0-9-]{36}(\/receipt)?$/.test(pathname) || /^\/api\/receipts\/[a-f0-9-]{36}$/.test(pathname)))) {
 		return NextResponse.next();
 	}

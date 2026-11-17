@@ -5,8 +5,11 @@ import { ArrowUpRight, Check, Ticket, ShieldCheck, Clock3 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { useI18n } from "@/i18n/provider";
 import { type BookingConfig, type BookingAvailability, formatBookingPrice, bookingTiers } from "@/lib/booking-config";
+import { digest } from "@/lib/payments/core";
 
 const messages: Record<string, [string, string]> = {
+	retry_not_safe: ["We cannot confirm that it is safe to retry yet. Refresh the booking status or contact the organizer. Do not pay again while the result is uncertain.", "لم نتمكن من تأكيد إمكانية إعادة الدفع بأمان. حدّث حالة الحجز أو تواصل مع المنظم، ولا تكرر الدفع ما دامت النتيجة غير مؤكدة."],
+	booking_changed: ["The booking details or price have changed. Return to the summit and review the current offer before booking.", "تغيرت تفاصيل الحجز أو السعر. عد إلى صفحة القمة وراجع العرض الحالي قبل الحجز."],
 	payment_origin_required: ["Please open this edition on https://emaalbs.com to continue payment.", "يرجى فتح صفحة القمة على https://emaalbs.com لمتابعة الدفع."],
 	unauthorized: ["This private real-payment test requires local admin sign-in. Sign in using the link below in the same browser, then return here. Your form remains filled in.", "تجربة الدفع الفعلي الخاصة تتطلب تسجيل الدخول إلى الأدمن المحلي. افتح رابط الدخول أدناه في المتصفح نفسه، ثم عد إلى هذه الصفحة؛ ستبقى بياناتك في النموذج."],
 	payments_unavailable: ["Online payment is not available yet. Please contact the organizer.", "الدفع الإلكتروني غير متاح حاليًا. يرجى التواصل مع المنظم."],
@@ -102,11 +105,27 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 			// Verify storage before reserving; this capability stays in this browser tab, never in URLs.
 			sessionStorage.setItem(attemptKey, JSON.stringify({ token: key, fingerprint, createdAt: previous?.token === key ? previous.createdAt : Date.now() }));
 			const response = await fetch("/api/bookings/checkout", { method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": key, ...(preview ? { "X-IBS-Payment-Preview": preview } : {}) }, body: payload });
-			const result = await response.json() as { error?: string; booking: { id: string }; checkoutUrl: string | null };
+			let result = await response.json() as { error?: string; booking: { id: string; status?: string; provider?: string }; checkoutUrl: string | null };
 			if (result.booking?.id) { sessionStorage.setItem(`ibs-booking:${result.booking.id}`, key); setBookingReference(result.booking.id); }
 			if (response.status === 401) { setNeedsLogin(true); throw new Error("unauthorized"); }
 			if (!response.ok) throw new Error(result.error);
-			sessionStorage.setItem(`ibs-booking:${result.booking.id}`, key);
+			if (result.booking.status === "failed" && ["tabadul", "tabadul-preview"].includes(result.booking.provider || "")) {
+				const previousId = result.booking.id;
+				const retried = await fetch(`/api/bookings/${previousId}/retry-payment`, { method: "POST", credentials: "same-origin", headers: { Authorization: `Bearer ${key}` } });
+				result = await retried.json();
+				const retryKey = await digest(`ibs-retry:v1:${previousId}:${key}`);
+				if (result.booking?.id) {
+					sessionStorage.setItem(`ibs-booking:${result.booking.id}`, retryKey);
+					sessionStorage.setItem(attemptKey, JSON.stringify({ token: retryKey, fingerprint, createdAt: Date.now() }));
+					setBookingReference(result.booking.id);
+				}
+				if (!retried.ok) {
+					// The server already verified failure and created no new attempt.
+					// Let the visitor review and accept the updated offer on the next submit.
+					if (result.error === "booking_changed") sessionStorage.removeItem(attemptKey);
+					throw new Error(result.error);
+				}
+			}
 			window.location.assign(result.checkoutUrl || `/${locale}/booking/${result.booking.id}`);
 		} catch (e) { setError(bookingMessage(e instanceof Error ? e.message : "", ar)); }
 		finally { setBusy(false); }

@@ -27,6 +27,8 @@ export async function POST(request: Request) {
 			const config = await getBookingConfig(slug);
 			const tier = bookingTiers(config).find(t => t.id === tierId && t.enabled);
 			if (!config.enabled || !tier || tier.amountMinor <= 0) throw new BookingError("booking_closed", 409);
+			// A retry must never silently accept a changed price, category or terms.
+			if (body.expectedOffer && (body.expectedOffer.amountMinor !== tier.amountMinor || body.expectedOffer.currency !== config.currency || body.expectedOffer.title !== JSON.stringify(config.title) || body.expectedOffer.terms !== JSON.stringify(config.terms) || body.expectedOffer.tierName !== JSON.stringify(tier.name))) throw new BookingError("booking_changed", 409);
 			provider.validateOffer?.({ slug, amountMinor: tier.amountMinor, currency: config.currency, realPaymentConsent: body.realPaymentConsent === true });
 			const now = Date.now();
 			const id = crypto.randomUUID();
@@ -37,9 +39,10 @@ export async function POST(request: Request) {
 				(SELECT json_object('title',json_object('en',title_en,'ar',title_ar),'date',json_object('en',dates_en,'ar',dates_ar),'location',json_object('en',location_en,'ar',location_ar)) FROM ibs_editions WHERE slug=?)
 				WHERE EXISTS(SELECT 1 FROM ibs_editions WHERE slug=? AND published=1)
 				AND EXISTS(SELECT 1 FROM ibs_booking_settings WHERE edition_slug=? AND config_json=?)
+				AND (? IS NULL OR EXISTS(SELECT 1 FROM ibs_bookings WHERE id=? AND status='failed'))
 				AND (? IS NULL OR (SELECT COUNT(*) FROM ibs_bookings WHERE edition_slug=? AND tier_id=? AND
 				(status IN ('paid','review') OR (status='pending' AND expires_at>?))) < ?)`)
-				.bind(id, slug, JSON.stringify(config.title), name.trim(), email.trim().toLowerCase(), phone.trim(), locale, tier.amountMinor, config.currency, provider.name, accessHash, requestHash, JSON.stringify(config.terms), now + 20 * 60000, now, now, tier.id, JSON.stringify(tier.name), slug, slug, slug, JSON.stringify(config), tier.capacity, slug, tier.id, now, tier.capacity).run();
+				.bind(id, slug, JSON.stringify(config.title), name.trim(), email.trim().toLowerCase(), phone.trim(), locale, tier.amountMinor, config.currency, provider.name, accessHash, requestHash, JSON.stringify(config.terms), now + 20 * 60000, now, now, tier.id, JSON.stringify(tier.name), slug, slug, slug, JSON.stringify(config), typeof body.retryOf === "string" ? body.retryOf : null, typeof body.retryOf === "string" ? body.retryOf : null, tier.capacity, slug, tier.id, now, tier.capacity).run();
 			row = await DB.prepare("SELECT * FROM ibs_bookings WHERE access_hash=?").bind(accessHash).first<BookingRow>();
 			if (!row) throw new BookingError("sold_out_or_changed", 409);
 			if (row.request_hash !== requestHash) throw new BookingError("request_conflict", 409);

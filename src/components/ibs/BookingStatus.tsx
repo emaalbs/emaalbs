@@ -5,8 +5,10 @@ import { CheckCircle2, Clock3, CircleAlert, Ticket } from "lucide-react";
 import { formatBookingPrice } from "@/lib/booking-config";
 import { BookingReceipt } from "./BookingReceipt";
 import type { BookingReceipt as Receipt } from "@/lib/receipt-types";
+import { bookingMessage } from "./EditionBooking";
+import { digest } from "@/lib/payments/core";
 
-type Status = { id: string; editionSlug: string; title: string; tierName?: string; amountMinor: number; currency: string; status: string; provider: string };
+type Status = { id: string; editionSlug: string; title: string; tierName?: string; amountMinor: number; currency: string; status: string; provider: string; retryAllowed?: boolean; gatewayState?: number };
 const text: Record<string, [string, string]> = {
 	pending: ["Awaiting payment", "بانتظار الدفع"], paid: ["Your booking is confirmed", "تم تأكيد حجزك"], failed: ["Payment was unsuccessful", "لم تنجح عملية الدفع"], cancelled: ["Payment was cancelled", "أُلغيت عملية الدفع"], expired: ["Your reservation has expired", "انتهت مهلة الحجز"], review: ["Payment needs organizer review", "عملية الدفع تحتاج مراجعة المنظم"],
 };
@@ -15,6 +17,7 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 	const [booking, setBooking] = useState<Status | null>(null);
 	const [error, setError] = useState("");
 	const [busy, setBusy] = useState(false);
+	const [retryError, setRetryError] = useState("");
 	const [checks, setChecks] = useState(0);
 	const [verification, setVerification] = useState("");
 	const [receipt,setReceipt] = useState<Receipt|null>(null);
@@ -57,6 +60,40 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 		const timer = setTimeout(() => { setChecks(n => n + 1); void refresh(); }, 15000);
 		return () => clearTimeout(timer);
 	}, [booking, checks]); // eslint-disable-line react-hooks/exhaustive-deps
+	async function retryPayment() {
+		if (busy || !booking?.retryAllowed) return;
+		setBusy(true); setRetryError("");
+		try {
+			let token = "";
+			try { token = sessionStorage.getItem(`ibs-booking:${id}`) || ""; } catch { /* Cookie recovery. */ }
+			const response = await fetch(`/api/bookings/${id}/retry-payment`, { method: "POST", credentials: "same-origin", headers: token ? { Authorization: `Bearer ${token}` } : {} });
+			const result = await response.json() as { error?: string; booking?: Status; checkoutUrl?: string | null };
+			if (result.booking?.id) {
+				if (token) {
+					const retryToken = await digest(`ibs-retry:v1:${id}:${token}`);
+					try {
+						sessionStorage.setItem(`ibs-booking:${result.booking.id}`, retryToken);
+						const key = `ibs-booking-pending:${booking.editionSlug}`;
+						const pending = JSON.parse(sessionStorage.getItem(key) || "null");
+						if (pending?.token === token) sessionStorage.setItem(key, JSON.stringify({ ...pending, token: retryToken, createdAt: Date.now() }));
+					} catch { /* New booking also has an HttpOnly capability cookie. */ }
+				}
+				// Registration uncertainty belongs to the NEW attempt; never retry the old order.
+				window.location.assign(result.checkoutUrl || `/${locale}/booking/${result.booking.id}`);
+				return;
+			}
+			if (result.error === "booking_changed" && token) {
+				try {
+					const key = `ibs-booking-pending:${booking.editionSlug}`;
+					if (JSON.parse(sessionStorage.getItem(key) || "null")?.token === token) sessionStorage.removeItem(key);
+				} catch { /* No stored form attempt to reset. */ }
+			}
+			throw new Error(result.error || "retry_not_safe");
+		} catch (e) {
+			setRetryError(bookingMessage(e instanceof Error ? e.message : "retry_not_safe", ar));
+			await refresh();
+		} finally { setBusy(false); }
+	}
 	async function simulate(status: string) {
 		setBusy(true);
 		try {
@@ -87,6 +124,12 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 			<p className="mt-8 text-xs text-[var(--color-slate)]">{ar ? "رقم الحجز" : "Booking reference"}</p><p dir="ltr" className="mt-2 break-all font-mono text-sm">{id}</p>
 			{booking?.status === "pending" && <p className="mt-6 text-sm leading-7">{ar ? "ننتظر تأكيد شركة الدفع. العودة لهذه الصفحة وحدها لا تؤكد الحجز." : "Waiting for payment provider confirmation. Returning to this page alone does not confirm payment."}</p>}
 			{booking?.status === "review" && <p className="mt-6 text-sm leading-7">{ar ? "تحتاج العملية مراجعة بسبب توقيت الدفع أو تغيّر حالته، وقد يشمل ذلك الاسترجاع. تواصل مع المنظم لتأكيد المقعد وحالة المبلغ." : "The payment timing or status needs review, which may include a refund. Contact the organizer to confirm your seat and payment status."}</p>}
+			{booking?.status === "failed" && <div className="mt-6 rounded-xl border border-[var(--color-line)] bg-[var(--color-warm)] p-5 text-sm leading-7">
+				<p className="font-bold">{ar ? "سبب عدم إتمام الدفع" : "Why payment was unsuccessful"}</p>
+				<p className="mt-2">{booking.gatewayState === 6 ? (ar ? "أفادت بوابة تبادل بأن الدفع مرفوض (Payment is declined). لا يتوفر لدينا سبب مصرفي تفصيلي مؤكد لهذا الرفض. لمعرفة المزيد تواصل مع جهة إصدار البطاقة أو المنظم باستخدام رقم الحجز." : "Tabadul reports: Payment is declined. We do not have a confirmed, detailed bank reason for this decline. Contact your card issuer or the organizer with your booking reference for more information.") : (ar ? "سُجلت المحاولة كعملية غير ناجحة. نحتاج إلى التحقق من البوابة لعرض النتيجة والسماح بإعادة المحاولة بأمان." : "This attempt is recorded as unsuccessful. We need to verify the gateway result before allowing a safe retry.")}</p>
+				{booking.retryAllowed && <><p className="mt-3">{ar ? "يمكنك فتح محاولة دفع جديدة بالمبلغ والفئة نفسيهما. سيبقى سجل المحاولة السابقة محفوظًا." : "You can start a new payment attempt for the same amount and category. Your previous attempt remains in the history."}</p><button disabled={busy} onClick={() => void retryPayment()} className="mt-4 min-h-12 w-full rounded-xl bg-[var(--color-gold)] px-5 font-bold text-[var(--color-navy)] hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-teal)] disabled:opacity-50">{busy ? (ar ? "جارٍ التحقق وتجهيز الدفع…" : "Checking and preparing payment…") : (ar ? "إعادة محاولة الدفع" : "Retry payment")}</button></>}
+			</div>}
+			{retryError && <p role="alert" className="mt-5 text-sm leading-7 text-red-700">{retryError}</p>}
 			{verification && <p role="status" className="mt-5 rounded-xl bg-amber-50 p-4 text-sm leading-7 text-amber-950">{verification}</p>}
 			{error && <p role="alert" className="mt-5 text-sm leading-7 text-red-700">{error}</p>}
 			{booking?.provider === "mock" && <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-950"><p className="flex items-center gap-2 font-bold"><Ticket size={18} />{ar ? "دفع تجريبي — لا يتم خصم أي مبلغ" : "Test payment — no money is charged"}</p>{booking.status === "pending" && <div className="mt-4 flex flex-wrap gap-2">{(["paid", "failed", "cancelled"] as const).map((s, i) => <button key={s} disabled={busy} onClick={() => simulate(s)} className="min-h-11 rounded-lg border border-amber-300 bg-white px-4 text-sm font-semibold hover:bg-amber-100 disabled:opacity-50">{(ar ? ["محاكاة النجاح", "محاكاة الفشل", "محاكاة الإلغاء"] : ["Simulate success", "Simulate failure", "Simulate cancel"])[i]}</button>)}</div>}</div>}
@@ -96,7 +139,7 @@ export function BookingStatus({ id, locale }: { id: string; locale: "en" | "ar" 
 				<div className="mt-4 flex flex-wrap gap-2">{[2, 6, 3, 1, 4].map((state, i) => <button key={state} disabled={busy} onClick={() => simulateGateway(state)} className="min-h-11 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50">{(ar ? ["محاكاة النجاح", "محاكاة الرفض", "محاكاة الإلغاء", "تفويض دون تأكيد التحصيل", "محاكاة الاسترجاع"] : ["Simulate success", "Simulate decline", "Simulate cancel", "Authorization only", "Simulate refund"])[i]}</button>)}</div>
 			</div>}
 			{booking?.provider === "tabadul" && <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">{ar ? "الدفع عبر تبادل. نتحقق من النتيجة مع شركة الدفع؛ لا تكرر الدفع إذا تأخر التأكيد. احتفظ برقم الحجز للمتابعة." : "Payment via Tabadul. We verify the result with the provider; do not pay again if confirmation is delayed. Keep your booking reference."}</p>}
-			<button onClick={() => { setChecks(0); void refresh(); }} className="mt-8 min-h-11 rounded-xl border border-[var(--color-line)] px-5 font-semibold hover:bg-[var(--color-warm)]">{ar ? "تحديث الحالة" : "Refresh status"}</button>
+			<button disabled={busy} onClick={() => { setChecks(0); void refresh(); }} className="mt-8 min-h-11 rounded-xl border border-[var(--color-line)] px-5 font-semibold hover:bg-[var(--color-warm)] focus-visible:outline-2 focus-visible:outline-offset-4 disabled:opacity-50">{ar ? "تحديث الحالة" : "Refresh status"}</button>
 			<Link href={`/${locale}/ibs/${booking?.editionSlug || ""}#booking`} className="mt-4 block py-3 text-sm font-bold text-[var(--color-teal)]">{ar ? "العودة إلى القمة" : "Back to the summit"}</Link>
 			<Link href={`/${locale}/contact`} className="block py-3 text-sm font-bold text-[var(--color-teal)]">{ar ? "التواصل بشأن الحجز أو الاسترجاع" : "Contact us about your booking or refund"}</Link>
 		</div>

@@ -12,11 +12,12 @@ sql.exec("PRAGMA foreign_keys=ON; CREATE TABLE ibs_editions(slug TEXT PRIMARY KE
 for(const f of ['0020_edition_bookings.sql','0022_tabadul_attempts.sql','0023_payment_history_indexes.sql','0024_tabadul_gateway_order.sql','0025_public_payment_reconciliation.sql','0026_booking_tiers_receipts.sql'])sql.exec(readFileSync('db/migrations/'+f,'utf8'));
 const DB={prepare(query){let values=[];const stmt=()=>sql.prepare(query);return {bind(...v){values=v;return this;},async first(){return stmt().get(...values)||null;},async all(){return {results:stmt().all(...values)};},async run(){const r=stmt().run(...values);return {meta:{changes:Number(r.changes)}};},async execute(){if(stmt().columns().length)return {results:stmt().all(...values)};return this.run();}};},async batch(stmts){sql.exec('BEGIN');try{const results=[];for(const s of stmts)results.push(await s.execute());sql.exec('COMMIT');return results;}catch(e){sql.exec('ROLLBACK');throw e;}}};
 const env={DB,PAYMENT_PROVIDER:'tabadul',PAYMENT_PUBLIC_ORIGIN:'https://emaalbs.com',TABADUL_LIVE_ENABLED:'true',TABADUL_USERNAME:'fake-only',TABADUL_PASSWORD:'fake-only',TABADUL_IQD_UNITS_PER_DINAR:'1000',TABADUL_PAID_STATUS:'2',TABADUL_CHECKOUT_HOSTS:'epg.tabadul.iq',PAYMENT_RECONCILE_SECRET:'test-reconciliation-secret-not-real-123456'};
-const sessions=new Map();let registrations=0;let gatewayDown=false;
+const sessions=new Map();let registrations=0;let gatewayDown=false;let holdRegistration;
 async function fakeFetch(url,opts){
  assert.ok(String(url).startsWith('https://epg.tabadul.iq/epg/rest/'),'External network blocked');
  if(gatewayDown)throw new Error('simulated outage');
  const f=new URLSearchParams(opts.body);assert.equal(f.get('userName'),'fake-only');
+ if(holdRegistration && String(url).endsWith('/register.do'))await holdRegistration();
  if(String(url).endsWith('/register.do')){registrations++;const id='fake-session-'+registrations;sessions.set(id,{ErrorCode:'0',OrderStatus:0,OrderNumber:String(800000+registrations),Amount:Number(f.get('amount')),currency:f.get('currency'),Description:f.get('description')});assert.match(f.get('returnUrl'),/^https:\/\/emaalbs\.com\/(ar|en)\/booking\/[a-f0-9-]{36}$/);return Response.json({orderId:id,formUrl:'https://epg.tabadul.iq/checkout/'+id});}
  assert.ok(String(url).endsWith('/getOrderStatus.do'));assert.ok(sessions.has(f.get('orderId')));return Response.json(sessions.get(f.get('orderId')));
 }
@@ -167,5 +168,80 @@ assert.equal((await availabilityResponse()).status,404);assert.equal((await avai
 sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify({...offer,capacity:500}),'qa-public');
 assert.equal((await (await availabilityResponse('qa-public')).json()).tiers[0].id,'standard');
 console.log('PASS: public remaining seats, sold out, independent unlimited category, expired/active holds, review, no negative counts, no private data, no caching, legacy offers and optional descriptions/terms.');
+// Failed payment recovery: existing order verification, one new idempotent child,
+// same-origin capability access, current price/terms/capacity, no real network.
+const retry=load('src/app/api/bookings/[id]/retry-payment/route.ts').POST;
+sql.prepare('INSERT INTO ibs_editions(slug,published) VALUES(?,1)').run('qa-retry');
+const retryOffer={...offer,capacity:null};
+sql.prepare('INSERT INTO ibs_booking_settings(edition_slug,config_json,updated_at) VALUES(?,?,?)').run('qa-retry',JSON.stringify(retryOffer),Date.now());
+async function failedAttempt(){
+ sql.exec('DELETE FROM ibs_booking_limits');
+ const started=await start({slug:'qa-retry'});assert.equal(started.r.status,200);
+ const row=sql.prepare('SELECT * FROM ibs_bookings WHERE id=?').get(started.data.booking.id);
+ const response=sessions.get(row.provider_session);Object.assign(response,{OrderStatus:6,ErrorCode:'2',ErrorMessage:'Payment is declined'});
+ const ctx={params:Promise.resolve({id:row.id})};
+ const checked=await verify(request(`/api/bookings/${row.id}/verify-payment`,{},{Authorization:'Bearer '+started.key}),ctx);
+ const result=await checked.json();assert.equal(result.status,'failed');assert.equal(result.retryAllowed,true);assert.equal(result.gatewayState,6);
+ return {...started,row,ctx,response};
+}
+const retryRequest=(attempt,headers={Authorization:'Bearer '+attempt.key})=>request(`/api/bookings/${attempt.row.id}/retry-payment`,{},headers);
+const resetCheck=a=>sql.prepare('UPDATE ibs_tabadul_attempts SET check_after=0 WHERE booking_id=?').run(a.row.id);
+const concurrentAttempt=await failedAttempt();
+let releaseRegistration,markEntered;
+const waiting=new Promise(resolve=>{releaseRegistration=resolve;});
+const entered=new Promise(resolve=>{markEntered=resolve;});
+holdRegistration=async()=>{markEntered();await waiting;};
+const countBeforeConcurrent=registrations;
+const inFlight=retry(retryRequest(concurrentAttempt),concurrentAttempt.ctx);
+await entered;
+const duringRegistration=await retry(retryRequest(concurrentAttempt),concurrentAttempt.ctx);
+assert.equal(duringRegistration.status,409);
+const duringData=await duringRegistration.json();assert.equal(duringData.error,'gateway_registration_pending');
+releaseRegistration();const completedRetry=await inFlight;holdRegistration=undefined;
+assert.equal(completedRetry.status,200);assert.equal((await completedRetry.json()).booking.id,duringData.booking.id);
+assert.equal(registrations,countBeforeConcurrent+1,'Concurrent click during gateway registration creates one order');
+let a=await failedAttempt();let count=registrations;
+assert.equal((await retry(retryRequest(a,{}),a.ctx)).status,404,'No guest capability');
+assert.equal((await retry(retryRequest(a,{Authorization:'Bearer '+randomBytes(32).toString('hex')}),a.ctx)).status,404,'Wrong capability');
+assert.equal((await retry(retryRequest(a,{Authorization:'Bearer '+a.key,Origin:'https://attacker.invalid'}),a.ctx)).status,403,'Cross-origin retry rejected');
+assert.equal(registrations,count);
+const next=await retry(retryRequest(a),a.ctx);assert.equal(next.status,200);
+const child=await next.json();assert.notEqual(child.booking.id,a.row.id);assert.notEqual(child.checkoutUrl,a.data.checkoutUrl);assert.equal(registrations,count+1);
+assert.equal(sql.prepare('SELECT status FROM ibs_bookings WHERE id=?').get(a.row.id).status,'failed','Original preserved');
+const repeated=await retry(retryRequest(a),a.ctx);assert.equal(repeated.status,200);assert.equal((await repeated.json()).booking.id,child.booking.id);assert.equal(registrations,count+1,'Lost response / repeated click reuses child');
+const childCookie=next.headers.get('set-cookie').split(';')[0];
+assert.equal((await statusRoute(new Request(origin+'/api/bookings/'+child.booking.id,{headers:{Cookie:childCookie}}),{params:Promise.resolve({id:child.booking.id})})).status,200,'Child accessible without sessionStorage');
+const cookieRetry=await retry(retryRequest(a,{Cookie:a.r.headers.get('set-cookie').split(';')[0]}),a.ctx);
+assert.equal((await cookieRetry.json()).booking.id,child.booking.id,'Cookie and bearer produce same child');
+// A retry may itself fail; retrying THAT attempt creates a fresh order.
+const childRow=sql.prepare('SELECT * FROM ibs_bookings WHERE id=?').get(child.booking.id);
+Object.assign(sessions.get(childRow.provider_session),{OrderStatus:6,ErrorCode:'2'});
+const childCtx={params:Promise.resolve({id:childRow.id})};
+await verify(request(`/api/bookings/${childRow.id}/verify-payment`,{},{Cookie:childCookie}),childCtx);
+const grandchild=await retry(request(`/api/bookings/${childRow.id}/retry-payment`,{},{Cookie:childCookie}),childCtx);
+assert.equal(grandchild.status,200);assert.notEqual((await grandchild.json()).booking.id,childRow.id);
+// Never resurrect a paid/review/pending/expired/cancelled order.
+for(const status of ['paid','review','pending','expired','cancelled']){
+ a=await failedAttempt();sql.prepare('UPDATE ibs_bookings SET status=? WHERE id=?').run(status,a.row.id);count=registrations;
+ assert.equal((await retry(retryRequest(a),a.ctx)).status,409);assert.equal(registrations,count,status+' cannot retry');
+}
+for(const state of [0,1,2,4]){
+ a=await failedAttempt();resetCheck(a);Object.assign(a.response,{OrderStatus:state,ErrorCode:'0'});count=registrations;
+ assert.equal((await retry(retryRequest(a),a.ctx)).status,409);assert.equal(registrations,count,'New gateway state blocks retry');
+ if(state===2)assert.equal(sql.prepare('SELECT status FROM ibs_bookings WHERE id=?').get(a.row.id).status,'review','Late money needs review');
+}
+a=await failedAttempt();resetCheck(a);gatewayDown=true;count=registrations;
+assert.equal((await retry(retryRequest(a),a.ctx)).status,502);gatewayDown=false;
+assert.equal((await retry(retryRequest(a),a.ctx)).status,409,'Cooldown after outage cannot reuse old decline');assert.equal(registrations,count);
+a=await failedAttempt();resetCheck(a);a.response.Amount++;count=registrations;
+assert.equal((await retry(retryRequest(a),a.ctx)).status,409);assert.equal(registrations,count,'Wrong amount blocks retry');
+a=await failedAttempt();sql.prepare('UPDATE ibs_tabadul_attempts SET last_verified_at=?,check_after=? WHERE booking_id=?').run(Date.now()-60000,Date.now()+15000,a.row.id);count=registrations;
+assert.equal((await retry(retryRequest(a),a.ctx)).status,409);assert.equal(registrations,count,'Stale decline not enough');
+for(const change of [{amountMinor:offer.amountMinor+1000},{terms:{en:'New terms',ar:'شروط جديدة'}},{enabled:false},{capacity:1}]){
+ a=await failedAttempt();sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify({...retryOffer,...change}),'qa-retry');count=registrations;
+ assert.equal((await retry(retryRequest(a),a.ctx)).status,409);assert.equal(registrations,count,'Changed/closed/full offer blocked');
+ sql.prepare('UPDATE ibs_booking_settings SET config_json=? WHERE edition_slug=?').run(JSON.stringify(retryOffer),'qa-retry');
+}
+console.log('PASS: verified decline recovery, new gateway session, retry idempotency, cookie recovery, repeated failure, same-origin/capability checks, pending/paid/review/late payment/outage/mismatch/stale-check guards, changed price/terms, closed offer and capacity.');
 sql.close();
 console.log('PASS: production guest checkout, server price, admin validation/toggle, canonical returns, secure cookie recovery, idempotency, capacity, identity-bound decline, paid-state guards, late-money review, protected background reconciliation, outage safety and pause. Isolated DB; fake gateway only.');

@@ -8,7 +8,7 @@ import type { CheckoutInput, PaymentProvider } from "./provider";
 import { publicPaymentOrigin, requirePublicPaymentRequest } from "./public-policy";
 
 type Env = { PAYMENT_PROVIDER?: string; PAYMENT_PUBLIC_ORIGIN?: string; TABADUL_LIVE_ENABLED?: string; TABADUL_PILOT_ACKNOWLEDGED?: string; TABADUL_USERNAME?: string; TABADUL_PASSWORD?: string; TABADUL_IQD_UNITS_PER_DINAR?: string; TABADUL_PAID_STATUS?: string; TABADUL_CHECKOUT_HOSTS?: string; TABADUL_TEST_EDITION?: string };
-type Attempt = { registration_state: string; session_id: string | null; checkout_url: string | null; simulation_state: number; gateway_state: number | null; gateway_order_number: string | null };
+type Attempt = { registration_state: string; session_id: string | null; checkout_url: string | null; simulation_state: number; gateway_state: number | null; gateway_order_number: string | null; last_verified_at: number | null; verification_error: string | null };
 const SIMULATED_HOST = "tabadul-preview.invalid";
 
 async function context(request: Request, real: boolean, publicMode = false, enforceOrigin = true) {
@@ -91,7 +91,13 @@ export async function verifyTabadulBooking(row: BookingRow, request: Request) {
 	if (row.provider === "tabadul" && !attempt?.gateway_order_number) throw new BookingError("payment_mismatch",409);
 	// Atomically limit checks per booking (including concurrent tabs). Failures also back off.
 	const claim = await DB.prepare("UPDATE ibs_tabadul_attempts SET check_after=? WHERE booking_id=? AND check_after<=?").bind(Date.now() + 15000, row.id, Date.now()).run();
-	if (!claim.meta.changes) return { ...publicBooking((await findBooking(row.id))!), verification: "cooldown" };
+	if (!claim.meta.changes) {
+		const latest = (await findBooking(row.id))!;
+		// Only a very recent, successful, identity-bound decline permits a retry.
+		const recent = !!attempt?.last_verified_at && Date.now() - attempt.last_verified_at < 15000 && !attempt.verification_error;
+		return { ...publicBooking(latest), verification: "cooldown", gatewayState: recent ? attempt?.gateway_state : undefined,
+			retryAllowed: recent && latest.status === "failed" && attempt?.gateway_state === 6 };
+	}
 	let result;
 	try {
 		result = await createTabadulClient(ctx.config, row.provider === "tabadul-preview" ? simulationTransport(row) : undefined).status({...orderFromRow(row, request),gatewayOrderNumber:attempt?.gateway_order_number || undefined}, row.provider_session);
@@ -109,7 +115,9 @@ export async function verifyTabadulBooking(row: BookingRow, request: Request) {
 	} else if (result.status !== "pending") {
 		await applyPaymentEvent(row.provider, { eventId: `${row.provider_session}:${result.state}`, bookingId: row.id, sessionId: row.provider_session, transactionId: row.provider_session, amountMinor: row.amount_minor, currency: row.currency, status: result.status });
 	}
-	return { ...publicBooking((await findBooking(row.id))!), verification: "checked", gatewayState: result.state };
+	const latest = (await findBooking(row.id))!;
+	return { ...publicBooking(latest), verification: "checked", gatewayState: result.state,
+		retryAllowed: latest.status === "failed" && result.state === 6 };
 }
 export async function simulateTabadul(row: BookingRow, request: Request, state: number) {
 	if (!isLocalPaymentTest(request.url, process.env.NODE_ENV) || row.provider !== "tabadul-preview" || !row.provider_session) throw new BookingError("not_found", 404);
