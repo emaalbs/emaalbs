@@ -3,6 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { adminHome, canAccessAdmin, type AdminRole } from "@/lib/admin-access";
+import { AdminSessionContext } from "@/components/admin/AdminSession";
 import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, Menu, X, BookOpen, PanelsTopLeft, Share2, Images, Sparkles, Wallet } from "lucide-react";
 
 const baseNav = [
@@ -20,7 +22,7 @@ const baseNav = [
 	{ label: "Subscribers", href: "/admin/subscribers", icon: Users },
 ];
 
-type Me = { id: number; username: string; isSuperAdmin: boolean };
+type Me = { id: number; username: string; isSuperAdmin: boolean; role: AdminRole };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
@@ -29,21 +31,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 	const [me, setMe] = useState<Me | null>(null);
 
 	useEffect(() => {
-		fetch("/api/admin/me", { credentials: "same-origin" })
-			.then((r) => (r.ok ? r.json() : null))
-			.then((data) => setMe(data as Me))
-			.catch(() => setMe(null));
-	}, []);
+		if (pathname === "/admin/login") { setMe(null); return; }
+		let active = true;
+		setMe(null);
+		fetch("/api/admin/me", { credentials: "same-origin", cache: "no-store" })
+			.then((r) => (r.ok ? r.json() as Promise<Me> : null))
+			.then((data: Me | null) => {
+				if (!active) return;
+				if (!data) { router.replace("/admin/login"); return; }
+				if (!canAccessAdmin(data.role, pathname)) { router.replace(adminHome(data.role)); return; }
+				setMe(data);
+			})
+			.catch(() => { if (active) router.replace("/admin/login"); });
+		return () => { active = false; };
+	}, [pathname, router]);
 
-	const nav = me?.isSuperAdmin ? [...baseNav, { label: "Users", href: "/admin/users", icon: Shield }] : baseNav;
+	const nav = me ? (me.isSuperAdmin ? [...baseNav, { label: "Users", href: "/admin/users", icon: Shield }] : baseNav)
+		.filter(item => canAccessAdmin(me.role, item.href)) : [];
 
 	async function logout() {
 		await fetch("/api/admin/logout", { method: "POST" });
-		router.push("/admin/login");
+		window.location.assign("/admin/login");
 	}
 
 	if (pathname === "/admin/login") {
 		return <div dir="ltr" className="min-h-screen bg-gray-50">{children}</div>;
+	}
+	if (!me || !canAccessAdmin(me.role, pathname)) {
+		return <div role="status" className="p-8 text-gray-500">Loading… / جارٍ التحقق من الصلاحيات</div>;
 	}
 
 	return (
@@ -129,7 +144,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 						</span>
 					)}
 				</header>
-				<main className="flex-1 overflow-y-auto p-6 lg:p-8">{children}</main>
+				<main className="flex-1 overflow-y-auto p-6 lg:p-8"><AdminSessionContext.Provider value={me}>{children}</AdminSessionContext.Provider></main>
 			</div>
 		</div>
 	);

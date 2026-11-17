@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { hashPassword, verifyPassword, signSession, sessionCookie } from "@/lib/auth";
 import { getEnv } from "@/lib/cloudflare";
+import { accountRole, adminHome } from "@/lib/admin-access";
 
 export async function POST(request: Request) {
 	try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: "Database unavailable" }, { status: 500 });
 		}
 
-		const user = await DB.prepare("SELECT id, username, password_hash, salt, is_super_admin FROM admin_users WHERE username = ?").bind(username).first();
+		const user = await DB.prepare("SELECT id, username, password_hash, salt, is_super_admin, role FROM admin_users WHERE username = ?").bind(username).first();
 		if (!user) {
 			return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 		}
@@ -28,8 +29,9 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
 		}
 
-		const token = await signSession({ userId: user.id as number, username, isSuperAdmin: (user.is_super_admin as number) === 1 }, ADMIN_SECRET);
-		const response = NextResponse.json({ success: true });
+		const role = accountRole({ is_super_admin: user.is_super_admin, role: user.role });
+		const token = await signSession({ userId: user.id as number, username, isSuperAdmin: role === "super_admin", role }, ADMIN_SECRET);
+		const response = NextResponse.json({ success: true, redirectTo: adminHome(role) }, { headers: { "Cache-Control": "no-store, private" } });
 		response.headers.set("Set-Cookie", sessionCookie(token, 24 * 60 * 60, new URL(request.url).protocol === "https:"));
 		return response;
 	} catch (err) {

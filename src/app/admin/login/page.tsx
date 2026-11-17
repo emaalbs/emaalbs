@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-	const router = useRouter();
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -22,7 +20,9 @@ export default function AdminLoginPage() {
 				credentials: "same-origin",
 			});
 			if (res.ok) {
-				router.push("/admin");
+				const data = await res.json() as { redirectTo?: string };
+				// Full navigation drops any previous user's cached admin layout.
+				window.location.assign(data.redirectTo === "/admin/payments" ? "/admin/payments" : "/admin");
 			} else {
 				const data = (await res.json()) as { error?: string };
 				setError(data.error || "Invalid credentials");

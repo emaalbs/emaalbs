@@ -6,6 +6,7 @@ export function bookingJson(value: unknown, status = 200) {
 export function bookingFailure(error: unknown) {
 	if (error instanceof BookingError) return bookingJson({ error: error.code }, error.status);
 	if (error instanceof Error && ["Unauthorized", "Invalid session"].includes(error.message)) return bookingJson({ error: "unauthorized" }, 401);
+	if (error instanceof Error && error.message === "Forbidden") return bookingJson({ error: "forbidden" }, 403);
 	console.error("Booking request failed", error instanceof Error ? error.name : "UnknownError");
 	return bookingJson({ error: "service_unavailable" }, 503);
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSuperAdmin, hashPassword } from "@/lib/auth";
 import { getEnv } from "@/lib/cloudflare";
+import { accountRole, isAdminRole } from "@/lib/admin-access";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
@@ -16,6 +17,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			password?: string;
 			displayName?: string | null;
 			isSuperAdmin?: boolean;
+			role?: unknown;
 		};
 
 		const { DB } = await getEnv();
@@ -24,7 +26,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 		}
 
 		// Check user exists
-		const user = await DB.prepare("SELECT id FROM admin_users WHERE id = ?").bind(userId).first();
+		const user = await DB.prepare("SELECT id, is_super_admin, role FROM admin_users WHERE id = ?").bind(userId)
+			.first<{ id: number; is_super_admin: number; role: string }>();
 		if (!user) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 });
 		}
@@ -37,8 +40,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			}
 		}
 
-		// Prevent self-demotion of last super admin
-		if (body.isSuperAdmin === false && userId === session.userId) {
+		if (body.role !== undefined && (!isAdminRole(body.role) || (body.isSuperAdmin !== undefined && body.isSuperAdmin !== (body.role === "super_admin")))) {
+			return NextResponse.json({ error: "Invalid or conflicting role" }, { status: 400 });
+		}
+		const existingRole = accountRole(user);
+		const role = body.role ?? (body.isSuperAdmin === true ? "super_admin" : body.isSuperAdmin === false && existingRole === "super_admin" ? "admin" : existingRole);
+		// Preserve the last owner, including when changing another account.
+		if (role !== "super_admin" && existingRole === "super_admin") {
 			const count = await DB.prepare("SELECT COUNT(*) as count FROM admin_users WHERE is_super_admin = 1").first();
 			if ((count?.count as number) <= 1) {
 				return NextResponse.json({ error: "Cannot demote the last super admin" }, { status: 403 });
@@ -63,9 +71,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			updates.push("salt = ?");
 			values.push(salt);
 		}
-		if (body.isSuperAdmin !== undefined) {
-			updates.push("is_super_admin = ?");
-			values.push(body.isSuperAdmin ? 1 : 0);
+		if (body.role !== undefined || body.isSuperAdmin !== undefined) {
+			updates.push("is_super_admin = ?", "role = ?");
+			values.push(role === "super_admin" ? 1 : 0, role === "payments" ? "payments" : "admin");
 		}
 
 		if (updates.length === 0) {

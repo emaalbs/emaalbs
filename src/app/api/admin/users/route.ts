@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSuperAdmin, hashPassword } from "@/lib/auth";
 import { getEnv } from "@/lib/cloudflare";
+import { isAdminRole } from "@/lib/admin-access";
 
 export async function GET(request: Request) {
 	try {
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
 			return NextResponse.json({ error: "Database unavailable" }, { status: 500 });
 		}
 		const users = await DB.prepare(
-			"SELECT id, username, display_name, is_super_admin, created_at, updated_at FROM admin_users ORDER BY id ASC"
+			"SELECT id, username, display_name, is_super_admin, role, created_at, updated_at FROM admin_users ORDER BY id ASC"
 		).all();
 		return NextResponse.json(users.results || []);
 	} catch (err) {
@@ -28,11 +29,16 @@ export async function POST(request: Request) {
 			password?: string;
 			displayName?: string;
 			isSuperAdmin?: boolean;
+			role?: unknown;
 		};
 
 		if (!body.username || !body.password) {
 			return NextResponse.json({ error: "Missing username or password" }, { status: 400 });
 		}
+		if (body.role !== undefined && (!isAdminRole(body.role) || (body.isSuperAdmin !== undefined && body.isSuperAdmin !== (body.role === "super_admin")))) {
+			return NextResponse.json({ error: "Invalid or conflicting role" }, { status: 400 });
+		}
+		const role = body.role ?? (body.isSuperAdmin ? "super_admin" : "admin");
 
 		const { DB } = await getEnv();
 		if (!DB) {
@@ -49,13 +55,14 @@ export async function POST(request: Request) {
 		const now = Date.now();
 
 		await DB.prepare(
-			"INSERT INTO admin_users (username, password_hash, salt, display_name, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+			"INSERT INTO admin_users (username, password_hash, salt, display_name, is_super_admin, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 		).bind(
 			body.username,
 			hash,
 			salt,
 			body.displayName || null,
-			body.isSuperAdmin ? 1 : 0,
+			role === "super_admin" ? 1 : 0,
+			role === "payments" ? "payments" : "admin",
 			now,
 			now
 		).run();

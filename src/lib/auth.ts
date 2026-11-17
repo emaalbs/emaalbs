@@ -4,6 +4,8 @@
  */
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getEnv } from "@/lib/cloudflare";
+import { accountRole, canAccessAdmin, type AdminRole } from "@/lib/admin-access";
 
 const ITERATIONS = 100_000;
 const SALT_LEN = 16;
@@ -44,6 +46,7 @@ export interface SessionPayload {
 	userId: number;
 	username: string;
 	isSuperAdmin: boolean;
+	role?: AdminRole;
 	exp: number;
 }
 
@@ -65,7 +68,7 @@ export async function verifySession(token: string, secret: string): Promise<Sess
 	if (!valid) return null;
 	try {
 		const payload = JSON.parse(new TextDecoder().decode(fromB64Url(body))) as SessionPayload;
-		if (payload.exp < Date.now()) return null;
+		if (!Number.isFinite(payload.exp) || payload.exp < Date.now() || !Number.isSafeInteger(payload.userId) || payload.userId < 1) return null;
 		return payload;
 	} catch {
 		return null;
@@ -111,14 +114,28 @@ export async function getAdminSecret(): Promise<string | undefined> {
 	}
 }
 
-export async function requireAuth(request: Request): Promise<SessionPayload> {
+export async function authenticateAdmin(request: Request): Promise<SessionPayload & { role: AdminRole }> {
 	const cookie = request.headers.get("cookie");
 	const token = parseSessionCookie(cookie);
 	if (!token) throw new Error("Unauthorized");
 	const secret = await getAdminSecret();
 	if (!secret) throw new Error("Missing ADMIN_SECRET");
-	const session = await verifySession(token, secret);
+	let session: SessionPayload | null;
+	try { session = await verifySession(token, secret); } catch { throw new Error("Invalid session"); }
 	if (!session) throw new Error("Invalid session");
+	const { DB } = await getEnv();
+	if (!DB) throw new Error("Database unavailable");
+	const user = await DB.prepare("SELECT username, is_super_admin, role FROM admin_users WHERE id = ?").bind(session.userId)
+		.first<{ username: string; is_super_admin: number; role: string }>();
+	if (!user) throw new Error("Invalid session");
+	const role = accountRole(user);
+	// Always use current database permissions, even for an older signed session.
+	return { ...session, username: user.username, isSuperAdmin: role === "super_admin", role };
+}
+
+export async function requireAuth(request: Request): Promise<SessionPayload & { role: AdminRole }> {
+	const session = await authenticateAdmin(request);
+	if (!canAccessAdmin(session.role, new URL(request.url).pathname, request.method)) throw new Error("Forbidden");
 	return session;
 }
 

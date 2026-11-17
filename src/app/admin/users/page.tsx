@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { accountRole, type AdminRole } from "@/lib/admin-access";
 
 type AdminUser = {
 	id: number;
 	username: string;
 	display_name: string | null;
 	is_super_admin: number;
+	role: string;
 	created_at: number;
 	updated_at: number;
 };
@@ -25,7 +27,7 @@ export default function AdminUsersPage() {
 		username: "",
 		password: "",
 		displayName: "",
-		isSuperAdmin: false,
+		role: "admin" as AdminRole,
 	});
 	const [error, setError] = useState("");
 	const [saving, setSaving] = useState(false);
@@ -59,7 +61,7 @@ export default function AdminUsersPage() {
 
 	function openAdd() {
 		setEditingUser(null);
-		setForm({ username: "", password: "", displayName: "", isSuperAdmin: false });
+		setForm({ username: "", password: "", displayName: "", role: "admin" });
 		setError("");
 		setModalOpen(true);
 	}
@@ -70,7 +72,7 @@ export default function AdminUsersPage() {
 			username: user.username,
 			password: "",
 			displayName: user.display_name || "",
-			isSuperAdmin: user.is_super_admin === 1,
+			role: accountRole(user),
 		});
 		setError("");
 		setModalOpen(true);
@@ -86,7 +88,7 @@ export default function AdminUsersPage() {
 				const payload: Record<string, unknown> = {
 					username: form.username,
 					displayName: form.displayName || null,
-					isSuperAdmin: form.isSuperAdmin,
+					role: form.role,
 				};
 				if (form.password) payload.password = form.password;
 
@@ -115,7 +117,7 @@ export default function AdminUsersPage() {
 						username: form.username,
 						password: form.password,
 						displayName: form.displayName || null,
-						isSuperAdmin: form.isSuperAdmin,
+						role: form.role,
 					}),
 					credentials: "same-origin",
 				});
@@ -192,7 +194,7 @@ export default function AdminUsersPage() {
 											</span>
 										) : (
 											<span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
-												Admin
+												{user.role === "payments" ? "Payments only / المدفوعات فقط" : "Admin"}
 											</span>
 										)}
 									</td>
@@ -262,15 +264,20 @@ export default function AdminUsersPage() {
 									{...(!editingUser ? { required: true } : {})}
 								/>
 							</div>
-							<label className="flex cursor-pointer items-center gap-2">
-								<input
-									type="checkbox"
-									checked={form.isSuperAdmin}
-									onChange={(e) => setForm((f) => ({ ...f, isSuperAdmin: e.target.checked }))}
-									className="h-4 w-4 rounded border-gray-300 text-[#01334D] focus:ring-[#01334D]"
-								/>
-								<span className="text-sm text-gray-700">Super Admin</span>
+							<label className="block text-sm font-medium text-gray-700">
+								Role / صلاحية الحساب
+								<select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value as AdminRole }))}
+									className="mt-2 min-h-11 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 focus:border-[var(--color-teal)]"
+									aria-describedby="role-description">
+									<option value="admin">Admin / إدارة المحتوى</option>
+									<option value="payments">Payments only / المدفوعات فقط</option>
+									<option value="super_admin">Super Admin / مدير شامل</option>
+								</select>
 							</label>
+							<p id="role-description" dir="rtl" className="text-sm leading-6 text-gray-600">
+								{form.role === "payments" ? "يمكنه مشاهدة الحجوزات والمدفوعات والتحقق من حالة الدفع فقط. لا يمكنه تعديل الموقع أو الأسعار أو إدارة الحسابات."
+									: form.role === "super_admin" ? "وصول كامل إلى لوحة الإدارة وإدارة الحسابات والصلاحيات." : "وصول إلى أقسام الإدارة والمحتوى، دون إدارة الحسابات."}
+							</p>
 							{error && <p className="text-sm text-red-600">{error}</p>}
 							<div className="flex justify-end gap-3 pt-2">
 								<button
