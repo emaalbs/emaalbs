@@ -24,6 +24,9 @@ try{
    if(url.pathname.endsWith('/retry-payment')){retries++;data={booking:{...fixture,id:child,status:'pending'},checkoutUrl:base+'/ar/booking/'+child};}
    return void r.respond({status:code,contentType:'application/json',body:JSON.stringify(data)});
   }
+  // Cloudflare telemetry/bot checks are expected only on live. Block them too,
+  // but distinguish these background requests from an unexpected application write.
+  if(r.method()!=='GET' && url.pathname.startsWith('/cdn-cgi/'))return void r.abort();
   if(r.method()!=='GET'){errors.push('Unexpected mutation');return void r.abort();}
   void r.continue();
  });
@@ -31,7 +34,7 @@ try{
  await mkdir('.wrangler/retry-qa',{recursive:true});
  for(const [locale,width] of [['ar',390],['en',1440]]){
   await page.setViewport({width,height:1050,deviceScaleFactor:1});
-  await page.goto(`${base}/${locale}/booking/${id}`,{waitUntil:'networkidle2',timeout:120000});
+  await page.goto(`${base}/${locale}/booking/${id}`,{waitUntil:'domcontentloaded',timeout:120000});
   const label=locale==='ar'?'إعادة محاولة الدفع':'Retry payment';
   await page.waitForFunction(t=>[...document.querySelectorAll('button')].some(b=>b.innerText===t),{},label);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Responsive width');
@@ -41,11 +44,11 @@ try{
  await page.evaluate(()=>[...document.querySelectorAll('button')].find(b=>b.innerText==='Retry payment').click());
  await page.waitForFunction(child=>location.pathname.endsWith(child),{},child);assert.equal(retries,1);
  for(const s of ['pending','review','paid','expired']){
-  status=s;await page.goto(`${base}/ar/booking/${id}`,{waitUntil:'networkidle2'});
+  status=s;await page.goto(`${base}/ar/booking/${id}`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.innerText.includes('مقعد في القمة'));
   assert.equal(await page.evaluate(()=>[...document.querySelectorAll('button')].some(b=>b.innerText==='إعادة محاولة الدفع')),false,s+' has no retry');
  }
- status='failed';unavailable=true;await page.goto(`${base}/ar/booking/${id}`,{waitUntil:'networkidle2'});
+ status='failed';unavailable=true;await page.goto(`${base}/ar/booking/${id}`,{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.body.innerText.includes('تعذر التحقق من شركة الدفع الآن'));
  assert.equal(await page.evaluate(()=>[...document.querySelectorAll('button')].some(b=>b.innerText==='إعادة محاولة الدفع')),false,'Gateway outage has no retry');
  assert.ok(await page.evaluate(()=>document.body.innerText.includes('لا تكرر الدفع')));
