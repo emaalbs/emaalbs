@@ -24,6 +24,7 @@ jobs:
       - name: Verify payment safety guards
         run: |
           node scripts/test-admin-access.mjs
+          node scripts/test-payment-export.mjs
           node scripts/test-payment-core.mjs
           node scripts/test-tabadul-core.mjs
           node scripts/test-public-payments.mjs

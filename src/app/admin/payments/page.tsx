@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Wallet, RefreshCw, Search, Clock3, CircleAlert, CheckCircle2 } from "lucide-react";
+import { Wallet, RefreshCw, Search, Clock3, CircleAlert, CheckCircle2, Download } from "lucide-react";
 import { formatBookingPrice } from "@/lib/booking-config";
+import type { PaymentReport } from "@/lib/payment-excel";
 
 type Payment={id:string;tier_name:string;edition_slug:string;customer_name:string;email:string;phone:string;amount_minor:number;currency:string;provider:string;transaction_id:string|null;provider_session:string|null;created_at:number;confirmed_at:number|null;payment_state:string};
 type Summary={currency:string;attempts:number;confirmed_minor:number;confirmed_count:number;pending_count:number;review_count:number};
@@ -17,6 +18,7 @@ export default function PaymentsPage(){
 	const [page,setPage]=useState(1),[version,setVersion]=useState(0),[data,setData]=useState<Data|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState("");
 	const [selected,setSelected]=useState<Payment|null>(null),[events,setEvents]=useState<{status:string;received_at:number}[]|null>(null),[detailError,setDetailError]=useState("");
 	const [busy,setBusy]=useState(false),[notice,setNotice]=useState("");
+	const [exporting,setExporting]=useState(false),[exportError,setExportError]=useState(""),[exportNotice,setExportNotice]=useState("");
 	const [verification,setVerification]=useState<Verification|null>(null);
 	useEffect(()=>{
 		const abort=new AbortController();setLoading(true);setData(null);setError("");setSelected(null);
@@ -30,12 +32,34 @@ export default function PaymentsPage(){
 		return()=>abort.abort();
 	},[selected]);
 	function search(e:FormEvent){e.preventDefault();setPage(1);setQ(query.trim());}
+	async function exportExcel(){
+		if(exporting || loading || !data?.total)return;
+		setExporting(true);setExportError("");setExportNotice("");
+		try{
+			const params=new URLSearchParams({mode,status,currency,q,from,to});
+			const response=await fetch(`/api/admin/payments/export?${params}`,{cache:"no-store",credentials:"same-origin"});
+			if(response.status===401 || response.status===403)throw new Error("auth");
+			if(response.status===413)throw new Error("too_large");
+			if(!response.ok)throw new Error("unavailable");
+			const report=await response.json() as PaymentReport;
+			if(!report.total)throw new Error("empty");
+			const {createPaymentWorkbook}=await import("@/lib/payment-excel");
+			const {bytes,filename}=await createPaymentWorkbook(report);
+			const url=URL.createObjectURL(new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+			const link=document.createElement("a");link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+			setTimeout(()=>URL.revokeObjectURL(url),30000);
+			setExportNotice(`بدأ تنزيل تقرير Excel: ${report.total} عملية، مع ملخص منفصل لكل عملة.`);
+		}catch(e){const code=e instanceof Error?e.message:"";setExportError(code==="auth"?"انتهت الجلسة أو لا توجد صلاحية للتصدير. سجّل الدخول مجددًا.":code==="too_large"?"النتائج تتجاوز 10,000 عملية. اختر فترة زمنية أقصر أو حدد الحالة ثم أعد التصدير؛ لم يتم تنزيل تقرير ناقص.":code==="empty"?"لا توجد عمليات مطابقة للفلاتر الحالية.":"تعذر تجهيز تقرير Excel. راجع الفترة الزمنية والاتصال ثم أعد المحاولة.");}
+		finally{setExporting(false);}
+	}
 	async function verify(){if(!selected)return;setBusy(true);setNotice("");try{
 		const r=await fetch(`/api/admin/bookings/${selected.id}/verify-payment`,{method:"POST"});if(!r.ok)throw new Error();
 		const result=await r.json() as {verification:string};setNotice(result.verification==="cooldown"?"انتظر 15 ثانية قبل التحقق مجددًا.":"تم التحقق من الحالة. لم يتم إنشاء دفعة أو استرجاع أموال.");setVersion(v=>v+1);
 	}catch{setNotice("تعذر التحقق الآن. لا تطلب من الزائر تكرار الدفع؛ راجع بوابة الشركة.");}finally{setBusy(false);}}
 	return <div dir="rtl" className="space-y-6 text-[var(--color-ink)]">
-		<header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold text-[var(--color-teal)]">EMAAL · Payment History</p><h1 className="mt-2 text-3xl font-bold text-[var(--color-navy)]">سجل المدفوعات</h1><p className="mt-3 text-sm leading-7 text-[var(--color-slate)]">من دفع؟ كم دفع؟ وما حالة العملية؟ جميع الأوقات بتوقيت بغداد.</p></div><button className={control+" flex items-center gap-2"} disabled={loading} onClick={()=>setVersion(v=>v+1)}><RefreshCw size={16}/>تحديث</button></header>
+		<header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold text-[var(--color-teal)]">EMAAL · Payment History</p><h1 className="mt-2 text-3xl font-bold text-[var(--color-navy)]">سجل المدفوعات</h1><p className="mt-3 text-sm leading-7 text-[var(--color-slate)]">من دفع؟ كم دفع؟ وما حالة العملية؟ جميع الأوقات بتوقيت بغداد.</p></div><div className="flex flex-wrap gap-3"><button className={control+" flex items-center gap-2"} disabled={loading} onClick={()=>setVersion(v=>v+1)}><RefreshCw size={16}/>تحديث</button><button onClick={()=>void exportExcel()} disabled={exporting||loading||!data?.total} aria-busy={exporting} className={control+" flex items-center gap-2 !border-[var(--color-teal)] !bg-[var(--color-teal)] font-bold text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"}><Download size={18}/>{exporting?"جارٍ تجهيز التقرير…":"تصدير Excel"}</button></div></header>
+		<p className="text-sm leading-7 text-[var(--color-slate)]">تقرير Excel يشمل كل العمليات المطابقة للفلاتر المطبقة، مع ورقة للعمليات وورقة للملخص. حد التقرير الواحد 10,000 عملية؛ يمكنك تحديد الفترة الزمنية لتقليل النتائج.</p>
+		{exportError&&<p role="alert" className="rounded-xl bg-red-50 p-4 text-sm leading-7 text-red-700">{exportError}</p>}{exportNotice&&<p role="status" className="rounded-xl bg-teal-50 p-4 text-sm leading-7 text-teal-900">{exportNotice}</p>}
 		<div role="group" aria-label="نوع العمليات" className="flex flex-wrap gap-2">{[["real","مدفوعات فعلية"],["simulation","محاكاة وتجارب"]].map(([value,label])=><button key={value} aria-pressed={mode===value} onClick={()=>{setMode(value);setPage(1);}} className={control+(mode===value?" !bg-[var(--color-navy)] text-white":"")}>{label}</button>)}</div>
 		<p className={`rounded-xl border p-4 text-sm leading-7 ${mode==="simulation"?"border-amber-200 bg-amber-50 text-amber-950":"border-[var(--color-line)] bg-white text-[var(--color-slate)]"}`}>{mode==="simulation"?"هذه عمليات محاكاة فقط؛ لا تمثل أموالًا حقيقية ولا تدخل في إجمالي المدفوعات الفعلية.":"الإجماليات أدناه تخص المدفوعات المؤكدة غير المحالة للمراجعة، قبل عمولة تبادل. ليست رصيدًا بنكيًا أو صافي تسوية، ولا نحتسب العمولة دون بيانات من الشركة."}</p>
 		<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

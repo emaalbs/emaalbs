@@ -9,7 +9,7 @@ import { build } from "esbuild";
 import { accountRole, canAccessAdmin } from "../src/lib/admin-access.ts";
 
 const id = "12345678-1234-1234-1234-123456789012";
-for (const path of ["/admin/bookings", "/admin/payments", "/api/admin/me", "/api/admin/payments", "/api/admin/bookings", `/api/admin/payments/${id}`])
+for (const path of ["/admin/bookings", "/admin/payments", "/api/admin/me", "/api/admin/payments", "/api/admin/payments/export", "/api/admin/bookings", `/api/admin/payments/${id}`])
 	assert.equal(canAccessAdmin("payments", path), true, path);
 for (const path of ["/admin", "/admin/users", "/admin/blogs", "/admin/ibs/editions", "/api/admin/users", "/api/contact", "/api/subscribers", "/api/media/presign", "/api/ibs/editions/test/booking", "/api/admin/payments-extra", "/api/admin/payments/delete", "/api/admin/translate"]) {
 	for (const method of ["GET", "POST", "PATCH", "DELETE"]) assert.equal(canAccessAdmin("payments", path, method), false, path + method);
@@ -17,6 +17,7 @@ for (const path of ["/admin", "/admin/users", "/admin/blogs", "/admin/ibs/editio
 assert.equal(canAccessAdmin("payments", `/api/admin/bookings/${id}/verify-payment`, "POST"), true);
 assert.equal(canAccessAdmin("payments", "/api/admin/logout", "POST"), true);
 assert.equal(canAccessAdmin("payments", "/api/admin/payments", "DELETE"), false);
+for(const method of ["POST","PATCH","DELETE"])assert.equal(canAccessAdmin("payments","/api/admin/payments/export",method),false);
 assert.equal(canAccessAdmin("admin", "/api/admin/users"), false);
 assert.equal(canAccessAdmin("super_admin", "/api/admin/users"), true);
 assert.throws(() => accountRole({is_super_admin: 0, role: "typo"}));

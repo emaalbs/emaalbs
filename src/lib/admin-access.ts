@@ -22,7 +22,7 @@ export function canAccessAdmin(role: AdminRole, path: string, method = "GET"): b
 	if (role === "admin") return true;
 	if (role !== "payments") return false;
 	if (method === "GET" || method === "HEAD") {
-		return ["/admin/payments", "/admin/bookings", "/api/admin/me", "/api/admin/payments", "/api/admin/bookings"].includes(path) ||
+		return ["/admin/payments", "/admin/bookings", "/api/admin/me", "/api/admin/payments", "/api/admin/payments/export", "/api/admin/bookings"].includes(path) ||
 			/^\/api\/admin\/payments\/[a-f0-9-]{36}$/.test(path);
 	}
 	// Verification only reads an existing gateway order; it never charges or refunds.
