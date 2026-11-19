@@ -1,4 +1,5 @@
 import { getEnv } from "@/lib/cloudflare";
+import type { ContactEmailDelivery } from "@/lib/contact-email-config";
 
 async function getDB(): Promise<D1Database> {
 	const { DB } = await getEnv();
@@ -15,6 +16,7 @@ export type Contact = {
 	message: string;
 	subject: string;
 	created_at: number;
+	email_notifications?: ContactEmailDelivery[];
 };
 
 export async function createContact(data: {
@@ -51,6 +53,9 @@ export async function listContacts(): Promise<Contact[]> {
 		const { results } = await db
 			.prepare("SELECT * FROM contacts ORDER BY created_at DESC")
 			.all();
+		const deliveries = await db.prepare("SELECT contact_id,recipient,status,error_code FROM contact_email_deliveries WHERE contact_id IS NOT NULL ORDER BY id").all<ContactEmailDelivery & {contact_id:number}>();
+		const notifications = new Map<number,ContactEmailDelivery[]>();
+		for (const d of deliveries.results || []) notifications.set(d.contact_id,[...(notifications.get(d.contact_id)||[]),{recipient:d.recipient,status:d.status,error_code:d.error_code}]);
 		return (results || []).map((row) => ({
 			id: row.id as number,
 			name: row.name as string,
@@ -60,6 +65,7 @@ export async function listContacts(): Promise<Contact[]> {
 			message: row.message as string,
 			subject: row.subject as string,
 			created_at: row.created_at as number,
+			email_notifications: notifications.get(row.id as number) || [],
 		}));
 	} catch {
 		return [];

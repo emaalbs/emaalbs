@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Mail, User, Building, Phone, Calendar, Search, X, Eye } from "lucide-react";
+import { ContactEmailSettings } from "@/components/admin/ContactEmailSettings";
+import { contactEmailError, type ContactEmailDelivery } from "@/lib/contact-email-config";
 
 type Contact = {
 	id: number;
@@ -12,6 +14,7 @@ type Contact = {
 	message: string;
 	subject: string;
 	created_at: number;
+	email_notifications?: ContactEmailDelivery[];
 };
 
 export default function ContactsPage() {
@@ -62,6 +65,7 @@ export default function ContactsPage() {
 				</div>
 			</div>
 
+			<ContactEmailSettings />
 			<div className="rounded-xl border border-gray-200 bg-white shadow-sm">
 				<div className="overflow-x-auto">
 					<table className="w-full text-left text-sm">
@@ -74,12 +78,13 @@ export default function ContactsPage() {
 								<th className="px-4 py-3 font-medium">Subject</th>
 								<th className="px-4 py-3 font-medium">Message</th>
 								<th className="px-4 py-3 font-medium">Date</th>
+								<th className="px-4 py-3 font-medium">Email / إشعارات البريد</th>
 							</tr>
 						</thead>
 						<tbody>
 							{filtered.length === 0 ? (
 								<tr>
-									<td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+									<td colSpan={8} className="px-4 py-8 text-center text-gray-400">
 										No contacts found.
 									</td>
 								</tr>
@@ -133,6 +138,9 @@ export default function ContactsPage() {
 													{new Date(c.created_at).toLocaleDateString()}
 												</span>
 											</div>
+										</td>
+										<td className="min-w-56 px-4 py-3 text-xs">
+											{c.email_notifications?.length ? c.email_notifications.map((d,i)=><div key={i} className="mb-2"><div dir="ltr" className="font-medium text-gray-700">{d.recipient}</div><div className={d.status==="accepted"?"text-teal-700":d.status==="pending"?"text-gray-500":"text-amber-800"}>{d.status==="accepted"?"قبلتها خدمة البريد / Accepted":d.status==="pending"?"قيد الإرسال / Pending":contactEmailError(d.error_code)}</div></div>) : <span className="text-gray-400">لم تُطلب نسخة بريد / No email requested</span>}
 										</td>
 									</tr>
 								))

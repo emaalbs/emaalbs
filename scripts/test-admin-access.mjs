@@ -11,7 +11,7 @@ import { accountRole, canAccessAdmin } from "../src/lib/admin-access.ts";
 const id = "12345678-1234-1234-1234-123456789012";
 for (const path of ["/admin/bookings", "/admin/payments", "/api/admin/me", "/api/admin/payments", "/api/admin/payments/export", "/api/admin/bookings", `/api/admin/payments/${id}`])
 	assert.equal(canAccessAdmin("payments", path), true, path);
-for (const path of ["/admin", "/admin/users", "/admin/blogs", "/admin/ibs/editions", "/api/admin/users", "/api/contact", "/api/subscribers", "/api/media/presign", "/api/ibs/editions/test/booking", "/api/admin/payments-extra", "/api/admin/payments/delete", "/api/admin/translate"]) {
+for (const path of ["/admin", "/admin/users", "/admin/blogs", "/admin/ibs/editions", "/api/admin/users", "/api/contact", "/api/admin/contact-email", "/api/subscribers", "/api/media/presign", "/api/ibs/editions/test/booking", "/api/admin/payments-extra", "/api/admin/payments/delete", "/api/admin/translate"]) {
 	for (const method of ["GET", "POST", "PATCH", "DELETE"]) assert.equal(canAccessAdmin("payments", path, method), false, path + method);
 }
 assert.equal(canAccessAdmin("payments", `/api/admin/bookings/${id}/verify-payment`, "POST"), true);
@@ -27,6 +27,7 @@ sql.exec("CREATE TABLE admin_users (id INTEGER PRIMARY KEY AUTOINCREMENT, userna
 sql.exec("INSERT INTO admin_users (username,is_super_admin) VALUES ('owner',1),('editor',0)");
 sql.exec(readFileSync("db/migrations/0027_admin_payments_role.sql", "utf8"));
 sql.exec(readFileSync("db/migrations/0008_contacts.sql", "utf8"));
+sql.exec(readFileSync("db/migrations/0028_contact_email_notifications.sql", "utf8"));
 assert.equal(sql.prepare("SELECT role FROM admin_users WHERE id=2").get().role,"admin");
 globalThis.__roleDB = {prepare(query) {
 	let args = [];

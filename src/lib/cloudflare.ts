@@ -8,6 +8,7 @@ export async function getEnv() {
 		AI: Ai;
 		ADMIN_SECRET: string;
 		ADMIN_SESSION_SECRET?: string;
+		CONTACT_EMAIL?: import("@/lib/contact-email").ContactEmailBinding;
 	};
 	// Keep existing server callers compatible while moving the signing key out
 	// of tracked plain-text config. The local fallback is intentionally retained.
