@@ -46,7 +46,9 @@ failRecipient='second@example.com';const contact=await submit();assert.equal(cal
 let rows=sql.prepare('SELECT status,error_code FROM contact_email_deliveries WHERE contact_id=? ORDER BY id').all(contact.id);assert.deepEqual(rows.map(r=>r.status),['accepted','failed']);assert.equal(rows[1].error_code,'E_RECIPIENT_NOT_ALLOWED');
 assert.equal(sql.prepare('SELECT count(*) n FROM contacts').get().n,2,'Provider rejection never loses the contact');
 assert.equal((await contacts.GET(request('/api/contact','GET',undefined,''))).status,401);
-const inbox=await(await contacts.GET(request('/api/contact'))).json();assert.equal(inbox[0].email_notifications.length,2);
+// Fast CI machines can create both contacts in the same millisecond; match identity, not row order.
+sql.prepare('UPDATE contacts SET created_at=?').run(contact.created_at);
+const inbox=await(await contacts.GET(request('/api/contact'))).json();assert.equal(inbox.find(row=>row.id===contact.id).email_notifications.length,2);
 env.CONTACT_EMAIL=undefined;await submit();rows=sql.prepare('SELECT * FROM contact_email_deliveries ORDER BY id DESC LIMIT 2').all();assert.ok(rows.every(r=>r.error_code==='NOT_CONFIGURED'));env.CONTACT_EMAIL=sender;
 failRecipient='';await settings.PUT(request(path,'PUT',{enabled:true,emails:['','new@example.com']}));const before=calls.length;await submit();assert.equal(calls.length,before+1);assert.equal(calls.at(-1).to,'new@example.com');
 const firstTest=await settings.POST(request(path,'POST'));assert.equal(firstTest.status,200);assert.equal((await firstTest.json()).deliveries[0].status,'accepted');assert.equal(calls.at(-1).replyTo,undefined);assert.equal((await settings.POST(request(path,'POST'))).status,429);
