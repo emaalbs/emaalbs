@@ -89,7 +89,7 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 											className={`inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-[var(--color-navy)] px-4 py-2.5 text-lg font-bold text-white shadow-lg ${isRtl ? "sm:mr-10" : "sm:ml-10"}`}
 										>
 											<Clock className="h-4 w-4 text-[var(--color-gold)]" />
-											{item.time.trim() && item.time !== "—" ? item.time : (locale === "ar" ? "غير محدد" : "Not specified")}
+											{item.time.trim() && item.time !== "—" ? item.time : (locale === "ar" ? "يُحدَّد لاحقًا" : "To be confirmed")}
 										</div>
 									</div>
 
