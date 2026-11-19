@@ -12,11 +12,13 @@ Payments-only accounts cannot read, change, or test these settings.
    it does not modify existing contacts. Register the migration when executing it
    directly rather than via Wrangler migrations.
 2. Deploy with the `CONTACT_EMAIL` send-email binding in `wrangler.jsonc`.
-3. In Cloudflare **Email Service → Email Sending**, configure/verify sending for
-   `emaalbs.com`. The sender is `notifications@emaalbs.com`. Keep existing inbound
-   mail/MX configuration intact; sending-domain setup is distinct from mail routing.
-4. Depending on the account plan, destination addresses must be verified in
-   Cloudflare before they can receive notifications. The user chooses these later.
+3. Enable **Email Routing only for `notify.emaalbs.com`**, the dedicated
+   notification subdomain. The sender is `notifications@notify.emaalbs.com`.
+   Leave root-domain Google Workspace MX/SPF records intact. Do not enable routing
+   on `emaalbs.com` or purchase Workers Paid for these notifications.
+4. Verify each destination address in Cloudflare. Sending to verified destination
+   addresses is free on Workers Free/Paid with an onboarded Email Routing domain.
+   Any address added or changed in the admin must also be verified in Cloudflare.
 5. Save the recipient addresses and enable notifications in Contacts, then use
    **Test email**. Confirm actual arrival in the recipient inbox/spam folder.
 
@@ -53,3 +55,16 @@ Provider references:
 - https://developers.cloudflare.com/email-service/api/send-emails/workers-api/
 - https://developers.cloudflare.com/email-service/configuration/send-bindings/
 - https://developers.cloudflare.com/email-service/get-started/send-emails/
+
+## Production setup (2026-11-19)
+
+`notify.emaalbs.com` was enabled through the Email Routing DNS API with the explicit
+subdomain name. Cloudflare returned `enabled: true`, `status: ready`; the root MX
+remained `1 smtp.google.com.`. A remote Worker test returned a provider message ID
+for the verified recipient. This proves acceptance, not inbox delivery. No paid
+subscription was created. Root Email Sending onboarding is not required for this
+verified-recipient setup.
+
+- https://developers.cloudflare.com/email-service/configuration/subdomains/
+- https://developers.cloudflare.com/email-service/configuration/email-routing-addresses/
+- https://developers.cloudflare.com/email-service/platform/pricing/

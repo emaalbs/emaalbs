@@ -2,7 +2,7 @@ import { getEnv } from "@/lib/cloudflare";
 import type { Contact } from "@/lib/db/contacts";
 import { parseContactEmailSettings, type ContactEmailSettings } from "@/lib/contact-email-config";
 
-export const CONTACT_EMAIL_SENDER = "notifications@emaalbs.com";
+export const CONTACT_EMAIL_SENDER = "notifications@notify.emaalbs.com";
 export type ContactEmailMessage = { from: { email: string; name: string }; to: string; replyTo?: string; subject: string; text: string; html: string };
 export type ContactEmailBinding = { send(message: ContactEmailMessage): Promise<{ messageId: string }> };
 

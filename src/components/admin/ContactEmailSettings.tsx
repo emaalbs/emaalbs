@@ -40,7 +40,7 @@ export function ContactEmailSettings() {
 			</fieldset>
 			<p className="mt-3 text-xs leading-6 text-gray-500">تطبق الإعدادات على الرسائل الجديدة بعد الحفظ. إضافة بريد أو تغييره لا ترسل الرسائل السابقة تلقائيًا.</p>
 			<div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-7 text-amber-900">
-				{loading?"جارٍ تحميل حالة الربط…":service?"ربط خدمة Cloudflare متاح. بعد إضافة الإيميلات وحفظها، استخدم زر الاختبار للتأكد من الإرسال. قد يلزم تفعيل نطاق الإرسال والتحقق من عناوين المستلمين في Cloudflare.":"إرسال البريد غير متاح في هذه البيئة حاليًا. يمكنك حفظ الإيميلات الآن؛ يلزم إكمال ربط خدمة البريد قبل وصول الإشعارات."}
+				{loading?"جارٍ تحميل حالة الربط…":service?"الإرسال إلى الإيميلات المؤكّدة في Cloudflare مجاني. عند إضافة بريد أو تغييره، أكّد عنوانه في Cloudflare ثم احفظ الإعدادات واستخدم زر الاختبار.":"إرسال البريد غير متاح في هذه البيئة حاليًا. يمكنك حفظ الإيميلات الآن؛ يلزم إكمال ربط خدمة البريد قبل وصول الإشعارات."}
 				<a href="https://dash.cloudflare.com/?to=/:account/email-service" target="_blank" rel="noreferrer" className="ms-2 underline">إعداد خدمة البريد في Cloudflare ↗</a>
 			</div>
 			<div className="mt-5 flex flex-wrap gap-3">
