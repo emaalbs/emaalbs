@@ -13,10 +13,9 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 	const { locale } = useI18n();
 	const labels = ibsOverview.editionLabels;
 	const agenda = edition.agenda;
-	if (!agenda || agenda.length === 0) return null;
-
 	const [activeDay, setActiveDay] = useState(0);
-	const currentDay = agenda[activeDay];
+	if (!agenda || agenda.length === 0) return null;
+	const currentDay = agenda[activeDay] ?? agenda[0];
 	const isRtl = locale === "ar";
 
 	return (
@@ -37,6 +36,8 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 						{agenda.map((day, idx) => (
 							<button
 								key={idx}
+								type="button"
+								aria-pressed={activeDay === idx}
 								onClick={() => setActiveDay(idx)}
 								className={`rounded-full px-6 py-2.5 text-base font-bold transition-all ${
 									activeDay === idx
@@ -62,32 +63,33 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 				<div className="relative mt-12">
 					{/* Vertical line */}
 					<div
-						className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-[var(--color-line)] via-[var(--color-line)] to-transparent"
+						className="absolute top-0 bottom-0 hidden w-px sm:block bg-gradient-to-b from-[var(--color-line)] via-[var(--color-line)] to-transparent"
 						style={{ [isRtl ? "right" : "left"]: "28px" }}
 					/>
 
 					<div className="space-y-6">
 						{currentDay.items.map((item, idx) => {
 							const isSession =
-								item.speakers &&
-								item.speakers.length > 0;
+								Boolean(item.description?.[locale]?.trim()) ||
+								Boolean(item.speakers?.length);
 							const isBreak = !isSession;
 
 							return (
 								<div
 									key={idx}
-									className="relative flex gap-5 sm:gap-8"
+									className="relative flex flex-col gap-3 sm:flex-row sm:gap-8"
 								>
 									{/* Time + node */}
 									<div className="relative shrink-0 pt-2">
 										<div
-											className={`absolute top-4 h-3 w-3 rounded-full border-2 border-white bg-[var(--color-gold)] shadow-[0_0_12px_rgba(238,193,59,0.5)] ${isRtl ? "right-[22px]" : "left-[22px]"}`}
+											className={`absolute top-4 hidden h-3 w-3 sm:block rounded-full border-2 border-white bg-[var(--color-gold)] shadow-[0_0_12px_rgba(238,193,59,0.5)] ${isRtl ? "right-[22px]" : "left-[22px]"}`}
 										/>
 										<div
-											className={`flex items-center gap-2 rounded-xl bg-[var(--color-navy)] px-4 py-2.5 text-lg font-bold text-white shadow-lg ${isRtl ? "mr-10" : "ml-10"}`}
+											dir="ltr"
+											className={`inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-[var(--color-navy)] px-4 py-2.5 text-lg font-bold text-white shadow-lg ${isRtl ? "sm:mr-10" : "sm:ml-10"}`}
 										>
 											<Clock className="h-4 w-4 text-[var(--color-gold)]" />
-											{item.time}
+											{item.time.trim() && item.time !== "—" ? item.time : (locale === "ar" ? "غير محدد" : "Not specified")}
 										</div>
 									</div>
 
@@ -99,8 +101,8 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 												<h3 className="text-xl font-bold text-[var(--color-ink)]">
 													{item.title[locale]}
 												</h3>
-												{item.note && (
-													<span className="mt-2 inline-flex items-center gap-2 rounded-full bg-[var(--color-gold-tint)] px-4 py-1.5 text-sm font-bold text-[var(--color-gold-deep)]">
+												{item.note?.[locale]?.trim() && (
+													<span className="mt-2 inline-flex items-center gap-2 max-w-full rounded-2xl bg-[var(--color-gold-tint)] px-4 py-1.5 text-sm font-bold text-[var(--color-gold-deep)]">
 														<MapPin className="h-3.5 w-3.5" />
 														{item.note[locale]}
 													</span>
@@ -112,19 +114,19 @@ export function EditionAgenda({ edition }: { edition: IbsEdition }) {
 												<div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-start sm:gap-8 lg:p-8">
 													{/* Main content */}
 													<div className="flex-1">
-														<div className="flex items-center gap-2">
-															<Mic className="h-5 w-5 text-[var(--color-teal)]" />
+														<div className="flex items-start gap-2">
+															<Mic className="mt-1 h-5 w-5 shrink-0 text-[var(--color-teal)]" />
 															<h3 className="text-xl font-bold text-[var(--color-ink)] sm:text-2xl">
 																{item.title[locale]}
 															</h3>
 														</div>
-														{item.description && (
-															<p className="mt-3 max-w-3xl text-base leading-relaxed text-[var(--color-slate)] sm:text-lg">
+														{item.description?.[locale]?.trim() && (
+															<p className="mt-3 max-w-3xl whitespace-pre-line break-words text-base leading-relaxed text-[var(--color-slate)] sm:text-lg">
 																{item.description[locale]}
 															</p>
 														)}
-														{item.note && (
-															<span className="mt-3 inline-flex items-center gap-2 rounded-full bg-[var(--color-gold-tint)] px-4 py-1.5 text-sm font-bold text-[var(--color-gold-deep)]">
+														{item.note?.[locale]?.trim() && (
+															<span className="mt-3 inline-flex items-center gap-2 max-w-full rounded-2xl bg-[var(--color-gold-tint)] px-4 py-1.5 text-sm font-bold text-[var(--color-gold-deep)]">
 																<MapPin className="h-4 w-4" />
 																{item.note[locale]}
 															</span>
