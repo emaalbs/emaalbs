@@ -10,6 +10,8 @@ export const config = {
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const method = request.method;
+	// Visitors submit contact messages without an admin session; inbox reads stay protected.
+	if (method === "POST" && pathname === "/api/contact") return NextResponse.next();
 	// Keep hosted-payment returns and host-only booking cookies on one origin.
 	if (!pathname.startsWith("/api/") && !pathname.startsWith("/admin")) {
 		if (request.nextUrl.hostname === "www.emaalbs.com") {

@@ -26,6 +26,7 @@ const sql = new DatabaseSync(":memory:");
 sql.exec("CREATE TABLE admin_users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password_hash TEXT, salt TEXT, display_name TEXT, is_super_admin INTEGER DEFAULT 0, created_at INTEGER, updated_at INTEGER)");
 sql.exec("INSERT INTO admin_users (username,is_super_admin) VALUES ('owner',1),('editor',0)");
 sql.exec(readFileSync("db/migrations/0027_admin_payments_role.sql", "utf8"));
+sql.exec(readFileSync("db/migrations/0008_contacts.sql", "utf8"));
 assert.equal(sql.prepare("SELECT role FROM admin_users WHERE id=2").get().role,"admin");
 globalThis.__roleDB = {prepare(query) {
 	let args = [];
@@ -42,6 +43,7 @@ export * as users from "./src/app/api/admin/users/route";
 export * as user from "./src/app/api/admin/users/[id]/route";
 export * as login from "./src/app/api/admin/login/route";
 export * as me from "./src/app/api/admin/me/route";
+export * as contacts from "./src/app/api/contact/route";
 `,resolveDir:process.cwd(),loader:"ts"},bundle:true,platform:"node",format:"cjs",outfile,packages:"external",
 		plugins:[{name:"isolated-env",setup(b){
 			b.onResolve({filter:/cloudflare$/},a=>a.path==="@/lib/cloudflare"||a.path==="@opennextjs/cloudflare"?{path:a.path,namespace:"fixture"}:null);
@@ -50,7 +52,7 @@ export * as me from "./src/app/api/admin/me/route";
 	// Resolve framework modules from this repository, not the temporary folder.
 	const req=createRequire(resolve("package.json"));
 	const Module=req("node:module");process.env.NODE_PATH=resolve("node_modules");Module._initPaths();
-	const {auth,users,user,login,me,middleware}=req(outfile);
+	const {auth,users,user,login,me,contacts,middleware}=req(outfile);
 	const {NextRequest}=req("next/server");
 	const token=async uid=>auth.signSession({userId:uid,username:"stale",isSuperAdmin:true,role:"super_admin"},process.env.ADMIN_SESSION_SECRET);
 	const owner=await token(1);
@@ -81,6 +83,26 @@ export * as me from "./src/app/api/admin/me/route";
 	assert.equal((await middleware(new NextRequest(request("/admin/payments","GET",cashier)))).status,200);
 	assert.equal((await middleware(new NextRequest(request("/admin/login","GET","")))).status,200);
 	assert.equal((await middleware(new NextRequest(request("/api/blogs","GET","")))).status,200);
+	// Public visitors can submit contact messages, but never read the inbox.
+	for (const cookie of ["", "expired-or-invalid-session", cashier]) {
+		const visitor=request("/api/contact","POST",cookie,{name:"Contact regression test",email:"contact@example.invalid",message:"Test message",subject:"partner"});
+		const gate=await middleware(new NextRequest(visitor.clone()));
+		assert.equal(gate.headers.get("x-middleware-next"),"1","Contact submission must not require an admin session");
+		const saved=await contacts.POST(visitor);
+		assert.equal(saved.status,201);
+		const contact=await saved.json();
+		assert.equal(sql.prepare("SELECT message FROM contacts WHERE id=?").get(contact.id).message,"Test message");
+	}
+	assert.equal((await contacts.POST(request("/api/contact","POST","",{}))).status,400);
+	assert.equal((await contacts.GET(request("/api/contact","GET",""))).status,401);
+	assert.equal((await middleware(new NextRequest(request("/api/contact","GET",cashier)))).status,403);
+	for (const method of ["GET","HEAD","PUT","PATCH","DELETE"]) {
+		assert.equal((await middleware(new NextRequest(request("/api/contact",method,"")))).status,401);
+	}
+	for (const path of ["/api/contact/extra","/api/contacts","/api/blogs"]) {
+		assert.equal((await middleware(new NextRequest(request(path,"POST","",{})))).status,401);
+	}
+	assert.equal((await contacts.GET(request("/api/contact","GET",owner))).status,200);
 	res=await user.DELETE(request("/api/admin/users/"+uid,"DELETE",owner),{params:Promise.resolve({id:String(uid)})});assert.equal(res.status,200);
 	await assert.rejects(()=>auth.requireAuth(request("/api/admin/payments","GET",cashier)),/Invalid session/);
 	assert.equal((await users.GET(request("/api/admin/users","GET",owner))).status,200);
