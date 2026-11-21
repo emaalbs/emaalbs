@@ -6,6 +6,7 @@ import styles from "./WelcomeLanding.module.css";
 export function WelcomeLanding({settings:s, locale, onEnter, preview=false}: {settings:WelcomePageSettings; locale:"en"|"ar"; onEnter:()=>void; preview?:boolean}) {
  const ar = locale === "ar", other = ar ? "en" : "ar";
  const agenda = welcomeUrl(s.agendaUrl,locale), registration = welcomeUrl(s.registrationUrl,locale), details = welcomeUrl(s.detailsUrl,locale);
+ const secondAgenda = welcomeUrl(s.agenda2Url,locale);
  return <main className={styles.page} dir={ar?"rtl":"ltr"} data-welcome-page>
   <div className={styles.shell}>
    <header className={styles.header}>
@@ -19,7 +20,10 @@ export function WelcomeLanding({settings:s, locale, onEnter, preview=false}: {se
      <p className={styles.description}>{s.description[locale]}</p>
      {s.dateLine[locale] && <div className={styles.date}><CalendarDays size={21}/><p>{s.dateLine[locale].split(/(\d+(?:[–-]\d+)+)/g).map((part,index)=>/\d+[–-]\d+/.test(part)?<bdi dir="ltr" key={index}>{part}</bdi>:part)}</p></div>}
      <div className={styles.actions}>
-      {agenda ? <a className={styles.agenda} href={agenda} download target="_blank" rel="noopener noreferrer"><Download size={19}/>{s.agendaLabel[locale]}</a> : <div className={styles.pending}><button className={styles.agenda} disabled><Download size={19}/>{s.agendaLabel[locale]}</button><small>{ar?"سيُتاح ملف الأجندة قريبًا":"Agenda file coming soon"}</small></div>}
+      <div className={styles.agendaDownloads}>
+       {agenda ? <a className={styles.agenda} href={agenda} download target="_blank" rel="noopener noreferrer" data-agenda="1"><Download size={19}/><span>{s.agendaLabel[locale]}{s.agendaDescription[locale] && <small>{agendaDescription(s.agendaDescription[locale])}</small>}</span></a> : <div className={styles.pending}><button className={styles.agenda} disabled><Download size={19}/>{s.agendaLabel[locale]}</button><small>{ar?"سيُتاح ملف الأجندة قريبًا":"Agenda file coming soon"}</small></div>}
+       {secondAgenda && <a className={styles.agenda} href={secondAgenda} download target="_blank" rel="noopener noreferrer" data-agenda="2"><Download size={19}/><span>{s.agenda2Label[locale]}{s.agenda2Description[locale] && <small>{agendaDescription(s.agenda2Description[locale])}</small>}</span></a>}
+      </div>
       {registration ? <a className={styles.register} href={registration} target="_blank" rel="noopener noreferrer">{s.registrationLabel[locale]}<ArrowUpRight size={20}/></a> : <div className={styles.pending}><button className={styles.register} disabled>{s.registrationLabel[locale]}<ArrowUpRight size={20}/></button><small>{ar?"سيُتاح رابط التسجيل قريبًا":"Registration link coming soon"}</small></div>}
      </div>
      <div className={styles.enterRow}><button className={styles.enter} onClick={onEnter} data-enter-site>{s.enterLabel[locale]}<ArrowRight size={20}/></button></div>
@@ -38,3 +42,5 @@ export function WelcomeLanding({settings:s, locale, onEnter, preview=false}: {se
   </div>
  </main>;
 }
+
+function agendaDescription(text:string){return text.split(/(\d+(?:[–-]\d+)+)/g).map((part,index)=>/\d+[–-]\d+/.test(part)?<bdi dir="ltr" key={index}>{part}</bdi>:part);}

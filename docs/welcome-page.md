@@ -7,7 +7,8 @@ The homepage now checks the singleton welcome-page settings before displaying no
 - Public read / authenticated admin write: `/api/welcome-page`
 - Migration: `db/migrations/0029_welcome_page.sql` (new installations default to disabled)
 - Editable bilingual titles, descriptions, dates, image caption, button labels, image, registration URLs and summit-details URLs.
-- Optional Arabic/English PDFs. A single PDF or registration URL is reused for the other language. Missing agenda/registration links appear disabled with a coming-soon caption.
+- Two independent agenda downloads, each with bilingual labels, descriptions and optional Arabic/English PDFs. Each day's available file is reused for the other language. Clear both second-day URLs to hide that button. A missing first agenda or registration link appears disabled with a coming-soon caption.
+- Existing single-agenda configurations remain compatible; new fields default to an empty second download without a database migration.
 - No emails, registration submissions, payment calls or third-party form embedding are performed by this feature.
 
 ## Local state, 2026-11-21

@@ -45,6 +45,16 @@ const response=await route.GET();assert.match(response.headers.get('cache-contro
 assert.deepEqual(await response.json(),saved);
 assert.equal(config.welcomeUrl(saved.agendaUrl,'en'),saved.agendaUrl.ar);
 assert.equal(config.welcomeUrl(saved.registrationUrl,'ar'),saved.registrationUrl.en);
+const legacy={...saved};
+for(const field of ['agendaDescription','agenda2Url','agenda2Label','agenda2Description'])delete legacy[field];
+assert.deepEqual(JSON.parse(JSON.stringify(config.parseWelcomePage(legacy))),saved,'Existing single-agenda settings remain readable');
+const twoDays={...saved,agenda2Url:{ar:'/api/media/welcome/agenda/day-2.pdf',en:''},agenda2Label:{ar:'أجندة اليوم الثاني',en:'Day two agenda'}};
+assert.equal((await route.PUT(request(twoDays))).status,200);
+assert.deepEqual(await(await route.GET()).json(),twoDays,'Both agenda downloads persist independently');
+assert.equal(config.welcomeUrl(twoDays.agenda2Url,'en'),twoDays.agenda2Url.ar);
+assert.equal((await route.PUT(request({...twoDays,agenda2Url:{en:'javascript:alert(1)',ar:''}}))).status,400);
+assert.equal((await route.PUT(request({...twoDays,agenda2Label:{en:'',ar:''}}))).status,400);
+assert.equal((await route.PUT(request({...twoDays,agenda2Url:{en:'',ar:''}}))).status,200,'Second agenda can be removed');
 assert.equal((await route.PUT(request({...saved,enabled:false}))).status,200);
 assert.deepEqual(await(await route.GET()).json(),{...saved,enabled:false},'Disabling keeps content');
 console.log('PASS: default-off installation, authorized persistence, permission/origin guards, URL validation, bilingual fallback and hide/show without content loss.');
