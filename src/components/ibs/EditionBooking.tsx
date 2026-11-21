@@ -28,13 +28,13 @@ const messages: Record<string, [string, string]> = {
 export function bookingMessage(code: string, ar: boolean) {
 	return messages[code]?.[ar ? 1 : 0] || (ar ? "تعذر إكمال الطلب. أعد المحاولة لاحقًا." : "Unable to complete the request. Please try again shortly.");
 }
-export function EditionBooking({ slug, config, date, location, simulation=false }: { slug: string; config: BookingConfig; date: { en: string; ar: string }; location: { en: string; ar: string }; simulation?:boolean }) {
+export function EditionBooking({ slug, config, date, location, simulation=false, standalone=false }: { slug: string; config: BookingConfig; date: { en: string; ar: string }; location: { en: string; ar: string }; simulation?:boolean; standalone?:boolean }) {
 	const { locale } = useI18n();
 	const ar = locale === "ar";
 	const tiers = bookingTiers(config).filter(t => t.enabled);
 	const [tierId, setTierId] = useState(tiers[0]?.id || "");
 	const selectedTier = tiers.find(t => t.id === tierId) || tiers[0];
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(standalone);
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState("");
 	const [needsLogin, setNeedsLogin] = useState(false);
@@ -130,15 +130,15 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 		} catch (e) { setError(bookingMessage(e instanceof Error ? e.message : "", ar)); }
 		finally { setBusy(false); }
 	}
-	return <section id="booking" className="bg-[var(--color-warm)] py-20 lg:py-24 scroll-mt-24">
+	return <section id="booking" className={`bg-[var(--color-warm)] scroll-mt-24 ${standalone ? "pb-12 pt-4" : "py-20 lg:py-24"}`}>
 		<Container>
 			<div className="overflow-hidden rounded-3xl bg-[var(--color-navy)] text-white shadow-xl">
 				<div className="grid lg:grid-cols-[1.15fr_1fr]">
-					<div className="relative p-7 sm:p-12 lg:p-16">
+					<div className={standalone ? "relative p-6 lg:p-12" : "relative p-7 sm:p-12 lg:p-16"}>
 						<span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-gold)]/30 px-4 py-2 text-xs font-bold text-[var(--color-gold)]"><Ticket size={16} />{ar ? "مقعدك في القمة" : "YOUR PLACE AT THE SUMMIT"}</span>
-						<h2 className="mt-8 max-w-xl text-4xl font-bold leading-tight sm:text-5xl">{config.title[locale]}</h2>
-						{config.description[locale].trim() && <p className="mt-6 whitespace-pre-line text-base leading-8 text-white/80">{config.description[locale]}</p>}
-						<div className="mt-10 grid gap-4 border-t border-white/15 pt-7 text-sm text-white/85">
+						<h2 className={standalone ? "mt-4 max-w-xl text-2xl font-bold leading-snug lg:text-4xl" : "mt-8 max-w-xl text-4xl font-bold leading-tight sm:text-5xl"}>{config.title[locale]}</h2>
+						{config.description[locale].trim() && <p className={`${standalone ? "hidden lg:block" : ""} mt-6 whitespace-pre-line text-base leading-8 text-white/80`}>{config.description[locale]}</p>}
+						<div className={`${standalone ? "hidden lg:grid" : "grid"} mt-10 gap-4 border-t border-white/15 pt-7 text-sm text-white/85`}>
 							{[date[locale], location[locale]].filter(Boolean).map((text, i) => <div key={i} className="flex items-start gap-3"><Check size={18} className="shrink-0 text-[var(--color-gold)]" /><span>{text}</span></div>)}
 						</div>
 					</div>
@@ -153,7 +153,7 @@ export function EditionBooking({ slug, config, date, location, simulation=false 
 						<p className="mt-3 text-sm leading-6 text-[var(--color-slate)]">{ar ? "حجز واحد لكل عملية، دون إنشاء حساب. يتأكد الحجز بعد التحقق من نجاح الدفع." : "One reservation per checkout. No account required. Confirmed after payment is verified."}</p>
 						{!open ? <button disabled={soldOut} onClick={() => setOpen(true)} className="mt-8 flex min-h-14 w-full items-center justify-between gap-4 rounded-xl bg-[var(--color-gold)] px-6 font-bold text-[var(--color-navy)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-teal)] motion-reduce:transform-none disabled:opacity-50 disabled:cursor-not-allowed">{soldOut ? (ar ? "غير متاح للحجز" : "Booking unavailable") : config.buttonLabel[locale]}<ArrowUpRight className={ar ? "-scale-x-100" : ""} /></button> :
 						<form onSubmit={submit} className="mt-7 space-y-4" aria-label={ar ? "بيانات الحجز" : "Booking details"}>
-							<label className="block text-sm font-semibold">{ar ? "الاسم الكامل" : "Full name"}<input autoFocus required minLength={2} maxLength={120} name="name" autoComplete="name" className={inputClass} disabled={busy} /></label>
+							<label className="block text-sm font-semibold">{ar ? "الاسم الكامل" : "Full name"}<input autoFocus={!standalone} required minLength={2} maxLength={120} name="name" autoComplete="name" className={inputClass} disabled={busy} /></label>
 							<label className="block text-sm font-semibold">{ar ? "البريد الإلكتروني" : "Email address"}<input required type="email" maxLength={254} name="email" autoComplete="email" dir="ltr" className={inputClass} disabled={busy} /></label>
 							<label className="block text-sm font-semibold">{ar ? "رقم الهاتف" : "Phone number"}<input required type="tel" minLength={6} maxLength={40} name="phone" autoComplete="tel" dir="ltr" className={inputClass} disabled={busy} /></label>
 							{config.terms[locale].trim() && <p className="max-h-40 overflow-auto whitespace-pre-line rounded-lg bg-[var(--color-warm)] p-4 text-xs leading-6">{config.terms[locale]}</p>}
