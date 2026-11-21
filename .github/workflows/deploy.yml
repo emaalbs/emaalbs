@@ -23,6 +23,7 @@ jobs:
 
       - name: Verify payment safety guards
         run: |
+          node scripts/test-welcome-page.mjs
           node scripts/test-admin-access.mjs
           node scripts/test-contact-email.mjs
           node scripts/test-payment-export.mjs

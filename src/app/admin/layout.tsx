@@ -10,6 +10,7 @@ import { LayoutDashboard, FileText, CalendarDays, Mail, Users, Shield, LogOut, M
 const baseNav = [
 	{ label: "Dashboard", href: "/admin", icon: LayoutDashboard },
 	{ label: "Homepage Banners", href: "/admin/hero-slides", icon: PanelsTopLeft },
+	{ label: "Welcome Page / الترحيبية", href: "/admin/welcome-page", icon: PanelsTopLeft },
 	{ label: "Homepage Feature", href: "/admin/home-feature", icon: Sparkles },
 	{ label: "Social Media", href: "/admin/social-posts", icon: Share2 },
 	{ label: "Gallery Portfolio", href: "/admin/gallery", icon: Images },
@@ -65,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 		<div dir="ltr" className="flex min-h-screen bg-gray-50">
 			{/* Sidebar */}
 			<aside
-				className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r border-gray-200 bg-white transition-transform duration-200 lg:static lg:translate-x-0 ${
+				className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col transform border-r border-gray-200 bg-white transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
 					sidebarOpen ? "translate-x-0" : "-translate-x-full"
 				}`}
 			>
@@ -80,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 						<X className="h-5 w-5" />
 					</button>
 				</div>
-				<nav className="space-y-1 px-3 py-4">
+				<nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
 					{nav.map((item) => {
 						const Icon = item.icon;
 						const active =
@@ -104,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 						);
 					})}
 				</nav>
-				<div className="absolute bottom-0 w-full border-t border-gray-200 px-3 py-4">
+				<div className="mt-auto w-full shrink-0 border-t border-gray-200 px-3 py-4">
 					<button
 						onClick={logout}
 						className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"

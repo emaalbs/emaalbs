@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Allow public reads on IBS/blog APIs and media serving
-	if (pathname === "/api/home" || pathname.startsWith("/api/blogs") || pathname.startsWith("/api/ibs") || pathname.startsWith("/api/media") || pathname.startsWith("/api/magazines") || pathname.startsWith("/api/social-posts") || pathname.startsWith("/api/gallery")) {
+	if (pathname === "/api/welcome-page" || pathname === "/api/home" || pathname.startsWith("/api/blogs") || pathname.startsWith("/api/ibs") || pathname.startsWith("/api/media") || pathname.startsWith("/api/magazines") || pathname.startsWith("/api/social-posts") || pathname.startsWith("/api/gallery")) {
 		if (method === "GET") {
 			return NextResponse.next();
 		}

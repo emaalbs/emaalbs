@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { WelcomeGate } from "@/components/home/WelcomeGate";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { HomeClientContent } from "@/components/home/HomeClientContent";
@@ -27,9 +28,11 @@ export default async function Home({ params }: Props) {
 					]),
 				}}
 			/>
-			<Header />
-			<HomeClientContent locale={locale === "ar" ? "ar" : "en"} />
-			<Footer />
+			<WelcomeGate locale={locale === "ar" ? "ar" : "en"}>
+				<Header />
+				<HomeClientContent locale={locale === "ar" ? "ar" : "en"} />
+				<Footer />
+			</WelcomeGate>
 		</>
 	);
 }
