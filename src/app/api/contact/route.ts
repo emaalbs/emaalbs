@@ -3,6 +3,7 @@ import { createContact, listContacts } from "@/lib/db/contacts";
 import { requireAuth } from "@/lib/auth";
 import { isContactEmail } from "@/lib/contact-email-config";
 import { notifyContactSafely } from "@/lib/contact-email";
+import { replyToContactSafely } from "@/lib/contact-auto-reply";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function POST(request: Request) {
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 
 		const contact = await createContact({ name:name.trim(), email:email.trim(), phone, company, message:message.trim(), subject });
 		// Saving the inquiry succeeds even if the email provider is unavailable.
-		const notification = notifyContactSafely(contact);
+		const notification = Promise.all([notifyContactSafely(contact), replyToContactSafely(contact)]);
 		try {
 			const { ctx } = await getCloudflareContext({async:true});
 			if (ctx?.waitUntil) ctx.waitUntil(notification);

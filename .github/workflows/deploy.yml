@@ -26,6 +26,7 @@ jobs:
           node scripts/test-welcome-page.mjs
           node scripts/test-admin-access.mjs
           node scripts/test-contact-email.mjs
+          node scripts/test-contact-auto-reply.mjs
           node scripts/test-payment-export.mjs
           node scripts/test-payment-core.mjs
           node scripts/test-tabadul-core.mjs
