@@ -9,8 +9,8 @@ message text, links, or the organizer's notification recipient list.
 
 Deployed successfully on 2026-11-23 in commit `f7fa967` (GitHub Actions run
 `45163504727`). Production configuration and the additive migration are ready.
-Delivery remains explicitly disabled (`CONTACT_AUTO_REPLY_ENABLED=false`) while
-Resend completes verification. EN/AR contact pages and admin login return 200;
+Delivery is active (`CONTACT_AUTO_REPLY_ENABLED=true`) as of 2026-11-23 after
+all Resend DNS records became verified. EN/AR contact pages and admin login return 200;
 unauthenticated inbox access returns 401 and invalid contact input returns 400.
 Existing Cloudflare Email Routing notifications only support verified destination
 addresses in this setup; they cannot deliver replies to arbitrary visitors.
@@ -20,21 +20,19 @@ Resend API access was verified and `replies.emaalbs.com` was created on 2026-11-
 Sending is enabled, receiving disabled. The owner imported the four dedicated
 subdomain DNS records into Cloudflare. Public DNS matches all four expected
 records; root Google Workspace MX remains unchanged. Resend has verified DKIM
-and the Forge CNAME, while its SPF TXT/MX verification is pending. Both Cloudflare
-and Google public DNS resolve the expected SPF TXT and MX. A probe to Resend's
-own test recipient was rejected with "domain is not verified", including with
-the temporary setup credential; no visitor acknowledgement has been sent yet.
+and the Forge CNAME as well as SPF TXT/MX. Both Cloudflare and Google public DNS
+resolve the expected SPF TXT and MX. The restricted production key passed a
+provider test, then a real form submission to the owner's `qnuoot@emaalbs.com`
+inbox succeeded (contact 22). Resend reported `delivered` for email
+`01a20849-4c0e-7770-8964-f8d3d8bbb977`; the independent organizer notification
+was also accepted. This confirms provider-reported delivery, not a human read receipt.
 A sending-only key restricted to this domain is stored as the Worker secret
 `RESEND_API_KEY`. Sender: `notifications@replies.emaalbs.com`; Reply-To:
-`qnuoot@emaalbs.com`. The temporary setup key must be revoked after delivery
-verification. Never print or commit either key.
-To finish, recheck Resend domain verification, enable delivery only after the
-provider accepts this sender, run the prepared live contact form test to the
-owner-controlled inbox, inspect the provider's delivery event, then revoke the
-temporary setup key and remove local secret files. Prepared private helpers are
-in `.wrangler/finish-resend-setup-20261123.mjs`,
-`.wrangler/test-auto-reply-live-20261123.mjs`, and
-`.wrangler/close-resend-setup-20261123.mjs`.
+`qnuoot@emaalbs.com`. The temporary full-access setup key was revoked and its
+rejection verified. Both local key files were removed; the restricted sending
+key remains in Worker secrets. Never print or commit credentials.
+Private completion evidence is in `.wrangler/resend-setup-completed-20261123.json`
+and `.wrangler/auto-reply-live-test-20261123.json`.
 Migration `0030_contact_auto_replies.sql` was applied to production after a
 private database backup, without importing local content. The active Wrangler config is in
 `APPDATA/xdg.config/.wrangler/config/default.toml`, including the leading dot;
