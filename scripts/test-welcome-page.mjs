@@ -39,22 +39,41 @@ for(const url of ['javascript:alert(1)','data:text/html,test','//evil.invalid','
  assert.equal((await route.PUT(request(invalid))).status,400,'Reject unsafe URL '+url);
 }
 for(const body of [null,[],{...original,enabled:'yes'},{...original,title:{en:'',ar:'عنوان'}},{...original,description:{en:'a'.repeat(2001),ar:''}}])assert.equal((await route.PUT(request(body))).status,400);
-const saved={...original,enabled:true,registrationUrl:{en:'https://forms.gle/example?x=1&y=2',ar:''},agendaUrl:{en:'',ar:'/api/media/welcome/agenda/test.pdf'}};
+const file1={id:'agenda-1',visible:true,title:original.agendaLabel,description:original.agendaDescription,url:{en:'',ar:'/api/media/welcome/agenda/test.pdf'}};
+const saved={...original,enabled:true,registrationUrl:{en:'https://forms.gle/example?x=1&y=2',ar:''},agendaUrl:file1.url,downloads:[file1]};
 assert.equal((await route.PUT(request(saved))).status,200);
 const response=await route.GET();assert.match(response.headers.get('cache-control'),/no-store/);
 assert.deepEqual(await response.json(),saved);
 assert.equal(config.welcomeUrl(saved.agendaUrl,'en'),saved.agendaUrl.ar);
 assert.equal(config.welcomeUrl(saved.registrationUrl,'ar'),saved.registrationUrl.en);
 const legacy={...saved};
-for(const field of ['agendaDescription','agenda2Url','agenda2Label','agenda2Description'])delete legacy[field];
+for(const field of ['downloads','agendaDescription','agenda2Url','agenda2Label','agenda2Description'])delete legacy[field];
 assert.deepEqual(JSON.parse(JSON.stringify(config.parseWelcomePage(legacy))),saved,'Existing single-agenda settings remain readable');
 const twoDays={...saved,agenda2Url:{ar:'/api/media/welcome/agenda/day-2.pdf',en:''},agenda2Label:{ar:'أجندة اليوم الثاني',en:'Day two agenda'}};
+const file2={id:'agenda-2',visible:true,title:twoDays.agenda2Label,description:twoDays.agenda2Description,url:twoDays.agenda2Url};
+twoDays.downloads=[file1,file2];
+const legacyTwo={...twoDays};delete legacyTwo.downloads;
+assert.deepEqual(JSON.parse(JSON.stringify(config.parseWelcomePage(legacyTwo))),twoDays,'Legacy two-file settings preserve titles, descriptions, links and order');
+assert.equal((await route.PUT(request(legacyTwo))).status,409,'Stale editor must reload rather than erase new files');
 assert.equal((await route.PUT(request(twoDays))).status,200);
 assert.deepEqual(await(await route.GET()).json(),twoDays,'Both agenda downloads persist independently');
 assert.equal(config.welcomeUrl(twoDays.agenda2Url,'en'),twoDays.agenda2Url.ar);
 assert.equal((await route.PUT(request({...twoDays,agenda2Url:{en:'javascript:alert(1)',ar:''}}))).status,400);
 assert.equal((await route.PUT(request({...twoDays,agenda2Label:{en:'',ar:''}}))).status,400);
 assert.equal((await route.PUT(request({...twoDays,agenda2Url:{en:'',ar:''}}))).status,200,'Second agenda can be removed');
+const file3={id:'new-file-3',visible:true,title:{en:'Partner guide',ar:'دليل الشركاء'},description:{en:'Guide details',ar:'تفاصيل الدليل'},url:{en:'/api/media/welcome/guide.pdf',ar:''}};
+const many={...twoDays,downloads:[file3,{...file1,visible:false},file2]};
+assert.equal((await route.PUT(request(many))).status,200);
+assert.deepEqual(await(await route.GET()).json(),many,'Additional files, custom order and hidden content persist independently');
+assert.equal(config.welcomeUrl(file3.url,'ar'),file3.url.en);
+for(const downloads of [null,{},[file3,file3],[{...file3,id:'../bad'}],[{...file3,visible:'true'}],[{...file3,title:{en:'',ar:''}}],[{...file3,url:{en:'',ar:''}}],[{...file3,visible:false,url:{en:'javascript:alert(1)',ar:''}}],[{...file3,description:{en:42,ar:''}}],Array.from({length:101},(_,i)=>({...file3,id:'file-'+i}))]){
+ assert.equal((await route.PUT(request({...many,downloads}))).status,400,'Invalid file list must be rejected');
+ assert.deepEqual(await(await route.GET()).json(),many,'Rejected request cannot change existing files');
+}
+const hiddenDraft={id:'draft',visible:false,title:{en:'',ar:''},description:{en:'',ar:''},url:{en:'',ar:''}};
+assert.equal((await route.PUT(request({...many,downloads:[hiddenDraft]}))).status,200,'Incomplete hidden draft can be saved');
+assert.equal((await route.PUT(request({...many,downloads:[]}))).status,200);
+assert.deepEqual((await(await route.GET()).json()).downloads,[],'Deleting all files must not resurrect old agenda URLs');
 assert.equal((await route.PUT(request({...saved,enabled:false}))).status,200);
 assert.deepEqual(await(await route.GET()).json(),{...saved,enabled:false},'Disabling keeps content');
 console.log('PASS: default-off installation, authorized persistence, permission/origin guards, URL validation, bilingual fallback and hide/show without content loss.');

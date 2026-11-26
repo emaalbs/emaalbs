@@ -7,9 +7,10 @@ The homepage now checks the singleton welcome-page settings before displaying no
 - Public read / authenticated admin write: `/api/welcome-page`
 - Migration: `db/migrations/0029_welcome_page.sql` (new installations default to disabled)
 - Editable bilingual titles, descriptions, dates, image caption, button labels, image, registration URLs and summit-details URLs.
-- Two independent agenda downloads, each with bilingual labels, descriptions and optional Arabic/English PDFs. Each day's available file is reused for the other language. Clear both second-day URLs to hide that button. A missing first agenda or registration link appears disabled with a coming-soon caption.
-- Existing single-agenda configurations remain compatible; new fields default to an empty second download without a database migration.
-- The admin's **Download files / ملفات التحميل** section groups each file's bilingual public title, optional description, language uploads and URLs in one card. Each card includes a save button for the page settings. Titles can be changed without uploading the PDF again; existing labels and URLs are preserved.
+- Up to 100 ordered PDF downloads, each with a stable ID, bilingual title, optional description, Arabic/English URLs and an independent visibility toggle. One available language file serves both locales. Visible files require both titles and at least one URL; incomplete hidden drafts can be saved.
+- Existing one/two-agenda configurations are converted on read into `downloads` without a database migration or a production content write. Their titles, descriptions, URLs and order are preserved. An explicit empty array means all downloads were removed and never reimports the old fields.
+- The admin's **Download files / ملفات التحميل** section groups each file's title, description and uploads in one card. Add, move up/down, hide/show and delete controls are applied on Save. New files start hidden. Deletion removes the entry, not its underlying shared media object. Upload callbacks use stable IDs, so they cannot attach files to the wrong row after reordering; structural controls and saving are disabled during uploads.
+- Saves from pre-release editors without `downloads` return 409 with a reload instruction, preventing a stale two-file form from discarding additional files. Legacy fields remain in the configuration for compatibility but are no longer rendered as downloads once the array exists.
 - No emails, registration submissions, payment calls or third-party form embedding are performed by this feature.
 
 ## Local state, 2026-11-21

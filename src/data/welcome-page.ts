@@ -1,5 +1,14 @@
 export type WelcomeText = { en: string; ar: string };
+export type WelcomeDownload = {
+ id: string;
+ visible: boolean;
+ title: WelcomeText;
+ description: WelcomeText;
+ url: WelcomeText;
+};
+export const MAX_WELCOME_DOWNLOADS = 100;
 export type WelcomePageSettings = {
+ downloads: WelcomeDownload[];
  enabled: boolean;
  kicker: WelcomeText;
  title: WelcomeText;
@@ -20,6 +29,7 @@ export type WelcomePageSettings = {
 };
 const summit = "/ibs/iraq-business-summit-iii-ibs-iii-2026-the-exceptional-edition-baghdad-davos";
 export const DEFAULT_WELCOME_PAGE: WelcomePageSettings = {
+ downloads: [],
  enabled: false,
  kicker: { en: "IRAQ BUSINESS SUMMIT III · THE EXCEPTIONAL EDITION", ar: "قمة الأعمال العراقية الثالثة · النسخة الاستثنائية" },
  title: { en: "From Baghdad.\nTo Davos.", ar: "من بغداد\nإلى دافوس" },
@@ -65,6 +75,34 @@ export function parseWelcomePage(value: unknown): WelcomePageSettings {
  result.imageUrl = input.imageUrl.trim();
  if (result.agenda2Url.en || result.agenda2Url.ar) for (const locale of ["en", "ar"] as const) if (!result.agenda2Label[locale]) throw new Error("Required in both languages: agenda2Label");
  for (const field of ["title", "enterLabel", "agendaLabel", "registrationLabel"] as const) for (const locale of ["en", "ar"] as const) if (!result[field][locale]) throw new Error("Required in both languages: " + field);
+ // Read legacy uploads without writing to the database. An explicit empty list
+ // stays empty, so deleting every file never restores the legacy agenda links.
+ const downloads = input.downloads === undefined
+  ? [
+     {id:"agenda-1",visible:true,title:result.agendaLabel,description:result.agendaDescription,url:result.agendaUrl},
+     {id:"agenda-2",visible:true,title:result.agenda2Label,description:result.agenda2Description,url:result.agenda2Url},
+    ].filter(file=>file.url.en||file.url.ar)
+  : input.downloads;
+ if (!Array.isArray(downloads) || downloads.length > MAX_WELCOME_DOWNLOADS) throw new Error("Maximum 100 files / الحد الأقصى 100 ملف");
+ const ids = new Set<string>();
+ result.downloads = downloads.map((raw,index)=>{
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Invalid file / ملف غير صالح");
+  const file = raw as Record<string,unknown>;
+  if (typeof file.id !== "string" || !/^[a-zA-Z0-9_-]{1,80}$/.test(file.id) || ids.has(file.id)) throw new Error("Invalid or duplicate file ID");
+  ids.add(file.id);
+  if (typeof file.visible !== "boolean") throw new Error("Invalid file visibility");
+  const parsed = {id:file.id,visible:file.visible} as WelcomeDownload;
+  for (const key of ["title","description","url"] as const) {
+   const pair = file[key] as Record<string,unknown> | undefined;
+   if (!pair || typeof pair.en !== "string" || typeof pair.ar !== "string") throw new Error("Both languages are required for file " + (index+1));
+   const max = key === "title" ? 200 : 2000;
+   if (pair.en.length > max || pair.ar.length > max) throw new Error("File text is too long / نص الملف طويل جدًا");
+   parsed[key] = {en:pair.en.trim(),ar:pair.ar.trim()};
+  }
+  for (const locale of ["en","ar"] as const) if (!safeWelcomeUrl(parsed.url[locale])) throw new Error("Invalid file link / رابط الملف غير صالح");
+  if (parsed.visible && (!parsed.title.en || !parsed.title.ar || !(parsed.url.en || parsed.url.ar))) throw new Error(`File ${index+1}: add both titles and a file link, or hide it / أضف العنوان باللغتين ورابط الملف أو أخفِه`);
+  return parsed;
+ });
  return result;
 }
 export function welcomeUrl(pair: WelcomeText, locale: "en" | "ar") { return pair[locale] || pair[locale === "en" ? "ar" : "en"]; }
