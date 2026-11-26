@@ -11,12 +11,12 @@ const texts = [
  ["description", "Description / الوصف", true],
  ["dateLine", "Dates / المواعيد", true],
  ["locationLine", "Image caption / النص على الصورة", true],
- ["agendaLabel", "Day one agenda button / زر أجندة اليوم الأول", false],
- ["agendaDescription", "Day one details / تفاصيل اليوم الأول", true],
- ["agenda2Label", "Day two agenda button / زر أجندة اليوم الثاني", false],
- ["agenda2Description", "Day two details / تفاصيل اليوم الثاني", true],
  ["registrationLabel", "Registration button / زر التسجيل", false],
  ["enterLabel", "Enter website button / زر الدخول للموقع", false],
+] as const;
+const downloads = [
+ { url: "agendaUrl", title: "agendaLabel", description: "agendaDescription" },
+ { url: "agenda2Url", title: "agenda2Label", description: "agenda2Description" },
 ] as const;
 export default function WelcomePageAdmin() {
  const [data,setData]=useState<WelcomePageSettings>(DEFAULT_WELCOME_PAGE);
@@ -41,7 +41,19 @@ export default function WelcomePageAdmin() {
   </section>
   <section className={box}><h2 className="text-lg font-bold">Content / المحتوى</h2>{texts.map(([key,label,multiline])=><BilingualField key={key} label={label} multiline={multiline} rows={key==="description"?4:2} required={["title","enterLabel","agendaLabel","registrationLabel"].includes(key)} enValue={data[key].en} arValue={data[key].ar} onEnChange={v=>localized(key,"en",v)} onArChange={v=>localized(key,"ar",v)}/>)}</section>
   <section className={box}><h2 className="text-lg font-bold">Summit image / صورة القمة</h2><ImageUpload value={data.imageUrl} onChange={url=>change("imageUrl",url)} prefix="welcome/" label="Welcome image / صورة الصفحة الترحيبية" preset="blog-cover" recommendedSize="1200 × 1500 px" hint="Keep the focal point in the center for mobile cropping. / ضع العنصر الرئيسي وسط الصورة ليظهر على الهاتف."/><p className="text-xs text-gray-500">The EMAAL logo is included automatically. / شعار أعمال يظهر تلقائيًا.</p></section>
-  {(["agendaUrl","agenda2Url"] as const).map((key,index)=><section key={key} className={box} data-agenda-upload={index+1}><h2 className="text-lg font-bold">{index===0?"Day one agenda / أجندة اليوم الأول":"Day two agenda / أجندة اليوم الثاني"}</h2><p className="text-sm leading-6 text-gray-500">Upload one or both language versions. The available file is used for both languages. Clear both day-two links to hide its button. / ارفع نسخة واحدة أو نسختين لكل يوم. يُستخدم الملف المتوفر للغتين. لحذف زر اليوم الثاني أزل رابطَي ملفه.</p><div className="grid gap-6 md:grid-cols-2">{(["ar","en"] as const).map(locale=><PdfUpload key={locale} label={locale==="ar"?"ملف الأجندة بالعربية (اختياري)":"English agenda file (optional)"} value={data[key][locale]} onChange={url=>localized(key,locale,url)} prefix={`welcome/agenda/day-${index+1}/`} disabled={saving} onUploadingChange={busy=>setUploading(s=>({...s,[`${key}-${locale}`]:busy}))}/>)}</div><UrlPair label="Or paste an existing PDF link / أو ضع رابط ملف الأجندة" value={data[key]} change={(l,v)=>localized(key,l,v)}/></section>)}
+  <div id="download-files" className="space-y-2">
+   <h2 className="text-xl font-bold text-gray-900">Download files / ملفات التحميل</h2>
+   <p className="text-sm leading-6 text-gray-500">Choose the title visitors see for each file, in Arabic and English. Save to publish your changes.<br/>عدّل عنوان كل ملف بالعربية والإنكليزية؛ يظهر هذا العنوان على زر التحميل في الصفحة الترحيبية بعد الحفظ. يمكنك تغيير التسمية دون إعادة رفع الملف.</p>
+  </div>
+  {downloads.map(({url:key,title,description},index)=><section key={key} className={box} data-agenda-upload={index+1}>
+   <h3 className="text-lg font-bold">{index===0?"File 1 / الملف الأول":"File 2 / الملف الثاني"}</h3>
+   <div data-file-title={index+1}><BilingualField label="File title shown to visitors / عنوان الملف الظاهر للزائر" required={index===0||Boolean(data[key].ar||data[key].en)} enValue={data[title].en} arValue={data[title].ar} onEnChange={v=>localized(title,"en",v)} onArChange={v=>localized(title,"ar",v)} placeholderEn="e.g. Download the summit agenda" placeholderAr="مثال: تحميل أجندة القمة"/></div>
+   <BilingualField label="Description below the title (optional) / وصف أسفل العنوان (اختياري)" multiline rows={2} enValue={data[description].en} arValue={data[description].ar} onEnChange={v=>localized(description,"en",v)} onArChange={v=>localized(description,"ar",v)}/>
+   <p className="text-sm leading-6 text-gray-500">Upload one or both language versions. The available file is used for both languages. Clear both links for file 2 to hide its button.<br/>ارفع نسخة واحدة أو نسختين من الملف. يُستخدم الملف المتوفر للغتين. لإخفاء زر الملف الثاني أزل رابطَي ملفه.</p>
+   <div className="grid gap-6 md:grid-cols-2">{(["ar","en"] as const).map(locale=><PdfUpload key={locale} label={locale==="ar"?"الملف بالعربية (اختياري)":"English file (optional)"} value={data[key][locale]} onChange={url=>localized(key,locale,url)} prefix={`welcome/agenda/day-${index+1}/`} disabled={saving} onUploadingChange={busy=>setUploading(s=>({...s,[`${key}-${locale}`]:busy}))}/>)}</div>
+   <UrlPair label="Or paste an existing PDF link / أو ضع رابط ملف PDF" value={data[key]} change={(l,v)=>localized(key,l,v)}/>
+   <button type="button" onClick={save} disabled={saving||loadFailed||Object.values(uploading).some(Boolean)} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#01334D] px-5 py-3 font-semibold text-white disabled:opacity-50 hover:bg-[#006666] focus-visible:outline-2"><Save size={18}/>{saving?"Saving… / جارٍ الحفظ":"Save changes / حفظ التعديلات"}</button>
+  </section>)}
   <section className={box}><h2 className="text-lg font-bold">Registration link / رابط التسجيل</h2><p className="text-sm leading-6 text-gray-500">Google Forms or any https:// link. One link can serve both languages. Until a link is added, the button is marked as coming soon. / رابط كوكل فورم أو أي رابط آخر. يكفي رابط واحد للغتين، ويظهر الزر غير مفعّل إلى حين إضافة الرابط.</p><UrlPair label="Registration URL / رابط التسجيل" value={data.registrationUrl} change={(l,v)=>localized("registrationUrl",l,v)}/><UrlPair label="Summit details URL (optional) / رابط تفاصيل القمة (اختياري)" value={data.detailsUrl} change={(l,v)=>localized("detailsUrl",l,v)}/></section>
  </div>;
 }

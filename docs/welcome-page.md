@@ -9,6 +9,7 @@ The homepage now checks the singleton welcome-page settings before displaying no
 - Editable bilingual titles, descriptions, dates, image caption, button labels, image, registration URLs and summit-details URLs.
 - Two independent agenda downloads, each with bilingual labels, descriptions and optional Arabic/English PDFs. Each day's available file is reused for the other language. Clear both second-day URLs to hide that button. A missing first agenda or registration link appears disabled with a coming-soon caption.
 - Existing single-agenda configurations remain compatible; new fields default to an empty second download without a database migration.
+- The admin's **Download files / ملفات التحميل** section groups each file's bilingual public title, optional description, language uploads and URLs in one card. Each card includes a save button for the page settings. Titles can be changed without uploading the PDF again; existing labels and URLs are preserved.
 - No emails, registration submissions, payment calls or third-party form embedding are performed by this feature.
 
 ## Local state, 2026-11-21
